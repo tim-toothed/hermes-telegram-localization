@@ -28,6 +28,24 @@ Update from GitHub:
 hermes plugins update procvetaev-localization
 ```
 
+## Compatibility
+
+- Windows: full offline TelegramAdapter acceptance passed against Hermes 0.20.0.
+- Linux: plugin import, catalog loading, and translation smoke passed on Linux/Python 3.12. The runtime contains no OS-specific paths or APIs.
+- macOS: supported by the same platform-neutral runtime, but not yet exercised in this release.
+
+The plugin currently cannot translate three early or unsupported surfaces safely: the Gateway restart notification sent before adapter activation, callback popups, and Telegram command-menu descriptions. These remain English rather than using unsafe global monkey-patches.
+
+## Acceptance tests
+
+Run with the Python interpreter from the active Hermes installation:
+
+```bash
+python tests/run_acceptance.py
+```
+
+The suite performs no Telegram network calls. It exercises the real installed TelegramAdapter, `/new` and command-approval cards, buttons and outcomes, then samples representative notifications from every catalog source file.
+
 ## Design
 
 - `plugin.yaml` and `register(ctx)` use the normal Hermes standalone plugin loader.

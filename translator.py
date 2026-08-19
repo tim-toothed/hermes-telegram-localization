@@ -133,14 +133,14 @@ class Catalog:
             variables=dict(variables),
         )
 
-    def translate(self, text: str, boundary: str | None = None) -> TranslationResult:
+    def _translate_exact(
+        self, text: str, boundary: str | None = None, *, translate_variables: bool = True
+    ) -> TranslationResult:
         def allowed(rule: _Rule) -> bool:
             return not rule.boundaries or boundary in rule.boundaries
 
         matches: list[tuple[_Rule, Mapping[str, str]]] = [
-            (rule, {})
-            for rule in self._literal_rules.get(text, [])
-            if allowed(rule)
+            (rule, {}) for rule in self._literal_rules.get(text, []) if allowed(rule)
         ]
         for rule in self._template_rules:
             if not allowed(rule):
@@ -152,11 +152,41 @@ class Catalog:
         if not matches:
             return TranslationResult(text=text, status="passthrough", variables={})
         if len(matches) > 1:
-            return TranslationResult(
-                text=text,
-                status="ambiguous",
-                rule_id=",".join(rule.rule_id for rule, _ in matches),
-                variables={},
-            )
+            return TranslationResult(text=text, status="ambiguous", rule_id=",".join(rule.rule_id for rule, _ in matches), variables={})
         rule, variables = matches[0]
+        if translate_variables and variables:
+            translated_variables: dict[str, str] = {}
+            for name, value in variables.items():
+                nested = self._translate_exact(
+                    value, boundary=boundary, translate_variables=False
+                )
+                translated_variables[name] = (
+                    nested.text if nested.status == "translated" else value
+                )
+            return self._translated(rule, translated_variables)
         return self._translated(rule, variables)
+
+    def translate(self, text: str, boundary: str | None = None) -> TranslationResult:
+        exact = self._translate_exact(text, boundary=boundary)
+        if exact.status != "passthrough" or "\n" not in text:
+            return exact
+        output: list[str] = []
+        translated_ids: list[str] = []
+        for part in text.splitlines(keepends=True):
+            body = part.rstrip("\r\n")
+            ending = part[len(body):]
+            result = self._translate_exact(body, boundary=boundary)
+            if result.status == "ambiguous":
+                return TranslationResult(text=text, status="ambiguous", rule_id=result.rule_id, variables={})
+            if result.status == "translated":
+                translated_ids.append(result.rule_id or "unknown")
+                output.append(result.text + ending)
+            else:
+                output.append(part)
+        if not translated_ids:
+            return exact
+        return TranslationResult(
+            text="".join(output), status="translated",
+            rule_id="segments:" + ",".join(translated_ids),
+            source_file="locales/en.yaml + locales/ru.yaml", family="segmented_system_ui", variables={},
+        )

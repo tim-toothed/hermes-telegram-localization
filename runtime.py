@@ -21,6 +21,9 @@ class RuntimeState:
         self._suppress_translation: ContextVar[bool] = ContextVar(
             "procvetaev_localization_suppress", default=False
         )
+        self._command_dispatch: ContextVar[bool] = ContextVar(
+            "procvetaev_localization_command_dispatch", default=False
+        )
 
     def translate(self, text: Any, boundary: str) -> Any:
         if self._suppress_translation.get():
@@ -29,20 +32,19 @@ class RuntimeState:
             return text
         result = self.catalog.translate(text, boundary=boundary)
         self.counters[result.status] += 1
-        if result.status != "passthrough":
-            self.reporter.emit(
-                {
-                    "event": "translation",
-                    "status": result.status,
-                    "boundary": boundary,
-                    "rule_id": result.rule_id,
-                    "source_file": result.source_file,
-                    "family": result.family,
-                    "variables": dict(result.variables or {}),
-                },
-                input_text=text,
-                output_text=result.text,
-            )
+        self.reporter.emit(
+            {
+                "event": "translation",
+                "status": result.status,
+                "boundary": boundary,
+                "rule_id": result.rule_id,
+                "source_file": result.source_file,
+                "family": result.family,
+                "variable_names": sorted((result.variables or {}).keys()),
+            },
+            input_text=text,
+            output_text=result.text,
+        )
         return result.text
 
     def summary(self) -> str:
@@ -82,7 +84,9 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
             except Exception:
                 metadata = kwargs.get("metadata")
             suppress = bool(
-                isinstance(metadata, dict) and metadata.get("notify") is True
+                isinstance(metadata, dict)
+                and metadata.get("notify") is True
+                and not state._command_dispatch.get()
             )
             token = state._suppress_translation.set(suppress)
             try:
@@ -181,6 +185,11 @@ def activate_from_gateway_event(
     *, event: Any, gateway: Any, state: RuntimeState
 ) -> None:
     source = getattr(event, "source", None)
+    try:
+        is_command = bool(event.is_command())
+    except Exception:
+        is_command = str(getattr(event, "text", "") or "").lstrip().startswith("/")
+    state._command_dispatch.set(is_command)
     platform = getattr(getattr(source, "platform", None), "value", "")
     if str(platform).lower() != "telegram":
         return

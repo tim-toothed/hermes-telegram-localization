@@ -1,6 +1,4 @@
-# Generated from the factual DESKTOP-2 en/ru catalogs.
-# Rules are grouped by the Hermes source module that emits them.
-version: 1
+version: 0.2.0-d2
 locale: ru
 groups:
   agent.account.usage.py:
@@ -257,15 +255,6 @@ groups:
       family: tool_progress
       from: Searching the web
       to: Ищу в интернете
-  agent.onboarding.py:
-    source_file: agent/onboarding.py
-    rules:
-    - id: runtime_status.hint_tool_progress
-      family: runtime_status
-      from: '💡 First-time tip: this tool took a while, so progress is shown step by step. If this is noisy, use `/verbose`
-        to cycle modes (all → new → off). This notice will not appear again.'
-      to: '💡 Первая подсказка: инструмент выполняется долго, поэтому прогресс показывается по шагам. Если сообщений слишком
-        много, `/verbose` переключает режимы (all → new → off). Подсказка больше не появится.'
   cron.scheduler.py:
     source_file: cron/scheduler.py
     rules:
@@ -600,6 +589,18 @@ groups:
       placeholders:
         command: .+?
         detail: .*?
+    - id: gateway.slash_confirm.prompt_with_fallback
+      family: gateway
+      from: "⚠️ **Confirm /{command}**\n\n{detail}\n\nChoose:\n• **Approve Once** — proceed this time only\n• **Always Approve** — proceed and silence this prompt permanently\n• **Cancel** — keep current conversation\n\n_Text fallback: reply `{prefix}approve`, `{prefix}always`, or `{prefix}cancel`._"
+      to: "⚠️ **Подтверждение /{command}**\n\n{detail}\n\nВыберите:\n• **Подтвердить один раз** — выполнить только сейчас\n• **Подтверждать всегда** — выполнить и больше не показывать этот запрос\n• **Отмена** — сохранить текущий диалог\n\n_Текстовый вариант: ответьте `{prefix}approve`, `{prefix}always` или `{prefix}cancel`._"
+      placeholders:
+        command: .+?
+        detail: .*?
+        prefix: .*?
+    - id: gateway.slash_confirm.new_detail
+      family: gateway
+      from: This starts a fresh session and discards the current conversation history.
+      to: Будет начат новый сеанс, а текущая история диалога будет удалена.
     - id: gateway.slash_confirm.text_fallback
       family: gateway
       from: Reply `{prefix}approve`, `{prefix}always`, or `{prefix}cancel`.
@@ -780,32 +781,6 @@ groups:
       placeholders:
         minutes: '[0-9][0-9.,]*'
         detail: .*?
-    - id: runtime_status.hint_interrupt
-      family: runtime_status
-      from: '💡 First-time tip: I interrupted the current task to answer you. Use `/busy queue` to queue follow-ups, `/busy
-        steer` to inject them without interrupting, or `/busy status` to check. This notice will not appear again.'
-      to: '💡 Первая подсказка: текущая задача прервана для ответа. `/busy queue` ставит следующие сообщения в очередь, `/busy
-        steer` передаёт их в текущую работу без прерывания, `/busy status` показывает режим. Подсказка больше не появится.'
-    - id: runtime_status.hint_queue
-      family: runtime_status
-      from: '💡 First-time tip: I queued your message instead of interrupting. Use `/busy interrupt` to make new messages stop
-        the current task immediately, or `/busy status` to check. This notice will not appear again.'
-      to: '💡 Первая подсказка: сообщение поставлено в очередь без прерывания работы. `/busy interrupt` переключает новые сообщения
-        в режим немедленного прерывания, `/busy status` показывает режим. Подсказка больше не появится.'
-    - id: runtime_status.hint_redirect
-      family: runtime_status
-      from: '💡 First-time tip: I redirected the current run using your message. Completed work remains in context, and `/stop`
-        still cancels the task. Use `/busy queue` for a separate turn or `/busy status` to check. This notice will not appear
-        again.'
-      to: '💡 Первая подсказка: текущая работа скорректирована вашим сообщением. Уже выполненная работа остаётся в контексте,
-        `/stop` отменяет задачу. `/busy queue` ставит сообщение на отдельный ход, `/busy status` показывает режим. Подсказка
-        больше не появится.'
-    - id: runtime_status.hint_steer
-      family: runtime_status
-      from: '💡 First-time tip: I steered your message into the current run; it will arrive after the next tool call. Use `/busy
-        interrupt`, `/busy queue`, or `/busy status` to change/check this. This notice will not appear again.'
-      to: '💡 Первая подсказка: сообщение передано в текущую работу и будет учтено после следующего вызова инструмента. Режим
-        меняется через `/busy interrupt` или `/busy queue`, проверяется через `/busy status`. Подсказка больше не появится.'
     - id: runtime_status.iteration
       family: runtime_status
       from: iteration {current}/{maximum}
@@ -1516,3 +1491,3613 @@ groups:
       to: ◀ К провайдерам
       boundaries:
       - telegram.InlineKeyboardButton
+  locales.approval:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.approval.dangerous_header
+      family: locale.approval
+      from: '⚠️  DANGEROUS COMMAND: {description}'
+      to: '⚠️  ОПАСНАЯ КОМАНДА: {description}'
+      placeholders:
+        description: .*?
+    - id: locale.approval.choose_long
+      family: locale.approval
+      from: '      [o]nce  |  [s]ession  |  [a]lways  |  [d]eny'
+      to: '      [o]один раз  |  [s]сеанс  |  [a]всегда  |  [d]отклонить'
+    - id: locale.approval.choose_short
+      family: locale.approval
+      from: '      [o]nce  |  [s]ession  |  [d]eny'
+      to: '      [o]один раз  |  [s]сеанс  |  [d]отклонить'
+    - id: locale.approval.prompt_long
+      family: locale.approval
+      from: '      Choice [o/s/a/D]: '
+      to: '      Выбор [o/s/a/D]: '
+    - id: locale.approval.prompt_short
+      family: locale.approval
+      from: '      Choice [o/s/D]: '
+      to: '      Выбор [o/s/D]: '
+    - id: locale.approval.choose_smart_deny
+      family: locale.approval
+      from: '      [o]nce  |  [d]eny'
+      to: '      [o]один раз  |  [d]отклонить'
+    - id: locale.approval.prompt_smart_deny
+      family: locale.approval
+      from: '      Choice [o/D]: '
+      to: '      Выбор [o/D]: '
+    - id: locale.approval.timeout
+      family: locale.approval
+      from: '      ⏱ Timeout - denying command'
+      to: '      ⏱ Время ожидания истекло — команда отклонена'
+    - id: locale.approval.allowed_once
+      family: locale.approval
+      from: '      ✓ Allowed once'
+      to: '      ✓ Разрешено один раз'
+    - id: locale.approval.allowed_session
+      family: locale.approval
+      from: '      ✓ Allowed for this session'
+      to: '      ✓ Разрешено для этого сеанса'
+    - id: locale.approval.allowed_always
+      family: locale.approval
+      from: '      ✓ Added to permanent allowlist'
+      to: '      ✓ Добавлено в постоянный список разрешённых'
+    - id: locale.approval.denied
+      family: locale.approval
+      from: '      ✗ Denied'
+      to: '      ✗ Отклонено'
+    - id: locale.approval.cancelled
+      family: locale.approval
+      from: '      ✗ Cancelled'
+      to: '      ✗ Отменено'
+    - id: locale.approval.blocklist_message
+      family: locale.approval
+      from: This command is on the unconditional blocklist and cannot be approved.
+      to: Эта команда находится в безусловном списке блокировки и не может быть одобрена.
+  locales.account_usage:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.account_usage.resets
+      family: locale.account_usage
+      from: ' • resets {reset}'
+      to: ' • сброс {reset}'
+      placeholders:
+        reset: .*?
+    - id: locale.account_usage.label_session
+      family: locale.account_usage
+      from: Session
+      to: Сеанс
+    - id: locale.account_usage.label_weekly
+      family: locale.account_usage
+      from: Weekly
+      to: Неделя
+  locales.provider_progress:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.provider_progress.provider
+      family: locale.provider_progress
+      from: the provider
+      to: провайдер
+  locales.tool_progress:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.tool_progress.verbs.browser_type
+      family: locale.tool_progress.verbs
+      from: Typing
+      to: Ввожу текст
+    - id: locale.tool_progress.verbs.write_file
+      family: locale.tool_progress.verbs
+      from: Writing
+      to: Записываю файл
+    - id: locale.tool_progress.verbs.patch
+      family: locale.tool_progress.verbs
+      from: Editing
+      to: Редактирую файл
+    - id: locale.tool_progress.verbs.terminal
+      family: locale.tool_progress.verbs
+      from: Running
+      to: Выполняю команду
+    - id: locale.tool_progress.verbs.clarify
+      family: locale.tool_progress.verbs
+      from: Asking
+      to: Задаю вопрос
+    - id: locale.tool_progress.default_connector
+      family: locale.tool_progress
+      from: ' '
+      to: ': '
+    - id: locale.tool_progress.search_connector
+      family: locale.tool_progress
+      from: ' for '
+      to: ': '
+  locales.runtime_status:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.runtime_status.tool_error_suffix
+      family: locale.runtime_status
+      from: ' (error)'
+      to: ' (ошибка)'
+  locales.runtime_warning:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.runtime_warning.media_kind_photo
+      family: locale.runtime_warning
+      from: photo
+      to: фотографию
+    - id: locale.runtime_warning.provider_auth_status
+      family: locale.runtime_warning
+      from: ' The provider rejected authorization. Refresh OAuth/credentials and retry.'
+      to: ' Провайдер отклонил авторизацию. Обновите OAuth/credentials и повторите запрос.'
+    - id: locale.runtime_warning.provider_quota_status
+      family: locale.runtime_warning
+      from: ' The provider balance or quota may be exhausted. Check `/usage` and the provider account.'
+      to: ' Возможно, исчерпан баланс или лимит провайдера. Проверьте `/usage` и аккаунт провайдера.'
+    - id: locale.runtime_warning.provider_usage_reset_hours
+      family: locale.runtime_warning
+      from: ' The subscription usage limit has been reached; it should reset in about {hours} h.'
+      to: ' Лимит подписки исчерпан; ориентировочно он сбросится через {hours} ч.'
+      placeholders:
+        hours: .*?
+    - id: locale.runtime_warning.provider_usage_reset
+      family: locale.runtime_warning
+      from: ' The subscription usage limit has been reached. Wait for it to reset.'
+      to: ' Лимит подписки исчерпан. Дождитесь его сброса.'
+    - id: locale.runtime_warning.provider_rate_status
+      family: locale.runtime_warning
+      from: ' The provider temporarily limited the request rate. Wait and retry.'
+      to: ' Провайдер временно ограничил частоту запросов. Подождите и повторите запрос.'
+    - id: locale.runtime_warning.provider_overloaded_status
+      family: locale.runtime_warning
+      from: ' The provider is temporarily overloaded. Retry shortly.'
+      to: ' Провайдер временно перегружен. Повторите запрос позже.'
+    - id: locale.runtime_warning.provider_rejected_status
+      family: locale.runtime_warning
+      from: ' The provider rejected the request.'
+      to: ' Провайдер отклонил запрос.'
+    - id: locale.runtime_warning.preference_save_failed
+      family: locale.runtime_warning
+      from: '
+
+
+        ⚠️ Could not save this preference because `config.yaml` is not writable. `/clear`, `/new`, `/reset`, and `/undo` will
+        ask again next time. To disable confirmation permanently, set `approvals.destructive_slash_confirm: false` in `config.yaml`.'
+      to: '
+
+
+        ⚠️ Не удалось сохранить настройку: `config.yaml` недоступен для записи. При следующем запуске `/clear`, `/new`, `/reset`
+        или `/undo` подтверждение появится снова. Чтобы отключить его постоянно, задайте `approvals.destructive_slash_confirm:
+        false` в `config.yaml`.'
+    - id: locale.runtime_warning.cron_failure_nudge
+      family: locale.runtime_warning
+      from: '
+
+        This job has failed {streak} times in a row. Fix its prompt/config or pause it with `hermes cron pause {job_ref}`;
+        resume/remove are also available.'
+      to: '
+
+        Эта задача завершилась ошибкой {streak} раз подряд. Исправьте prompt/config или приостановите её командой `hermes
+        cron pause {job_ref}`; также доступны resume/remove.'
+      placeholders:
+        streak: .*?
+        job_ref: .*?
+    - id: locale.runtime_warning.approval_header_plain
+      family: locale.runtime_warning
+      from: '⚠️ Command Approval Required
+
+
+        '
+      to: '⚠️ Требуется подтверждение команды
+
+
+        '
+    - id: locale.runtime_warning.approval_reason_label
+      family: locale.runtime_warning
+      from: 'Reason: '
+      to: 'Причина: '
+    - id: locale.runtime_warning.approval_smart_deny
+      family: locale.runtime_warning
+      from: '
+
+
+        Smart DENY: owner override applies to this one operation only.'
+      to: '
+
+
+        Smart DENY: разрешение владельца действует только для этой операции.'
+  locales.gateway:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.gateway.whoami.scope_dm
+      family: locale.gateway.whoami
+      from: DM
+      to: личные сообщения
+    - id: locale.gateway.whoami.none
+      family: locale.gateway.whoami
+      from: (none)
+      to: (нет)
+    - id: locale.gateway.approval_expired
+      family: locale.gateway
+      from: ⚠️ Approval expired (agent is no longer waiting). Ask the agent to try again.
+      to: ⚠️ Срок одобрения истёк (агент больше не ожидает). Попросите агента повторить попытку.
+    - id: locale.gateway.draining
+      family: locale.gateway
+      from: ⏳ Draining {count} active agent(s) before restart...
+      to: ⏳ Ожидание завершения {count} активных агент(ов) перед перезапуском...
+      placeholders:
+        count: .*?
+    - id: locale.gateway.goal_cleared
+      family: locale.gateway
+      from: ✓ Goal cleared.
+      to: ✓ Цель очищена.
+    - id: locale.gateway.no_active_goal
+      family: locale.gateway
+      from: No active goal.
+      to: Нет активной цели.
+    - id: locale.gateway.config_read_failed
+      family: locale.gateway
+      from: '⚠️ Could not read config.yaml: {error}'
+      to: '⚠️ Не удалось прочитать config.yaml: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.config_save_failed
+      family: locale.gateway
+      from: '⚠️ Could not save config: {error}'
+      to: '⚠️ Не удалось сохранить конфигурацию: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.model.error_prefix
+      family: locale.gateway.model
+      from: 'Error: {error}'
+      to: 'Ошибка: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.model.switched
+      family: locale.gateway.model
+      from: Model switched to `{model}`
+      to: Модель изменена на `{model}`
+      placeholders:
+        model: .*?
+    - id: locale.gateway.model.context_label
+      family: locale.gateway.model
+      from: 'Context: {tokens} tokens'
+      to: 'Контекст: {tokens} токенов'
+      placeholders:
+        tokens: .*?
+    - id: locale.gateway.model.max_output_label
+      family: locale.gateway.model
+      from: 'Max output: {tokens} tokens'
+      to: 'Макс. вывод: {tokens} токенов'
+      placeholders:
+        tokens: .*?
+    - id: locale.gateway.model.cost_label
+      family: locale.gateway.model
+      from: 'Cost: {cost}'
+      to: 'Стоимость: {cost}'
+      placeholders:
+        cost: .*?
+    - id: locale.gateway.model.capabilities_label
+      family: locale.gateway.model
+      from: 'Capabilities: {capabilities}'
+      to: 'Возможности: {capabilities}'
+      placeholders:
+        capabilities: .*?
+    - id: locale.gateway.model.prompt_caching_enabled
+      family: locale.gateway.model
+      from: 'Prompt caching: enabled'
+      to: 'Кеширование промптов: включено'
+    - id: locale.gateway.model.warning_prefix
+      family: locale.gateway.model
+      from: 'Warning: {warning}'
+      to: 'Предупреждение: {warning}'
+      placeholders:
+        warning: .*?
+    - id: locale.gateway.model.saved_global
+      family: locale.gateway.model
+      from: Saved to config.yaml (`--global`)
+      to: Сохранено в config.yaml (`--global`)
+    - id: locale.gateway.model.session_only_hint
+      family: locale.gateway.model
+      from: _(session only — add `--global` to persist)_
+      to: _(только для этого сеанса — добавьте `--global`, чтобы сохранить)_
+    - id: locale.gateway.model.current_label
+      family: locale.gateway.model
+      from: 'Current: `{model}` on {provider}'
+      to: 'Текущая: `{model}` на {provider}'
+      placeholders:
+        model: .*?
+        provider: .*?
+    - id: locale.gateway.model.current_tag
+      family: locale.gateway.model
+      from: ' (current)'
+      to: ' (текущая)'
+    - id: locale.gateway.model.more_models_suffix
+      family: locale.gateway.model
+      from: ' (+{count} more)'
+      to: ' (+ещё {count})'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.model.usage_switch_model
+      family: locale.gateway.model
+      from: '`/model <name>` — switch model'
+      to: '`/model <name>` — сменить модель'
+    - id: locale.gateway.model.usage_switch_provider
+      family: locale.gateway.model
+      from: '`/model <name> --provider <slug>` — switch provider'
+      to: '`/model <name> --provider <slug>` — сменить провайдера'
+    - id: locale.gateway.model.usage_persist
+      family: locale.gateway.model
+      from: '`/model <name> --global` — persist'
+      to: '`/model <name> --global` — сохранить навсегда'
+    - id: locale.gateway.agents.header
+      family: locale.gateway.agents
+      from: 🤖 **Active Agents & Tasks**
+      to: 🤖 **Активные агенты и задачи**
+    - id: locale.gateway.agents.active_agents
+      family: locale.gateway.agents
+      from: '**Active agents:** {count}'
+      to: '**Активные агенты:** {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.agents.this_chat
+      family: locale.gateway.agents
+      from: ' · this chat'
+      to: ' · этот чат'
+    - id: locale.gateway.agents.more
+      family: locale.gateway.agents
+      from: '... and {count} more'
+      to: '... и ещё {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.agents.running_processes
+      family: locale.gateway.agents
+      from: '**Running background processes:** {count}'
+      to: '**Выполняющиеся фоновые процессы:** {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.agents.async_jobs
+      family: locale.gateway.agents
+      from: '**Gateway async jobs:** {count}'
+      to: '**Асинхронные задачи шлюза:** {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.agents.background_delegations
+      family: locale.gateway.agents
+      from: '**Background delegations:** {count}'
+      to: '**Фоновые делегирования:** {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.agents.none
+      family: locale.gateway.agents
+      from: No active agents or running tasks.
+      to: Нет активных агентов или выполняющихся задач.
+    - id: locale.gateway.agents.state_starting
+      family: locale.gateway.agents
+      from: starting
+      to: запускается
+    - id: locale.gateway.agents.state_running
+      family: locale.gateway.agents
+      from: running
+      to: выполняется
+    - id: locale.gateway.approve.no_pending
+      family: locale.gateway.approve
+      from: No pending command to approve.
+      to: Нет команды, ожидающей одобрения.
+    - id: locale.gateway.approve.once_singular
+      family: locale.gateway.approve
+      from: ✅ Command approved. The agent is resuming...
+      to: ✅ Команда одобрена. Агент возобновляет работу...
+    - id: locale.gateway.approve.once_plural
+      family: locale.gateway.approve
+      from: ✅ Commands approved ({count} commands). The agent is resuming...
+      to: ✅ Команды одобрены ({count} команд). Агент возобновляет работу...
+      placeholders:
+        count: .*?
+    - id: locale.gateway.approve.session_singular
+      family: locale.gateway.approve
+      from: ✅ Command approved (pattern approved for this session). The agent is resuming...
+      to: ✅ Команда одобрена (шаблон одобрен для этого сеанса). Агент возобновляет работу...
+    - id: locale.gateway.approve.session_plural
+      family: locale.gateway.approve
+      from: ✅ Commands approved (pattern approved for this session) ({count} commands). The agent is resuming...
+      to: ✅ Команды одобрены (шаблон одобрен для этого сеанса) ({count} команд). Агент возобновляет работу...
+      placeholders:
+        count: .*?
+    - id: locale.gateway.approve.always_singular
+      family: locale.gateway.approve
+      from: ✅ Command approved (pattern approved permanently). The agent is resuming...
+      to: ✅ Команда одобрена (шаблон одобрен навсегда). Агент возобновляет работу...
+    - id: locale.gateway.approve.always_plural
+      family: locale.gateway.approve
+      from: ✅ Commands approved (pattern approved permanently) ({count} commands). The agent is resuming...
+      to: ✅ Команды одобрены (шаблон одобрен навсегда) ({count} команд). Агент возобновляет работу...
+      placeholders:
+        count: .*?
+    - id: locale.gateway.background.usage
+      family: locale.gateway.background
+      from: 'Usage: /background <prompt>
+
+        Example: /background Summarize the top HN stories today
+
+
+        Runs the prompt in a separate session. You can keep chatting — the result will appear here when done.'
+      to: 'Использование: /background <запрос>
+
+        Пример: /background Сделай сводку лучших историй с HN сегодня
+
+
+        Запускает запрос в отдельном сеансе. Можно продолжить общение — результат появится здесь по завершении.'
+    - id: locale.gateway.background.started
+      family: locale.gateway.background
+      from: '🔄 Background task started: "{preview}"
+
+        Task ID: {task_id}
+
+        You can keep chatting — results will appear when done.'
+      to: '🔄 Фоновая задача запущена: «{preview}»
+
+        ID задачи: {task_id}
+
+        Можно продолжить общение — результаты появятся здесь по завершении.'
+      placeholders:
+        preview: .*?
+        task_id: .*?
+    - id: locale.gateway.branch.db_unavailable
+      family: locale.gateway.branch
+      from: Session database not available.
+      to: База данных сеансов недоступна.
+    - id: locale.gateway.branch.no_conversation
+      family: locale.gateway.branch
+      from: No conversation to branch — send a message first.
+      to: Нет беседы для ответвления — сначала отправьте сообщение.
+    - id: locale.gateway.branch.create_failed
+      family: locale.gateway.branch
+      from: 'Failed to create branch: {error}'
+      to: 'Не удалось создать ветку: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.branch.switch_failed
+      family: locale.gateway.branch
+      from: Branch created but failed to switch to it.
+      to: Ветка создана, но переключиться на неё не удалось.
+    - id: locale.gateway.branch.branched_one
+      family: locale.gateway.branch
+      from: '⑂ Branched to **{title}** ({count} message copied)
+
+        Original: `{parent}`
+
+        Branch: `{new}`
+
+        Use `/resume` to switch back to the original.'
+      to: '⑂ Создана ветка **{title}** (скопировано {count} сообщение)
+
+        Оригинал: `{parent}`
+
+        Ветка: `{new}`
+
+        Используйте `/resume`, чтобы вернуться к оригиналу.'
+      placeholders:
+        title: .*?
+        count: .*?
+        parent: .*?
+        new: .*?
+    - id: locale.gateway.branch.branched_many
+      family: locale.gateway.branch
+      from: '⑂ Branched to **{title}** ({count} messages copied)
+
+        Original: `{parent}`
+
+        Branch: `{new}`
+
+        Use `/resume` to switch back to the original.'
+      to: '⑂ Создана ветка **{title}** (скопировано {count} сообщений)
+
+        Оригинал: `{parent}`
+
+        Ветка: `{new}`
+
+        Используйте `/resume`, чтобы вернуться к оригиналу.'
+      placeholders:
+        title: .*?
+        count: .*?
+        parent: .*?
+        new: .*?
+    - id: locale.gateway.commands.usage
+      family: locale.gateway.commands
+      from: 'Usage: `/commands [page]`'
+      to: 'Использование: `/commands [page]`'
+    - id: locale.gateway.commands.skill_header
+      family: locale.gateway.commands
+      from: '⚡ **Skill Commands**:'
+      to: '⚡ **Команды навыков**:'
+    - id: locale.gateway.commands.default_desc
+      family: locale.gateway.commands
+      from: Skill command
+      to: Команда навыка
+    - id: locale.gateway.commands.none
+      family: locale.gateway.commands
+      from: No commands available.
+      to: Нет доступных команд.
+    - id: locale.gateway.commands.header
+      family: locale.gateway.commands
+      from: 📚 **Commands** ({total} total, page {page}/{total_pages})
+      to: 📚 **Команды** (всего {total}, страница {page}/{total_pages})
+      placeholders:
+        total: .*?
+        page: .*?
+        total_pages: .*?
+    - id: locale.gateway.commands.nav_prev
+      family: locale.gateway.commands
+      from: '`/commands {page}` ← prev'
+      to: '`/commands {page}` ← пред.'
+      placeholders:
+        page: .*?
+    - id: locale.gateway.commands.nav_next
+      family: locale.gateway.commands
+      from: next → `/commands {page}`
+      to: след. → `/commands {page}`
+      placeholders:
+        page: .*?
+    - id: locale.gateway.commands.out_of_range
+      family: locale.gateway.commands
+      from: _(Requested page {requested} was out of range, showing page {page}.)_
+      to: _(Запрошенная страница {requested} вне диапазона, показана страница {page}.)_
+      placeholders:
+        requested: .*?
+        page: .*?
+    - id: locale.gateway.compress.not_enough
+      family: locale.gateway.compress
+      from: Not enough conversation to compress (need at least 4 messages).
+      to: Недостаточно беседы для сжатия (нужно минимум 4 сообщения).
+    - id: locale.gateway.compress.no_provider
+      family: locale.gateway.compress
+      from: No provider configured -- cannot compress.
+      to: Провайдер не настроен — сжатие невозможно.
+    - id: locale.gateway.compress.nothing_to_do
+      family: locale.gateway.compress
+      from: Nothing to compress yet (the transcript is still all protected context).
+      to: Пока нечего сжимать (стенограмма всё ещё полностью является защищённым контекстом).
+    - id: locale.gateway.compress.aggressive_unsupported
+      family: locale.gateway.compress
+      from: --aggressive is not supported; use '/compress here [N]' to keep only recent exchanges, or /undo to drop turns.
+      to: --aggressive не поддерживается; используйте '/compress here [N]', чтобы сохранить только недавние обмены, или /undo,
+        чтобы удалить ходы.
+    - id: locale.gateway.compress.focus_line
+      family: locale.gateway.compress
+      from: 'Focus: "{topic}"'
+      to: 'Фокус: "{topic}"'
+      placeholders:
+        topic: .*?
+    - id: locale.gateway.compress.summary_failed
+      family: locale.gateway.compress
+      from: ⚠️ Summary generation failed ({error}). {count} historical message(s) were removed and replaced with a placeholder;
+        earlier context is no longer recoverable. Consider checking your auxiliary.compression model configuration.
+      to: ⚠️ Не удалось сгенерировать сводку ({error}). {count} историч. сообщений было удалено и заменено заполнителем; предыдущий
+        контекст больше нельзя восстановить. Проверьте конфигурацию модели auxiliary.compression.
+      placeholders:
+        error: .*?
+        count: .*?
+    - id: locale.gateway.compress.aborted
+      family: locale.gateway.compress
+      from: ⚠️ Compression aborted ({error}). No messages were dropped — conversation is unchanged. Run /compress to retry,
+        /reset for a clean session, or check your auxiliary.compression model configuration.
+      to: ⚠️ Сжатие прервано ({error}). Сообщения не были удалены — разговор не изменился. Запустите /compress для повторной
+        попытки, /reset для новой сессии или проверьте конфигурацию модели auxiliary.compression.
+      placeholders:
+        error: .*?
+    - id: locale.gateway.compress.aux_failed
+      family: locale.gateway.compress
+      from: ℹ️ Configured compression model `{model}` failed ({error}). Recovered using your main model — context is intact
+        — but you may want to check `auxiliary.compression.model` in config.yaml.
+      to: ℹ️ Настроенная модель сжатия `{model}` дала сбой ({error}). Восстановлено с помощью основной модели — контекст не
+        повреждён — но рекомендуется проверить `auxiliary.compression.model` в config.yaml.
+      placeholders:
+        model: .*?
+        error: .*?
+    - id: locale.gateway.compress.failed
+      family: locale.gateway.compress
+      from: 'Compression failed: {error}'
+      to: 'Сжатие не удалось: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.debug.upload_failed
+      family: locale.gateway.debug
+      from: '✗ Failed to upload debug report: {error}'
+      to: '✗ Не удалось загрузить отчёт отладки: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.debug.header
+      family: locale.gateway.debug
+      from: '**Debug report uploaded:**'
+      to: '**Отчёт отладки загружен:**'
+    - id: locale.gateway.debug.auto_delete
+      family: locale.gateway.debug
+      from: ⏱ Pastes will auto-delete in 6 hours.
+      to: ⏱ Вставки автоматически удалятся через 6 часов.
+    - id: locale.gateway.debug.full_logs_hint
+      family: locale.gateway.debug
+      from: For full log uploads, use `hermes debug share` from the CLI.
+      to: Для загрузки полных журналов используйте `hermes debug share` из CLI.
+    - id: locale.gateway.debug.share_hint
+      family: locale.gateway.debug
+      from: Share these links with the Hermes team for support.
+      to: Поделитесь этими ссылками с командой Hermes для получения поддержки.
+    - id: locale.gateway.deny.stale
+      family: locale.gateway.deny
+      from: ❌ Command denied (approval was stale).
+      to: ❌ Команда отклонена (одобрение устарело).
+    - id: locale.gateway.deny.no_pending
+      family: locale.gateway.deny
+      from: No pending command to deny.
+      to: Нет команды для отклонения.
+    - id: locale.gateway.deny.denied_singular
+      family: locale.gateway.deny
+      from: ❌ Command denied.
+      to: ❌ Команда отклонена.
+    - id: locale.gateway.deny.denied_plural
+      family: locale.gateway.deny
+      from: ❌ Commands denied ({count} commands).
+      to: ❌ Команды отклонены ({count} команд).
+      placeholders:
+        count: .*?
+    - id: locale.gateway.deny.denied_reason_singular
+      family: locale.gateway.deny
+      from: '❌ Command denied. Reason relayed to the agent: "{reason}"'
+      to: '❌ Команда отклонена. Причина передана агенту: "{reason}"'
+      placeholders:
+        reason: .*?
+    - id: locale.gateway.deny.denied_reason_plural
+      family: locale.gateway.deny
+      from: '❌ Commands denied ({count} commands). Reason relayed to the agent: "{reason}"'
+      to: '❌ Команды отклонены ({count} команд). Причина передана агенту: "{reason}"'
+      placeholders:
+        count: .*?
+        reason: .*?
+    - id: locale.gateway.fast.not_supported
+      family: locale.gateway.fast
+      from: ⚡ /fast is only available for OpenAI models that support Priority Processing.
+      to: ⚡ /fast доступен только для моделей OpenAI, поддерживающих Priority Processing.
+    - id: locale.gateway.fast.status
+      family: locale.gateway.fast
+      from: '⚡ Priority Processing
+
+
+        Current mode: `{mode}`
+
+
+        _Usage:_ `/fast <normal|fast|status>`'
+      to: '⚡ Priority Processing
+
+
+        Текущий режим: `{mode}`
+
+
+        _Использование:_ `/fast <normal|fast|status>`'
+      placeholders:
+        mode: .*?
+    - id: locale.gateway.fast.unknown_arg
+      family: locale.gateway.fast
+      from: '⚠️ Unknown argument: `{arg}`
+
+
+        **Valid options:** normal, fast, status'
+      to: '⚠️ Неизвестный аргумент: `{arg}`
+
+
+        **Допустимые варианты:** normal, fast, status'
+      placeholders:
+        arg: .*?
+    - id: locale.gateway.fast.saved
+      family: locale.gateway.fast
+      from: '⚡ ✓ Priority Processing: **{label}** (saved to config)
+
+        _(takes effect on next message)_'
+      to: '⚡ ✓ Priority Processing: **{label}** (сохранено в конфигурации)
+
+        _(вступит в силу со следующего сообщения)_'
+      placeholders:
+        label: .*?
+    - id: locale.gateway.fast.session_only
+      family: locale.gateway.fast
+      from: '⚡ ✓ Priority Processing: **{label}** (this session only)'
+      to: '⚡ ✓ Priority Processing: **{label}** (только этот сеанс)'
+      placeholders:
+        label: .*?
+    - id: locale.gateway.fast.picker_title
+      family: locale.gateway.fast
+      from: '⚡ **Priority Processing**
+
+
+        Current mode: `{mode}`
+
+
+        Pick an option:'
+      to: '⚡ **Priority Processing**
+
+
+        Текущий режим: `{mode}`
+
+
+        Выберите вариант:'
+      placeholders:
+        mode: .*?
+    - id: locale.gateway.fast.choice_fast
+      family: locale.gateway.fast
+      from: fast — Priority Processing on
+      to: fast — Priority Processing включён
+    - id: locale.gateway.fast.choice_normal
+      family: locale.gateway.fast
+      from: normal — standard processing
+      to: normal — стандартная обработка
+    - id: locale.gateway.footer.status
+      family: locale.gateway.footer
+      from: '📎 Runtime footer: **{state}**
+
+        Fields: `{fields}`
+
+        Platform: `{platform}`'
+      to: '📎 Нижний колонтитул среды выполнения: **{state}**
+
+        Поля: `{fields}`
+
+        Платформа: `{platform}`'
+      placeholders:
+        state: .*?
+        fields: .*?
+        platform: .*?
+    - id: locale.gateway.footer.usage
+      family: locale.gateway.footer
+      from: 'Usage: `/footer [on|off|status]`'
+      to: 'Использование: `/footer [on|off|status]`'
+    - id: locale.gateway.footer.saved
+      family: locale.gateway.footer
+      from: '📎 Runtime footer: **{state}**{example}
+
+        _(saved globally — takes effect on next message)_'
+      to: '📎 Нижний колонтитул среды выполнения: **{state}**{example}
+
+        _(сохранено глобально — вступит в силу со следующего сообщения)_'
+      placeholders:
+        state: .*?
+        example: .*?
+    - id: locale.gateway.footer.example_line
+      family: locale.gateway.footer
+      from: '
+
+        Example: `{preview}`'
+      to: '
+
+        Пример: `{preview}`'
+      placeholders:
+        preview: .*?
+    - id: locale.gateway.goal.unavailable
+      family: locale.gateway.goal
+      from: Goals unavailable on this session.
+      to: Цели недоступны в этом сеансе.
+    - id: locale.gateway.goal.no_goal_set
+      family: locale.gateway.goal
+      from: No goal set.
+      to: Цель не задана.
+    - id: locale.gateway.goal.paused
+      family: locale.gateway.goal
+      from: '⏸ Goal paused: {goal}'
+      to: '⏸ Цель приостановлена: {goal}'
+      placeholders:
+        goal: .*?
+    - id: locale.gateway.goal.no_resume
+      family: locale.gateway.goal
+      from: No goal to resume.
+      to: Нет цели для возобновления.
+    - id: locale.gateway.goal.resumed
+      family: locale.gateway.goal
+      from: '▶ Goal resumed: {goal}
+
+        Send any message to continue, or wait — I''ll take the next step on the next turn.'
+      to: '▶ Цель возобновлена: {goal}
+
+        Отправьте любое сообщение, чтобы продолжить, или подождите — я сделаю следующий шаг на следующем ходу.'
+      placeholders:
+        goal: .*?
+    - id: locale.gateway.goal.invalid
+      family: locale.gateway.goal
+      from: 'Invalid goal: {error}'
+      to: 'Недопустимая цель: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.goal.set
+      family: locale.gateway.goal
+      from: '⊙ Goal set ({budget}-turn budget): {goal}
+
+        I''ll keep working until the goal is done, you pause/clear it, or the budget is exhausted.
+
+        Controls: /goal status · /goal pause · /goal resume · /goal clear'
+      to: '⊙ Цель задана (бюджет {budget} ходов): {goal}
+
+        Я продолжу работу, пока цель не будет достигнута, вы её не приостановите/очистите, или бюджет не исчерпается.
+
+        Управление: /goal status · /goal pause · /goal resume · /goal clear'
+      placeholders:
+        budget: .*?
+        goal: .*?
+    - id: locale.gateway.help.header
+      family: locale.gateway.help
+      from: '📖 **Hermes Commands**
+
+        '
+      to: '📖 **Команды Hermes**
+
+        '
+    - id: locale.gateway.help.skill_header
+      family: locale.gateway.help
+      from: '
+
+        ⚡ **Skill Commands** ({count} active):'
+      to: '
+
+        ⚡ **Команды навыков** (активных: {count}):'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.help.more_use_commands
+      family: locale.gateway.help
+      from: '
+
+        ... and {count} more. Use `/commands` for the full paginated list.'
+      to: '
+
+        ... и ещё {count}. Используйте `/commands` для полного списка с постраничной разбивкой.'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.insights.invalid_days
+      family: locale.gateway.insights
+      from: 'Invalid --days value: {value}'
+      to: 'Недействительное значение --days: {value}'
+      placeholders:
+        value: .*?
+    - id: locale.gateway.insights.error
+      family: locale.gateway.insights
+      from: 'Error generating insights: {error}'
+      to: 'Ошибка при формировании аналитики: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.kanban.error_prefix
+      family: locale.gateway.kanban
+      from: '⚠ kanban error: {error}'
+      to: '⚠ ошибка kanban: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.kanban.subscribed_suffix
+      family: locale.gateway.kanban
+      from: (subscribed — you'll be notified when {task_id} completes or blocks)
+      to: (подписка оформлена — вы получите уведомление, когда {task_id} завершится или будет заблокирован)
+      placeholders:
+        task_id: .*?
+    - id: locale.gateway.kanban.truncated_suffix
+      family: locale.gateway.kanban
+      from: … (truncated; use `hermes kanban …` in your terminal for full output)
+      to: … (сокращено; используйте `hermes kanban …` в терминале для полного вывода)
+    - id: locale.gateway.kanban.no_output
+      family: locale.gateway.kanban
+      from: (no output)
+      to: (нет вывода)
+    - id: locale.gateway.personality.none_configured
+      family: locale.gateway.personality
+      from: No personalities configured in `{path}/config.yaml`
+      to: В `{path}/config.yaml` не настроено ни одной личности
+      placeholders:
+        path: .*?
+    - id: locale.gateway.personality.header
+      family: locale.gateway.personality
+      from: '🎭 **Available Personalities**
+
+        '
+      to: '🎭 **Доступные личности**
+
+        '
+    - id: locale.gateway.personality.none_option
+      family: locale.gateway.personality
+      from: • `none` — (no personality overlay)
+      to: • `none` — (без наложения личности)
+    - id: locale.gateway.personality.usage
+      family: locale.gateway.personality
+      from: '
+
+        Usage: `/personality <name>`'
+      to: '
+
+        Использование: `/personality <name>`'
+    - id: locale.gateway.personality.save_failed
+      family: locale.gateway.personality
+      from: '⚠️ Failed to save personality change: {error}'
+      to: '⚠️ Не удалось сохранить изменение личности: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.personality.cleared
+      family: locale.gateway.personality
+      from: '🎭 Personality cleared — using base agent behavior.
+
+        _(takes effect on next message)_'
+      to: '🎭 Личность очищена — используется базовое поведение агента.
+
+        _(вступит в силу со следующего сообщения)_'
+    - id: locale.gateway.personality.set_to
+      family: locale.gateway.personality
+      from: '🎭 Personality set to **{name}**
+
+        _(takes effect on next message)_'
+      to: '🎭 Личность установлена на **{name}**
+
+        _(вступит в силу со следующего сообщения)_'
+      placeholders:
+        name: .*?
+    - id: locale.gateway.personality.unknown
+      family: locale.gateway.personality
+      from: 'Unknown personality: `{name}`
+
+
+        Available: {available}'
+      to: 'Неизвестная личность: `{name}`
+
+
+        Доступные: {available}'
+      placeholders:
+        name: .*?
+        available: .*?
+    - id: locale.gateway.profile.header
+      family: locale.gateway.profile
+      from: 👤 **Profile:** `{profile}`
+      to: 👤 **Профиль:** `{profile}`
+      placeholders:
+        profile: .*?
+    - id: locale.gateway.profile.home
+      family: locale.gateway.profile
+      from: 📂 **Home:** `{home}`
+      to: 📂 **Домашний каталог:** `{home}`
+      placeholders:
+        home: .*?
+    - id: locale.gateway.reasoning.level_default
+      family: locale.gateway.reasoning
+      from: medium (default)
+      to: medium (по умолчанию)
+    - id: locale.gateway.reasoning.level_disabled
+      family: locale.gateway.reasoning
+      from: none (disabled)
+      to: none (отключено)
+    - id: locale.gateway.reasoning.scope_session
+      family: locale.gateway.reasoning
+      from: session override
+      to: переопределение сеанса
+    - id: locale.gateway.reasoning.scope_global
+      family: locale.gateway.reasoning
+      from: global config
+      to: глобальная конфигурация
+    - id: locale.gateway.reasoning.status
+      family: locale.gateway.reasoning
+      from: '🧠 **Reasoning Settings**
+
+
+        **Effort:** `{level}`
+
+        **Scope:** {scope}
+
+        **Display:** {display}
+
+
+        _Usage:_ `/reasoning <none|minimal|low|medium|high|xhigh|max|ultra|reset|show|hide> [--global]`'
+      to: '🧠 **Настройки рассуждений**
+
+
+        **Усилия:** `{level}`
+
+        **Область:** {scope}
+
+        **Отображение:** {display}
+
+
+        _Использование:_ `/reasoning <none|minimal|low|medium|high|xhigh|max|ultra|reset|show|hide> [--global]`'
+      placeholders:
+        level: .*?
+        scope: .*?
+        display: .*?
+    - id: locale.gateway.reasoning.display_on
+      family: locale.gateway.reasoning
+      from: on ✓
+      to: включено ✓
+    - id: locale.gateway.reasoning.display_off
+      family: locale.gateway.reasoning
+      from: 'off'
+      to: выключено
+    - id: locale.gateway.reasoning.display_set_on
+      family: locale.gateway.reasoning
+      from: '🧠 ✓ Reasoning display: **ON**
+
+        Model thinking will be shown before each response on **{platform}**.'
+      to: '🧠 ✓ Отображение рассуждений: **ВКЛ.**
+
+        Мысли модели будут показываться перед каждым ответом на **{platform}**.'
+      placeholders:
+        platform: .*?
+    - id: locale.gateway.reasoning.display_set_off
+      family: locale.gateway.reasoning
+      from: '🧠 ✓ Reasoning display: **OFF** for **{platform}**'
+      to: '🧠 ✓ Отображение рассуждений: **ВЫКЛ.** для **{platform}**'
+      placeholders:
+        platform: .*?
+    - id: locale.gateway.reasoning.reset_global_unsupported
+      family: locale.gateway.reasoning
+      from: ⚠️ `/reasoning reset --global` is not supported. Use `/reasoning <level> --global` to change the global default.
+      to: ⚠️ `/reasoning reset --global` не поддерживается. Используйте `/reasoning <level> --global`, чтобы изменить глобальное
+        значение по умолчанию.
+    - id: locale.gateway.reasoning.reset_done
+      family: locale.gateway.reasoning
+      from: 🧠 ✓ Session reasoning override cleared; falling back to global config.
+      to: 🧠 ✓ Переопределение рассуждений для сеанса сброшено; возврат к глобальной конфигурации.
+    - id: locale.gateway.reasoning.unknown_arg
+      family: locale.gateway.reasoning
+      from: '⚠️ Unknown argument: `{arg}`
+
+
+        **Valid levels:** none, minimal, low, medium, high, xhigh, max, ultra
+
+        **Display:** show, hide
+
+        **Persist:** add `--global` to save beyond this session'
+      to: '⚠️ Неизвестный аргумент: `{arg}`
+
+
+        **Допустимые уровни:** none, minimal, low, medium, high, xhigh, max, ultra
+
+        **Отображение:** show, hide
+
+        **Сохранение:** добавьте `--global`, чтобы сохранить за пределами этого сеанса'
+      placeholders:
+        arg: .*?
+    - id: locale.gateway.reasoning.picker_title
+      family: locale.gateway.reasoning
+      from: '🧠 **Reasoning Settings**
+
+
+        **Effort:** `{level}`
+
+        **Scope:** {scope}
+
+        **Display:** {display}
+
+
+        Pick an option:'
+      to: '🧠 **Настройки рассуждений**
+
+
+        **Усилия:** `{level}`
+
+        **Область:** {scope}
+
+        **Отображение:** {display}
+
+
+        Выберите вариант:'
+      placeholders:
+        level: .*?
+        scope: .*?
+        display: .*?
+    - id: locale.gateway.reasoning.choice_none
+      family: locale.gateway.reasoning
+      from: none — disable reasoning
+      to: none — отключить рассуждения
+    - id: locale.gateway.reasoning.choice_reset
+      family: locale.gateway.reasoning
+      from: reset — clear session override
+      to: reset — сбросить переопределение сессии
+    - id: locale.gateway.reasoning.choice_show
+      family: locale.gateway.reasoning
+      from: show reasoning in replies
+      to: показывать рассуждения в ответах
+    - id: locale.gateway.reasoning.choice_hide
+      family: locale.gateway.reasoning
+      from: hide reasoning from replies
+      to: скрывать рассуждения в ответах
+    - id: locale.gateway.reasoning.set_global
+      family: locale.gateway.reasoning
+      from: '🧠 ✓ Reasoning effort set to `{effort}` (saved to config)
+
+        _(takes effect on next message)_'
+      to: '🧠 ✓ Усилия рассуждений установлены на `{effort}` (сохранено в конфигурации)
+
+        _(вступит в силу со следующего сообщения)_'
+      placeholders:
+        effort: .*?
+    - id: locale.gateway.reasoning.set_global_save_failed
+      family: locale.gateway.reasoning
+      from: '🧠 ✓ Reasoning effort set to `{effort}` (session only — config save failed)
+
+        _(takes effect on next message)_'
+      to: '🧠 ✓ Усилия рассуждений установлены на `{effort}` (только этот сеанс — не удалось сохранить конфигурацию)
+
+        _(вступит в силу со следующего сообщения)_'
+      placeholders:
+        effort: .*?
+    - id: locale.gateway.reasoning.set_session
+      family: locale.gateway.reasoning
+      from: '🧠 ✓ Reasoning effort set to `{effort}` (session only — add `--global` to persist)
+
+        _(takes effect on next message)_'
+      to: '🧠 ✓ Усилия рассуждений установлены на `{effort}` (только этот сеанс — добавьте `--global`, чтобы сохранить)
+
+        _(вступит в силу со следующего сообщения)_'
+      placeholders:
+        effort: .*?
+    - id: locale.gateway.reload_mcp.cancelled
+      family: locale.gateway.reload_mcp
+      from: 🟡 /reload-mcp cancelled. MCP tools unchanged.
+      to: 🟡 /reload-mcp отменено. MCP-инструменты без изменений.
+    - id: locale.gateway.reload_mcp.always_followup
+      family: locale.gateway.reload_mcp
+      from: 'ℹ️ Future `/reload-mcp` calls will run without confirmation. Re-enable via `approvals.mcp_reload_confirm: true`
+        in config.yaml.'
+      to: 'ℹ️ Будущие вызовы `/reload-mcp` будут выполняться без подтверждения. Снова включить можно через `approvals.mcp_reload_confirm:
+        true` в config.yaml.'
+    - id: locale.gateway.reload_mcp.confirm_prompt
+      family: locale.gateway.reload_mcp
+      from: '⚠️ **Confirm /reload-mcp**
+
+
+        Reloading MCP servers rebuilds the tool set for this session and **invalidates the provider prompt cache** — the next
+        message will re-send full input tokens.  On long-context or high-reasoning models this can be expensive.
+
+
+        Choose:
+
+        • **Approve Once** — reload now
+
+        • **Always Approve** — reload now and silence this prompt permanently
+
+        • **Cancel** — leave MCP tools unchanged
+
+
+        _Text fallback: reply `/approve`, `/always`, or `/cancel`._'
+      to: '⚠️ **Подтверждение /reload-mcp**
+
+
+        Перезагрузка MCP-серверов перестраивает набор инструментов для этого сеанса и **сбрасывает кеш промпта провайдера**
+        — следующее сообщение повторно отправит все входные токены. На моделях с длинным контекстом или высоким уровнем рассуждений
+        это может быть дорого.
+
+
+        Выберите:
+
+        • **Одобрить один раз** — перезагрузить сейчас
+
+        • **Всегда одобрять** — перезагрузить и навсегда отключить этот запрос
+
+        • **Отменить** — оставить MCP-инструменты без изменений
+
+
+        _Текстовая альтернатива: ответьте `/approve`, `/always` или `/cancel`._'
+    - id: locale.gateway.reload_mcp.header
+      family: locale.gateway.reload_mcp
+      from: '🔄 **MCP Servers Reloaded**
+
+        '
+      to: '🔄 **MCP-серверы перезагружены**
+
+        '
+    - id: locale.gateway.reload_mcp.reconnected
+      family: locale.gateway.reload_mcp
+      from: '♻️ Reconnected: {names}'
+      to: '♻️ Переподключено: {names}'
+      placeholders:
+        names: .*?
+    - id: locale.gateway.reload_mcp.added
+      family: locale.gateway.reload_mcp
+      from: '➕ Added: {names}'
+      to: '➕ Добавлено: {names}'
+      placeholders:
+        names: .*?
+    - id: locale.gateway.reload_mcp.removed
+      family: locale.gateway.reload_mcp
+      from: '➖ Removed: {names}'
+      to: '➖ Удалено: {names}'
+      placeholders:
+        names: .*?
+    - id: locale.gateway.reload_mcp.none_connected
+      family: locale.gateway.reload_mcp
+      from: No MCP servers connected.
+      to: Нет подключённых MCP-серверов.
+    - id: locale.gateway.reload_mcp.tools_available
+      family: locale.gateway.reload_mcp
+      from: '
+
+        🔧 {tools} tool(s) available from {servers} server(s)'
+      to: '
+
+        🔧 {tools} инструмент(ов) доступно с {servers} сервер(ов)'
+      placeholders:
+        tools: .*?
+        servers: .*?
+    - id: locale.gateway.reload_mcp.failed
+      family: locale.gateway.reload_mcp
+      from: '❌ MCP reload failed: {error}'
+      to: '❌ Ошибка перезагрузки MCP: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.reload_skills.header
+      family: locale.gateway.reload_skills
+      from: '🔄 **Skills Reloaded**
+
+        '
+      to: '🔄 **Навыки перезагружены**
+
+        '
+    - id: locale.gateway.reload_skills.no_new
+      family: locale.gateway.reload_skills
+      from: No new skills detected.
+      to: Новых навыков не обнаружено.
+    - id: locale.gateway.reload_skills.total
+      family: locale.gateway.reload_skills
+      from: '
+
+        📚 {count} skill(s) available'
+      to: '
+
+        📚 {count} навык(ов) доступно'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.reload_skills.added_header
+      family: locale.gateway.reload_skills
+      from: ➕ **Added Skills:**
+      to: ➕ **Добавленные навыки:**
+    - id: locale.gateway.reload_skills.removed_header
+      family: locale.gateway.reload_skills
+      from: ➖ **Removed Skills:**
+      to: ➖ **Удалённые навыки:**
+    - id: locale.gateway.reload_skills.failed
+      family: locale.gateway.reload_skills
+      from: '❌ Skills reload failed: {error}'
+      to: '❌ Ошибка перезагрузки навыков: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.reset.header_default
+      family: locale.gateway.reset
+      from: ✨ Session reset! Starting fresh.
+      to: ✨ Сеанс сброшен! Начинаем с чистого листа.
+    - id: locale.gateway.reset.header_new
+      family: locale.gateway.reset
+      from: ✨ New session started!
+      to: ✨ Новый сеанс запущен!
+    - id: locale.gateway.reset.header_titled
+      family: locale.gateway.reset
+      from: '✨ New session started: {title}'
+      to: '✨ Новый сеанс запущен: {title}'
+      placeholders:
+        title: .*?
+    - id: locale.gateway.reset.title_rejected
+      family: locale.gateway.reset
+      from: '
+
+        ⚠️ Title rejected: {error}'
+      to: '
+
+        ⚠️ Название отклонено: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.reset.title_error_untitled
+      family: locale.gateway.reset
+      from: '
+
+        ⚠️ {error} — session started untitled.'
+      to: '
+
+        ⚠️ {error} — сеанс запущен без названия.'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.reset.title_empty_untitled
+      family: locale.gateway.reset
+      from: '
+
+        ⚠️ Title is empty after cleanup — session started untitled.'
+      to: '
+
+        ⚠️ После очистки название пусто — сеанс запущен без названия.'
+    - id: locale.gateway.reset.context_source_config
+      family: locale.gateway.reset
+      from: config
+      to: из конфигурации
+    - id: locale.gateway.resume.parse_error
+      family: locale.gateway.resume
+      from: '⚠️ Could not parse `/resume` arguments: {error}.
+
+        Use quotes around titles with spaces, for example: `/resume "Project A Plan"`.'
+      to: '⚠️ Could not parse `/resume` arguments: {error}. Use quotes around titles with spaces, for example: `/resume "Project
+        A Plan"`.'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.resume.matrix_no_named_sessions
+      family: locale.gateway.resume
+      from: 'No named sessions found for this Matrix room.
+
+        Use `/title My Session` to name the current room session, `/resume --all` to list all Matrix sessions, or `/resume
+        --cross-room <session name>` to explicitly cross room boundaries.'
+      to: No named sessions found for this Matrix room. Use `/title My Session` to name the current room session, `/resume
+        --all` to list all Matrix sessions, or `/resume --cross-room <session name>` to explicitly cross room boundaries.
+    - id: locale.gateway.resume.matrix_cross_room_success
+      family: locale.gateway.resume
+      from: '⚠️ Cross-room resume: resumed **{title}** inside Matrix room **{room}**.
+
+        Future messages in this room will use that transcript until `/reset` or another `/resume`.{msg_part}'
+      to: '⚠️ Cross-room resume: resumed **{title}** inside Matrix room **{room}**. Future messages in this room will use
+        that transcript until `/reset` or another `/resume`.{msg_part}'
+      placeholders:
+        title: .*?
+        room: .*?
+        msg_part: .*?
+    - id: locale.gateway.resume.no_named_sessions
+      family: locale.gateway.resume
+      from: 'No named sessions found.
+
+        Use `/title My Session` to name your current session, then `/resume My Session` to return to it later.'
+      to: 'Именованных сеансов не найдено.
+
+        Используйте `/title Мой сеанс`, чтобы назвать текущий сеанс, затем `/resume Мой сеанс`, чтобы вернуться к нему позже.'
+    - id: locale.gateway.resume.list_header
+      family: locale.gateway.resume
+      from: '📋 **Named Sessions**
+
+        '
+      to: '📋 **Именованные сеансы**
+
+        '
+    - id: locale.gateway.resume.list_footer
+      family: locale.gateway.resume
+      from: '
+
+        Usage: `/resume <session name>`'
+      to: '
+
+        Использование: `/resume <название сеанса>`'
+    - id: locale.gateway.resume.list_footer_numbered
+      family: locale.gateway.resume
+      from: '
+
+        Usage: `/resume <session name>` or `/resume <number>` (e.g. `/resume 1` for the most recent)'
+      to: '
+
+        Использование: `/resume <имя сеанса>` или `/resume <номер>` (например, `/resume 1` для самого недавнего)'
+    - id: locale.gateway.resume.list_failed
+      family: locale.gateway.resume
+      from: 'Could not list sessions: {error}'
+      to: 'Не удалось получить список сеансов: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.resume.out_of_range
+      family: locale.gateway.resume
+      from: 'Resume index {index} is out of range.
+
+        Use `/resume` with no arguments to see available sessions.'
+      to: 'Индекс возобновления {index} вне диапазона.
+
+        Используйте `/resume` без аргументов, чтобы увидеть доступные сеансы.'
+      placeholders:
+        index: .*?
+    - id: locale.gateway.resume.not_found
+      family: locale.gateway.resume
+      from: 'No session found matching ''**{name}**''.
+
+        Use `/resume` with no arguments to see available sessions.'
+      to: 'Сеанс, соответствующий ''**{name}**'', не найден.
+
+        Используйте `/resume` без аргументов, чтобы увидеть доступные сеансы.'
+      placeholders:
+        name: .*?
+    - id: locale.gateway.resume.already_on
+      family: locale.gateway.resume
+      from: 📌 Already on session **{name}**.
+      to: 📌 Уже в сеансе **{name}**.
+      placeholders:
+        name: .*?
+    - id: locale.gateway.resume.switch_failed
+      family: locale.gateway.resume
+      from: Failed to switch session.
+      to: Не удалось переключить сеанс.
+    - id: locale.gateway.resume.resumed_one
+      family: locale.gateway.resume
+      from: ↻ Resumed session **{title}** ({count} message). Conversation restored.
+      to: ↻ Сеанс **{title}** возобновлён ({count} сообщение). Беседа восстановлена.
+      placeholders:
+        title: .*?
+        count: .*?
+    - id: locale.gateway.resume.resumed_many
+      family: locale.gateway.resume
+      from: ↻ Resumed session **{title}** ({count} messages). Conversation restored.
+      to: ↻ Сеанс **{title}** возобновлён ({count} сообщений). Беседа восстановлена.
+      placeholders:
+        title: .*?
+        count: .*?
+    - id: locale.gateway.resume.resumed_no_count
+      family: locale.gateway.resume
+      from: ↻ Resumed session **{title}**. Conversation restored.
+      to: ↻ Сеанс **{title}** возобновлён. Беседа восстановлена.
+      placeholders:
+        title: .*?
+    - id: locale.gateway.retry.no_previous
+      family: locale.gateway.retry
+      from: No previous message to retry.
+      to: Нет предыдущего сообщения для повтора.
+    - id: locale.gateway.rollback.not_enabled
+      family: locale.gateway.rollback
+      from: "Checkpoints are not enabled.\nEnable in config.yaml:\n```\ncheckpoints:\n  enabled: true\n```"
+      to: "Контрольные точки не включены.\nВключите в config.yaml:\n```\ncheckpoints:\n  enabled: true\n```"
+    - id: locale.gateway.rollback.none_found
+      family: locale.gateway.rollback
+      from: No checkpoints found for {cwd}
+      to: Контрольных точек для {cwd} не найдено
+      placeholders:
+        cwd: .*?
+    - id: locale.gateway.rollback.invalid_number
+      family: locale.gateway.rollback
+      from: Invalid checkpoint number. Use 1-{max}.
+      to: Недействительный номер контрольной точки. Используйте 1-{max}.
+      placeholders:
+        max: .*?
+    - id: locale.gateway.rollback.restored
+      family: locale.gateway.rollback
+      from: '✅ Restored to checkpoint {hash}: {reason}
+
+        A pre-rollback snapshot was saved automatically.'
+      to: '✅ Восстановлено до контрольной точки {hash}: {reason}
+
+        Снимок перед откатом сохранён автоматически.'
+      placeholders:
+        hash: .*?
+        reason: .*?
+    - id: locale.gateway.rollback.kept_user_edits
+      family: locale.gateway.rollback
+      from: '↷ Kept your hand-edits: {files}
+
+        Use /rollback <N> --all to restore those too.'
+      to: '↷ Ваши ручные правки сохранены: {files}
+
+        Используйте /rollback <N> --all, чтобы восстановить и их.'
+      placeholders:
+        files: .*?
+    - id: locale.gateway.diff.not_enabled
+      family: locale.gateway.diff
+      from: "Checkpoints are not enabled, so there's no session baseline.\nEnable in config.yaml:\n```\ncheckpoints:\n  enabled:\
+        \ true\n```\nPlain /diff still works — it uses git directly."
+      to: "Контрольные точки не включены, поэтому базовой линии сессии нет.\nВключите в config.yaml:\n```\ncheckpoints:\n\
+        \  enabled: true\n```\nОбычный /diff по-прежнему работает — он использует git напрямую."
+    - id: locale.gateway.diff.no_changes
+      family: locale.gateway.diff
+      from: No changes.
+      to: Изменений нет.
+    - id: locale.gateway.set_home.save_failed
+      family: locale.gateway.set_home
+      from: 'Failed to save home channel: {error}'
+      to: 'Не удалось сохранить главный канал: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.set_home.success
+      family: locale.gateway.set_home
+      from: '✅ Home channel set to **{name}** (ID: {chat_id}).
+
+        Cron jobs and cross-platform messages will be delivered here.'
+      to: '✅ Главный канал установлен на **{name}** (ID: {chat_id}).
+
+        Cron-задачи и межплатформенные сообщения будут доставляться сюда.'
+      placeholders:
+        name: .*?
+        chat_id: .*?
+    - id: locale.gateway.status.header
+      family: locale.gateway.status
+      from: 📊 **Hermes Gateway Status**
+      to: 📊 **Состояние Hermes Gateway**
+    - id: locale.gateway.status.session_id
+      family: locale.gateway.status
+      from: '**Session ID:** `{session_id}`'
+      to: '**ID сеанса:** `{session_id}`'
+      placeholders:
+        session_id: .*?
+    - id: locale.gateway.status.title
+      family: locale.gateway.status
+      from: '**Title:** {title}'
+      to: '**Название:** {title}'
+      placeholders:
+        title: .*?
+    - id: locale.gateway.status.created
+      family: locale.gateway.status
+      from: '**Created:** {timestamp}'
+      to: '**Создано:** {timestamp}'
+      placeholders:
+        timestamp: .*?
+    - id: locale.gateway.status.last_activity
+      family: locale.gateway.status
+      from: '**Last Activity:** {timestamp}'
+      to: '**Последняя активность:** {timestamp}'
+      placeholders:
+        timestamp: .*?
+    - id: locale.gateway.status.agent_running
+      family: locale.gateway.status
+      from: '**Agent Running:** {state}'
+      to: '**Агент активен:** {state}'
+      placeholders:
+        state: .*?
+    - id: locale.gateway.status.state_yes
+      family: locale.gateway.status
+      from: Yes ⚡
+      to: Да ⚡
+    - id: locale.gateway.status.state_no
+      family: locale.gateway.status
+      from: 'No'
+      to: Нет
+    - id: locale.gateway.status.queued
+      family: locale.gateway.status
+      from: '**Queued follow-ups:** {count}'
+      to: '**Очередь продолжений:** {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.status.platforms
+      family: locale.gateway.status
+      from: '**Connected Platforms:** {platforms}'
+      to: '**Подключённые платформы:** {platforms}'
+      placeholders:
+        platforms: .*?
+    - id: locale.gateway.stop.stopped_pending
+      family: locale.gateway.stop
+      from: ⚡ Stopped. The agent hadn't started yet — you can continue this session.
+      to: ⚡ Остановлено. Агент ещё не начинал — вы можете продолжить этот сеанс.
+    - id: locale.gateway.stop.stopped
+      family: locale.gateway.stop
+      from: ⚡ Stopped. You can continue this session.
+      to: ⚡ Остановлено. Вы можете продолжить этот сеанс.
+    - id: locale.gateway.stop.no_active
+      family: locale.gateway.stop
+      from: No active task to stop.
+      to: Нет активной задачи для остановки.
+    - id: locale.gateway.title.empty_after_clean
+      family: locale.gateway.title
+      from: ⚠️ Title is empty after cleanup. Please use printable characters.
+      to: ⚠️ После очистки название пусто. Используйте печатные символы.
+    - id: locale.gateway.title.set_to
+      family: locale.gateway.title
+      from: '✏️ Session title set: **{title}**'
+      to: '✏️ Название сеанса установлено: **{title}**'
+      placeholders:
+        title: .*?
+    - id: locale.gateway.title.not_found
+      family: locale.gateway.title
+      from: Session not found in database.
+      to: Сеанс не найден в базе данных.
+    - id: locale.gateway.title.current_with_title
+      family: locale.gateway.title
+      from: '📌 Session: `{session_id}`
+
+        Title: **{title}**'
+      to: '📌 Сеанс: `{session_id}`
+
+        Название: **{title}**'
+      placeholders:
+        session_id: .*?
+        title: .*?
+    - id: locale.gateway.title.current_no_title
+      family: locale.gateway.title
+      from: '📌 Session: `{session_id}`
+
+        No title set. Usage: `/title My Session Name`'
+      to: '📌 Сеанс: `{session_id}`
+
+        Название не задано. Использование: `/title Название моего сеанса`'
+      placeholders:
+        session_id: .*?
+    - id: locale.gateway.topic.not_telegram_dm
+      family: locale.gateway.topic
+      from: The /topic command is only available in Telegram private chats.
+      to: Команда /topic доступна только в личных чатах Telegram.
+    - id: locale.gateway.topic.unauthorized
+      family: locale.gateway.topic
+      from: You are not authorized to use /topic on this bot.
+      to: У вас нет прав использовать /topic в этом боте.
+    - id: locale.gateway.topic.restore_needs_topic
+      family: locale.gateway.topic
+      from: To restore a session, first create or open a Telegram topic, then send /topic <session-id> inside that topic.
+        To create a new topic, open All Messages and send any message there.
+      to: Чтобы восстановить сеанс, сначала создайте или откройте Telegram topic, затем отправьте /topic <session-id> в этом
+        topic. Чтобы создать новый topic, откройте All Messages и отправьте там любое сообщение.
+    - id: locale.gateway.topic.topics_disabled
+      family: locale.gateway.topic
+      from: 'Telegram topics are not enabled for this bot yet.
+
+
+        How to enable them:
+
+        1. Open @BotFather.
+
+        2. Choose your bot.
+
+        3. Open Bot Settings → Threads Settings.
+
+        4. Turn on Threaded Mode and make sure users are allowed to create new threads.
+
+
+        Then send /topic again.'
+      to: 'Telegram topics ещё не включены для этого бота.
+
+
+        Как включить:
+
+        1. Откройте @BotFather.
+
+        2. Выберите своего бота.
+
+        3. Откройте Bot Settings → Threads Settings.
+
+        4. Включите Threaded Mode и убедитесь, что пользователям разрешено создавать новые threads.
+
+
+        Затем снова отправьте /topic.'
+    - id: locale.gateway.topic.topics_user_disallowed
+      family: locale.gateway.topic
+      from: 'Telegram topics are enabled, but users are not allowed to create topics.
+
+
+        Open @BotFather → choose your bot → Bot Settings → Threads Settings, then turn off ''Disallow users to create new
+        threads''.
+
+
+        Then send /topic again.'
+      to: 'Telegram topics включены, но пользователям не разрешено создавать topics.
+
+
+        Откройте @BotFather → выберите своего бота → Bot Settings → Threads Settings, затем выключите ''Disallow users to
+        create new threads''.
+
+
+        Затем снова отправьте /topic.'
+    - id: locale.gateway.topic.enable_failed
+      family: locale.gateway.topic
+      from: 'Failed to enable Telegram topic mode: {error}'
+      to: 'Не удалось включить режим Telegram topic: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.topic.bound_status
+      family: locale.gateway.topic
+      from: 'This topic is linked to:
+
+        Session: {label}
+
+        ID: {session_id}
+
+
+        Use /new to replace this topic with a fresh session.
+
+        For parallel work, open All Messages and send a message there to create another topic.'
+      to: 'Этот topic привязан к:
+
+        Сеанс: {label}
+
+        ID: {session_id}
+
+
+        Используйте /new, чтобы заменить этот topic новым сеансом.
+
+        Для параллельной работы откройте All Messages и отправьте там сообщение, чтобы создать другой topic.'
+      placeholders:
+        label: .*?
+        session_id: .*?
+    - id: locale.gateway.topic.thread_ready
+      family: locale.gateway.topic
+      from: 'Telegram multi-session topics are enabled.
+
+
+        This topic will be used as an independent Hermes session. Use /new to replace this topic''s current session. For parallel
+        work, open All Messages and send a message there to create another topic.'
+      to: 'Многосеансовые Telegram topics включены.
+
+
+        Этот topic будет использоваться как независимый сеанс Hermes. Используйте /new, чтобы заменить текущий сеанс этого
+        topic. Для параллельной работы откройте All Messages и отправьте там сообщение, чтобы создать другой topic.'
+    - id: locale.gateway.topic.untitled_session
+      family: locale.gateway.topic
+      from: Untitled session
+      to: Сеанс без названия
+    - id: locale.gateway.undo.nothing
+      family: locale.gateway.undo
+      from: Nothing to undo.
+      to: Нечего отменять.
+    - id: locale.gateway.undo.removed
+      family: locale.gateway.undo
+      from: '↩️ Undid {turns} turn(s) ({count} message(s)).
+
+        Backed up to: "{preview}"
+
+        Copy/edit the text above and send it to re-prompt from here.'
+      to: '↩️ Отменено ходов: {turns} (сообщений: {count}).
+
+        Резервная копия: «{preview}»
+
+        Скопируйте/отредактируйте текст выше и отправьте его, чтобы запросить заново отсюда.'
+      placeholders:
+        turns: .*?
+        count: .*?
+        preview: .*?
+    - id: locale.gateway.undo.invalid_count
+      family: locale.gateway.undo
+      from: Invalid count "{arg}" — use /undo or /undo N.
+      to: Недопустимое число «{arg}» — используйте /undo или /undo N.
+      placeholders:
+        arg: .*?
+    - id: locale.gateway.update.platform_not_messaging
+      family: locale.gateway.update
+      from: ✗ /update is only available from messaging platforms. Run `hermes update` from the terminal.
+      to: ✗ /update доступен только на платформах обмена сообщениями. Выполните `hermes update` в терминале.
+    - id: locale.gateway.update.not_git_repo
+      family: locale.gateway.update
+      from: ✗ Not a git repository — cannot update.
+      to: ✗ Не git-репозиторий — обновление невозможно.
+    - id: locale.gateway.update.hermes_cmd_not_found
+      family: locale.gateway.update
+      from: ✗ Could not locate the `hermes` command. Hermes is running, but the update command could not find the executable
+        on PATH or via the current Python interpreter. Try running `hermes update` manually in your terminal.
+      to: ✗ Не удалось найти команду `hermes`. Hermes запущен, но команда обновления не нашла исполняемый файл в PATH или
+        через текущий интерпретатор Python. Попробуйте выполнить `hermes update` вручную в терминале.
+    - id: locale.gateway.update.start_failed
+      family: locale.gateway.update
+      from: '✗ Failed to start update: {error}'
+      to: '✗ Не удалось запустить обновление: {error}'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.update.starting
+      family: locale.gateway.update
+      from: ⚕ Starting Hermes update… I'll stream progress here.
+      to: ⚕ Запуск обновления Hermes… Я буду транслировать прогресс сюда.
+    - id: locale.gateway.usage.rate_limits
+      family: locale.gateway.usage
+      from: ⏱️ **Rate Limits:** {state}
+      to: ⏱️ **Ограничения скорости:** {state}
+      placeholders:
+        state: .*?
+    - id: locale.gateway.usage.header_session
+      family: locale.gateway.usage
+      from: 📊 **Session Token Usage**
+      to: 📊 **Использование токенов сеанса**
+    - id: locale.gateway.usage.label_model
+      family: locale.gateway.usage
+      from: 'Model: `{model}`'
+      to: 'Модель: `{model}`'
+      placeholders:
+        model: .*?
+    - id: locale.gateway.usage.label_input_tokens
+      family: locale.gateway.usage
+      from: 'Input tokens: {count}'
+      to: 'Входные токены: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_cache_read
+      family: locale.gateway.usage
+      from: 'Cache read tokens: {count}'
+      to: 'Токены чтения кеша: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_cache_write
+      family: locale.gateway.usage
+      from: 'Cache write tokens: {count}'
+      to: 'Токены записи кеша: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_output_tokens
+      family: locale.gateway.usage
+      from: 'Output tokens: {count}'
+      to: 'Выходные токены: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_total
+      family: locale.gateway.usage
+      from: 'Total: {count}'
+      to: 'Всего: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_api_calls
+      family: locale.gateway.usage
+      from: 'API calls: {count}'
+      to: 'Вызовы API: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_cost
+      family: locale.gateway.usage
+      from: 'Cost: {prefix}${amount}'
+      to: 'Стоимость: {prefix}${amount}'
+      placeholders:
+        prefix: .*?
+        amount: .*?
+    - id: locale.gateway.usage.label_cost_included
+      family: locale.gateway.usage
+      from: 'Cost: included'
+      to: 'Стоимость: включено'
+    - id: locale.gateway.usage.label_context
+      family: locale.gateway.usage
+      from: 'Context: {used} / {total} ({pct}%)'
+      to: 'Контекст: {used} / {total} ({pct}%)'
+      placeholders:
+        used: .*?
+        total: .*?
+        pct: .*?
+    - id: locale.gateway.usage.label_compressions
+      family: locale.gateway.usage
+      from: 'Compressions: {count}'
+      to: 'Сжатий: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.breakdown_header
+      family: locale.gateway.usage
+      from: 🧩 **Context breakdown** _(estimated)_
+      to: 🧩 **Разбивка контекста** _(оценка)_
+    - id: locale.gateway.usage.breakdown_cat_system_prompt
+      family: locale.gateway.usage
+      from: System prompt
+      to: Системный промпт
+    - id: locale.gateway.usage.breakdown_cat_tool_definitions
+      family: locale.gateway.usage
+      from: Tool definitions
+      to: Определения инструментов
+    - id: locale.gateway.usage.breakdown_cat_rules
+      family: locale.gateway.usage
+      from: Rules
+      to: Правила
+    - id: locale.gateway.usage.breakdown_cat_skills
+      family: locale.gateway.usage
+      from: Skills
+      to: Навыки
+    - id: locale.gateway.usage.breakdown_cat_subagent_definitions
+      family: locale.gateway.usage
+      from: Subagent definitions
+      to: Определения субагентов
+    - id: locale.gateway.usage.breakdown_cat_memory
+      family: locale.gateway.usage
+      from: Memory
+      to: Память
+    - id: locale.gateway.usage.breakdown_cat_conversation
+      family: locale.gateway.usage
+      from: Conversation
+      to: Разговор
+    - id: locale.gateway.usage.header_session_info
+      family: locale.gateway.usage
+      from: 📊 **Session Info**
+      to: 📊 **Информация о сеансе**
+    - id: locale.gateway.usage.label_messages
+      family: locale.gateway.usage
+      from: 'Messages: {count}'
+      to: 'Сообщений: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.label_estimated_context
+      family: locale.gateway.usage
+      from: 'Estimated context: ~{count} tokens'
+      to: 'Ориентировочный контекст: ~{count} токенов'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.usage.detailed_after_first
+      family: locale.gateway.usage
+      from: _(Detailed usage available after the first agent response)_
+      to: _(Подробное использование доступно после первого ответа агента)_
+    - id: locale.gateway.usage.no_data
+      family: locale.gateway.usage
+      from: No usage data available for this session.
+      to: Данные об использовании для этого сеанса отсутствуют.
+    - id: locale.gateway.usage.unknown_subcommand
+      family: locale.gateway.usage
+      from: 'Unknown /usage subcommand: `{args}`. Try `/usage` or `/usage reset [--force]`.'
+      to: 'Неизвестная подкоманда /usage: `{args}`. Попробуйте `/usage` или `/usage reset [--force]`.'
+      placeholders:
+        args: .*?
+    - id: locale.gateway.usage.reset_wrong_provider
+      family: locale.gateway.usage
+      from: Banked usage resets are only available on the openai-codex provider. Switch with `/model` first.
+      to: Накопленные сбросы лимитов доступны только с провайдером openai-codex. Сначала переключитесь через `/model`.
+    - id: locale.gateway.credits.not_logged_in
+      family: locale.gateway.credits
+      from: Not logged into Nous Portal. Log in to see your credit balance and top up.
+      to: Вы не вошли в Nous Portal. Войдите, чтобы увидеть баланс кредитов и пополнить его.
+    - id: locale.gateway.verbose.not_enabled
+      family: locale.gateway.verbose
+      from: "The `/verbose` command is not enabled for messaging platforms.\n\nEnable it in `config.yaml`:\n```yaml\ndisplay:\n\
+        \  tool_progress_command: true\n```"
+      to: "Команда `/verbose` не включена для платформ обмена сообщениями.\n\nВключите в `config.yaml`:\n```yaml\ndisplay:\n\
+        \  tool_progress_command: true\n```"
+    - id: locale.gateway.verbose.mode_off
+      family: locale.gateway.verbose
+      from: '⚙️ Tool progress: **OFF** — no tool activity shown.'
+      to: '⚙️ Прогресс инструментов: **OFF** — активность инструментов не показывается.'
+    - id: locale.gateway.verbose.mode_new
+      family: locale.gateway.verbose
+      from: '⚙️ Tool progress: **NEW** — shown when tool changes (preview length: `display.tool_preview_length`, default 40).'
+      to: '⚙️ Прогресс инструментов: **NEW** — показывается при смене инструмента (длина предпросмотра: `display.tool_preview_length`,
+        по умолчанию 40).'
+    - id: locale.gateway.verbose.mode_all
+      family: locale.gateway.verbose
+      from: '⚙️ Tool progress: **ALL** — every tool call shown (preview length: `display.tool_preview_length`, default 40).'
+      to: '⚙️ Прогресс инструментов: **ALL** — показывается каждый вызов инструмента (длина предпросмотра: `display.tool_preview_length`,
+        по умолчанию 40).'
+    - id: locale.gateway.verbose.mode_verbose
+      family: locale.gateway.verbose
+      from: '⚙️ Tool progress: **VERBOSE** — every tool call with full arguments.'
+      to: '⚙️ Прогресс инструментов: **VERBOSE** — каждый вызов инструмента с полными аргументами.'
+    - id: locale.gateway.verbose.mode_log
+      family: locale.gateway.verbose
+      from: '⚙️ Tool progress: **LOG** — silent in chat; tool calls written to ~/.hermes/logs/tool_calls.log.'
+      to: '⚙️ Прогресс инструментов: **LOG** — тихо в чате; вызовы инструментов записываются в ~/.hermes/logs/tool_calls.log.'
+    - id: locale.gateway.verbose.saved_suffix
+      family: locale.gateway.verbose
+      from: _(saved for **{platform}** — takes effect on next message)_
+      to: _(сохранено для **{platform}** — вступит в силу со следующего сообщения)_
+      placeholders:
+        platform: .*?
+    - id: locale.gateway.verbose.save_failed
+      family: locale.gateway.verbose
+      from: '_(could not save to config: {error})_'
+      to: '_(не удалось сохранить в конфигурацию: {error})_'
+      placeholders:
+        error: .*?
+    - id: locale.gateway.voice.enabled_voice_only
+      family: locale.gateway.voice
+      from: 'Voice mode enabled.
+
+        I''ll reply with voice when you send voice messages.
+
+        Use /voice tts to get voice replies for all messages.'
+      to: 'Голосовой режим включён.
+
+        Я буду отвечать голосом, когда вы отправляете голосовые сообщения.
+
+        Используйте /voice tts, чтобы получать голосовые ответы на все сообщения.'
+    - id: locale.gateway.voice.disabled_text
+      family: locale.gateway.voice
+      from: Voice mode disabled. Text-only replies.
+      to: Голосовой режим отключён. Только текстовые ответы.
+    - id: locale.gateway.voice.tts_enabled
+      family: locale.gateway.voice
+      from: 'Auto-TTS enabled.
+
+        All replies will include a voice message.'
+      to: 'Авто-TTS включён.
+
+        Все ответы будут содержать голосовое сообщение.'
+    - id: locale.gateway.voice.status_mode
+      family: locale.gateway.voice
+      from: 'Voice mode: {label}'
+      to: 'Голосовой режим: {label}'
+      placeholders:
+        label: .*?
+    - id: locale.gateway.voice.status_channel
+      family: locale.gateway.voice
+      from: 'Voice channel: #{channel}'
+      to: 'Голосовой канал: #{channel}'
+      placeholders:
+        channel: .*?
+    - id: locale.gateway.voice.status_participants
+      family: locale.gateway.voice
+      from: 'Participants: {count}'
+      to: 'Участники: {count}'
+      placeholders:
+        count: .*?
+    - id: locale.gateway.voice.speaking
+      family: locale.gateway.voice
+      from: ' (speaking)'
+      to: ' (говорит)'
+    - id: locale.gateway.voice.enabled_short
+      family: locale.gateway.voice
+      from: Voice mode enabled.
+      to: Голосовой режим включён.
+    - id: locale.gateway.voice.disabled_short
+      family: locale.gateway.voice
+      from: Voice mode disabled.
+      to: Голосовой режим отключён.
+    - id: locale.gateway.voice.label_off
+      family: locale.gateway.voice
+      from: Off (text only)
+      to: Выкл. (только текст)
+    - id: locale.gateway.voice.label_voice_only
+      family: locale.gateway.voice
+      from: On (voice reply to voice messages)
+      to: Вкл. (голосовой ответ на голосовые сообщения)
+    - id: locale.gateway.voice.label_all
+      family: locale.gateway.voice
+      from: TTS (voice reply to all messages)
+      to: TTS (голосовой ответ на все сообщения)
+    - id: locale.gateway.voice.help
+      family: locale.gateway.voice
+      from: '{toggle}
+
+
+        **How /voice works**
+
+        • `/voice on` — voice reply when you send a voice message
+
+        • `/voice tts` — voice reply to *every* message
+
+        • `/voice off` — back to text-only replies
+
+        • `/voice status` — show the current mode
+
+        • `/voice` (no argument) — quick toggle between on and off{channels}'
+      to: '{toggle}
+
+
+        **Как работает /voice**
+
+        • `/voice on` — голосовой ответ, когда вы отправляете голосовое сообщение
+
+        • `/voice tts` — голосовой ответ на *каждое* сообщение
+
+        • `/voice off` — вернуться к ответам только текстом
+
+        • `/voice status` — показать текущий режим
+
+        • `/voice` (без аргумента) — быстрое переключение между вкл и выкл{channels}'
+      placeholders:
+        toggle: .*?
+        channels: .*?
+    - id: locale.gateway.voice.help_channels
+      family: locale.gateway.voice
+      from: '
+
+
+        **Live voice channels (Discord)**
+
+        • Join a voice channel first, then `/voice channel` — I''ll join, listen, and speak my replies
+
+        • `/voice leave` — disconnect from the voice channel'
+      to: '
+
+
+        **Живые голосовые каналы (Discord)**
+
+        • Сначала зайдите в голосовой канал, затем `/voice channel` — я подключусь, буду слушать и отвечать голосом
+
+        • `/voice leave` — отключиться от голосового канала'
+    - id: locale.gateway.yolo.disabled
+      family: locale.gateway.yolo
+      from: ⚠️ YOLO mode **OFF** for this session — dangerous commands will require approval.
+      to: ⚠️ Режим YOLO для этого сеанса **ОТКЛЮЧЁН** — опасные команды потребуют одобрения.
+    - id: locale.gateway.yolo.enabled
+      family: locale.gateway.yolo
+      from: ⚡ YOLO mode **ON** for this session — all commands auto-approved. Use with caution.
+      to: ⚡ Режим YOLO для этого сеанса **ВКЛЮЧЁН** — все команды одобряются автоматически. Используйте с осторожностью.
+    - id: locale.gateway.shared.session_db_unavailable_prefix
+      family: locale.gateway.shared
+      from: Session database not available
+      to: База данных сеансов недоступна
+  locales.cron:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.cron.delivery.wrapper
+      family: locale.cron.delivery
+      from: 'Cronjob Response: {task_name}
+
+        (job_id: {job_id})
+
+        -------------
+
+
+        {content}
+
+
+        To stop or manage this job, send me a new message (e.g. "stop reminder {task_name}").'
+      to: 'Ответ cron-задачи: {task_name}
+
+        (job_id: {job_id})
+
+        -------------
+
+
+        {content}
+
+
+        Чтобы остановить задачу или управлять ею, отправьте мне новое сообщение (например, «остановить напоминание {task_name}»).'
+      placeholders:
+        task_name: .*?
+        job_id: .*?
+        content: .*?
+  locales.telegram:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.telegram.model_picker.more_available
+      family: locale.telegram.model_picker
+      from: '
+
+        _{count} more available — type `/model <name>` directly_'
+      to: '
+
+        _Доступно ещё: {count} — укажите модель напрямую: `/model <name>`_'
+      placeholders:
+        count: .*?
+    - id: locale.telegram.approval.header_html
+      family: locale.telegram.approval
+      from: '⚠️ <b>Command Approval Required</b>
+
+
+        '
+      to: '⚠️ <b>Требуется подтверждение команды</b>
+
+
+        '
+    - id: locale.telegram.approval.full_html
+      family: locale.telegram.approval
+      from: "⚠️ <b>Command Approval Required</b>\n\n<pre>{command}</pre>\n\nReason: {description}"
+      to: "⚠️ <b>Требуется подтверждение команды</b>\n\n<pre>{command}</pre>\n\nПричина: {description}"
+      placeholders:
+        command: .*?
+        description: .*?
+    - id: locale.telegram.approval.reason_dangerous_command
+      family: locale.telegram.approval
+      from: dangerous command
+      to: потенциально опасная команда
+    - id: locale.telegram.approval.reason_label
+      family: locale.telegram.approval
+      from: '<b>Reason:</b> '
+      to: '<b>Причина:</b> '
+    - id: locale.telegram.approval.smart_deny_html
+      family: locale.telegram.approval
+      from: '
+
+
+        <b>Smart DENY:</b> owner override applies to this one operation only.'
+      to: '
+
+
+        <b>Умный запрет:</b> разрешение владельца действует только для этой операции.'
+    - id: locale.telegram.approval.allow_once
+      family: locale.telegram.approval
+      from: ✅ Allow Once
+      to: ✅ Разрешить один раз
+    - id: locale.telegram.approval.session
+      family: locale.telegram.approval
+      from: ✅ Session
+      to: ✅ До конца сеанса
+    - id: locale.telegram.approval.always
+      family: locale.telegram.approval
+      from: ✅ Always
+      to: ✅ Разрешать всегда
+    - id: locale.telegram.approval.deny
+      family: locale.telegram.approval
+      from: ❌ Deny
+      to: ❌ Отклонить
+    - id: locale.telegram.approval.approve_once
+      family: locale.telegram.approval
+      from: ✅ Approve Once
+      to: ✅ Подтвердить один раз
+    - id: locale.telegram.approval.always_approve
+      family: locale.telegram.approval
+      from: 🔒 Always Approve
+      to: 🔒 Подтверждать всегда
+    - id: locale.telegram.approval.cancel
+      family: locale.telegram.approval
+      from: ❌ Cancel
+      to: ❌ Отмена
+    - id: locale.telegram.approval.approved_once
+      family: locale.telegram.approval
+      from: ✅ Approved once
+      to: ✅ Разрешено один раз
+    - id: locale.telegram.approval.approved_session
+      family: locale.telegram.approval
+      from: ✅ Approved for session
+      to: ✅ Разрешено до конца сеанса
+    - id: locale.telegram.approval.approved_permanently
+      family: locale.telegram.approval
+      from: ✅ Approved permanently
+      to: ✅ Разрешено постоянно
+    - id: locale.telegram.approval.denied
+      family: locale.telegram.approval
+      from: ❌ Denied
+      to: ❌ Отклонено
+    - id: locale.telegram.approval.cancelled
+      family: locale.telegram.approval
+      from: ❌ Cancelled
+      to: ❌ Отменено
+    - id: locale.telegram.approval.resolved
+      family: locale.telegram.approval
+      from: Resolved
+      to: Обработано
+    - id: locale.telegram.approval.expired
+      family: locale.telegram.approval
+      from: ⌛ Approval expired
+      to: ⌛ Срок подтверждения истёк
+    - id: locale.telegram.approval.expired_detail
+      family: locale.telegram.approval
+      from: '{label} — no command was waiting. It already timed out (and was denied) or was resolved elsewhere.'
+      to: '{label} — ожидающей команды уже нет. Время ожидания истекло и команда была отклонена либо решение принято в другом
+        месте.'
+      placeholders:
+        label: .*?
+    - id: locale.telegram.approval.by_user
+      family: locale.telegram.approval
+      from: '{label} by {user}'
+      to: '{label}. Пользователь: {user}'
+      placeholders:
+        label: (?:(?:✅|❌|🔒)[^\n]*?|Resolved)
+        user: '[^\n]+'
+    - id: locale.telegram.approval.invalid_data
+      family: locale.telegram.approval
+      from: Invalid approval data.
+      to: Некорректные данные подтверждения.
+    - id: locale.telegram.approval.unauthorized_commands
+      family: locale.telegram.approval
+      from: ⛔ You are not authorized to approve commands.
+      to: ⛔ У вас нет права подтверждать команды.
+    - id: locale.telegram.approval.unauthorized_prompt
+      family: locale.telegram.approval
+      from: ⛔ You are not authorized to answer this prompt.
+      to: ⛔ У вас нет права отвечать на этот запрос.
+    - id: locale.telegram.approval.already_resolved
+      family: locale.telegram.approval
+      from: This approval has already been resolved.
+      to: Решение по этой команде уже принято.
+    - id: locale.telegram.approval.prompt_already_resolved
+      family: locale.telegram.approval
+      from: This prompt has already been resolved.
+      to: Ответ на этот запрос уже получен.
+  hardcoded.gateway.platforms.base.py:
+    source_file: gateway/platforms/base.py
+    rules:
+    - id: hardcoded.base.formatting_failed
+      family: gateway.delivery
+      from: '(Response formatting failed, plain text:)
+
+
+        {content}'
+      to: '(Не удалось отформатировать ответ; показан обычный текст:)
+
+
+        {content}'
+      placeholders:
+        content: .*?
+    - id: hardcoded.base.handler_error
+      family: gateway.delivery
+      from: 'Sorry, I encountered an error ({error_type}).
+
+        {error_detail}
+
+        Try again or use /reset to start a fresh session.'
+      to: 'Произошла ошибка ({error_type}).
+
+        {error_detail}
+
+        Повторите попытку или используйте /reset, чтобы начать новый сеанс.'
+      placeholders:
+        error_type: .+?
+        error_detail: .*?
+  hardcoded.gateway.run.py:
+    source_file: gateway/run.py
+    rules:
+    - id: hardcoded.gateway.destructive_cancelled
+      family: gateway.slash_confirm
+      from: 🟡 /{command} cancelled. Conversation unchanged.
+      to: 🟡 Команда /{command} отменена. Диалог не изменён.
+      placeholders:
+        command: '[A-Za-z0-9_-]+'
+    - id: hardcoded.gateway.run.16037
+      family: gateway.busy_command
+      from: ⏳ Agent is running — `/{name}` can't run mid-turn. Wait for the current response or `/stop` first.
+      to: ⏳ Агент работает — команду `/{name}` нельзя выполнить во время обработки запроса. Дождитесь текущего ответа или
+        сначала выполните `/stop`.
+      placeholders:
+        name: .+?
+    - id: hardcoded.gateway.run.16055
+      family: gateway.pause
+      from: ▶️ Resumed — new work is accepted again.
+      to: ▶️ Работа возобновлена — новые задачи снова принимаются.
+    - id: hardcoded.gateway.run.16056
+      family: gateway.pause
+      from: Hermes wasn't paused.
+      to: Hermes не был приостановлен.
+    - id: hardcoded.gateway.run.16061
+      family: gateway.pause
+      from: ⏸️ Hermes is already paused{suffix}. Use `/pause off` to resume.
+      to: ⏸️ Hermes уже приостановлен{suffix}. Чтобы возобновить работу, используйте `/pause off`.
+      placeholders:
+        suffix: .+?
+    - id: hardcoded.gateway.run.16067
+      family: gateway.pause
+      from: ⏸️ Paused{suffix}. New cron/kanban/gateway work is on hold; in-flight work finishes normally. Use `/pause off`
+        to resume.
+      to: ⏸️ Работа приостановлена{suffix}. Новые задачи cron/kanban/gateway не принимаются; уже выполняемые задачи завершатся
+        как обычно. Чтобы возобновить работу, используйте `/pause off`.
+      placeholders:
+        suffix: .+?
+    - id: hardcoded.gateway.run.16130
+      family: gateway.queue
+      from: 'Usage: /queue <prompt>'
+      to: 'Использование: /queue <prompt>'
+    - id: hardcoded.gateway.run.16155
+      family: gateway.queue
+      from: Queued for the next turn.
+      to: Добавлено в очередь на следующий запрос.
+    - id: hardcoded.gateway.run.16156
+      family: gateway.queue
+      from: Queued for the next turn. ({depth} queued)
+      to: 'Добавлено в очередь на следующий запрос. (В очереди: {depth})'
+      placeholders:
+        depth: .+?
+    - id: hardcoded.gateway.run.16166
+      family: gateway.steer
+      from: 'Usage: /steer <prompt>'
+      to: 'Использование: /steer <prompt>'
+    - id: hardcoded.gateway.run.16182
+      family: gateway.steer
+      from: Agent still starting — /steer queued for the next turn.
+      to: Агент ещё запускается — команда /steer добавлена в очередь на следующий запрос.
+    - id: hardcoded.gateway.run.16188
+      family: gateway.steer
+      from: '⚠️ Steer failed: {exc}'
+      to: '⚠️ Не удалось передать уточнение: {exc}'
+      placeholders:
+        exc: .+?
+    - id: hardcoded.gateway.run.16191
+      family: gateway.steer
+      from: '⏩ Steer queued — arrives after the next tool call: ''{preview}'''
+      to: '⏩ Уточнение добавлено в очередь и будет передано после следующего вызова инструмента: ''{preview}'''
+      placeholders:
+        preview: .+?
+    - id: hardcoded.gateway.run.16192
+      family: gateway.steer
+      from: Steer rejected (empty payload).
+      to: 'Уточнение отклонено: пустые данные.'
+    - id: hardcoded.gateway.run.16205
+      family: gateway.steer
+      from: No active agent — /steer queued for the next turn.
+      to: Нет активного агента — команда /steer добавлена в очередь на следующий запрос.
+    - id: hardcoded.gateway.run.16226
+      family: gateway.goal
+      from: Agent is running — use /goal status / pause / clear / wait mid-run, or /stop before setting a new goal.
+      to: Агент работает — во время выполнения доступны /goal status / pause / clear / wait; перед установкой новой цели выполните
+        /stop.
+    - id: hardcoded.gateway.run.16235
+      family: gateway.loop
+      from: Agent is running — use /loop status / pause / stop mid-run, or /stop before setting a new loop.
+      to: Агент работает — во время выполнения доступны /loop status / pause / stop; перед запуском нового цикла выполните
+        /stop.
+    - id: hardcoded.gateway.run.16569
+      family: gateway.update
+      from: '✗ Failed to send response to update process: {e}'
+      to: '✗ Не удалось отправить ответ процессу обновления: {e}'
+      placeholders:
+        e: .+?
+    - id: hardcoded.gateway.run.16572
+      family: gateway.update
+      from: ✓ Sent `{label}` to the update process.
+      to: ✓ `{label}` отправлено процессу обновления.
+      placeholders:
+        label: .+?
+    - id: hardcoded.gateway.run.17113
+      family: gateway.commands
+      from: Command `/{command}` was blocked by a hook.
+      to: Команда `/{command}` заблокирована хуком.
+      placeholders:
+        command: .+?
+    - id: hardcoded.gateway.run.17226
+      family: gateway.commands
+      from: Could not start /learn — please try again.
+      to: Не удалось запустить /learn — повторите попытку.
+    - id: hardcoded.gateway.run.17240
+      family: gateway.commands
+      from: Could not start /init — please try again.
+      to: Не удалось запустить /init — повторите попытку.
+    - id: hardcoded.gateway.run.17418
+      family: gateway.steer
+      from: 'Usage: /steer <prompt>  (no agent is running; sending as a normal message)'
+      to: 'Использование: /steer <prompt>  (агент не запущен; сообщение будет отправлено как обычное)'
+    - id: hardcoded.gateway.run.17472
+      family: gateway.moa
+      from: Failed to prepare MoA turn.
+      to: Не удалось подготовить запрос MoA.
+    - id: hardcoded.gateway.run.17481
+      family: gateway.lifecycle
+      from: ⏳ Gateway is {value} and is not accepting new work right now.
+      to: ⏳ Сервис Hermes сейчас выполняет действие «{value}» и временно не принимает новые задачи.
+      placeholders:
+        value: .+?
+    - id: hardcoded.gateway.run.17526
+      family: gateway.quick_command
+      from: Quick command timed out (30s).
+      to: Время ожидания быстрой команды истекло (30 с).
+    - id: hardcoded.gateway.run.17528
+      family: gateway.quick_command
+      from: 'Quick command error: {e}'
+      to: 'Ошибка быстрой команды: {e}'
+      placeholders:
+        e: .+?
+    - id: hardcoded.gateway.run.17530
+      family: gateway.quick_command
+      from: Quick command '/{command}' has no command defined.
+      to: Для быстрой команды '/{command}' не задана команда.
+      placeholders:
+        command: .+?
+    - id: hardcoded.gateway.run.17541
+      family: gateway.quick_command
+      from: Quick command '/{command}' has no target defined.
+      to: Для быстрой команды '/{command}' не задана цель.
+      placeholders:
+        command: .+?
+    - id: hardcoded.gateway.run.17543
+      family: gateway.quick_command
+      from: 'Quick command ''/{command}'' has unsupported type (supported: ''exec'', ''alias'').'
+      to: 'Быстрая команда ''/{command}'' имеет неподдерживаемый тип (поддерживаются: ''exec'', ''alias'').'
+      placeholders:
+        command: .+?
+    - id: hardcoded.gateway.run.17620
+      family: gateway.skills
+      from: 'The **{skill_name}** skill is disabled for {plat}.
+
+        Enable it with: `hermes skills config`'
+      to: 'Навык **{skill_name}** отключён для {plat}.
+
+        Включите его командой: `hermes skills config`'
+      placeholders:
+        skill_name: .+?
+        plat: .+?
+    - id: hardcoded.gateway.run.17655
+      family: gateway.skills
+      from: 'The **{value}** skill(s) in this stacked invocation are disabled for {plat}.
+
+        Enable them with: `hermes skills config`'
+      to: 'Навыки **{value}** в этом составном вызове отключены для {plat}.
+
+        Включите их командой: `hermes skills config`'
+      placeholders:
+        value: .+?
+        plat: .+?
+    - id: hardcoded.gateway.run.17671
+      family: gateway.skills
+      from: Failed to load stacked skills for /{command}.
+      to: Не удалось загрузить составной набор навыков для /{command}.
+      placeholders:
+        command: .+?
+    - id: hardcoded.gateway.run.17700
+      family: gateway.commands
+      from: Unknown command `/{command}`. Type /commands to see what's available, or resend without the leading slash to send
+        as a regular message.
+      to: Неизвестная команда `/{command}`. Используйте /commands, чтобы посмотреть доступные команды, или отправьте сообщение
+        ещё раз без начального символа косой черты.
+      placeholders:
+        command: .+?
+    - id: hardcoded.gateway.run.17737
+      family: gateway.lifecycle
+      from: ⏳ This agent is draining for a maintenance action and isn't accepting new turns right now. It'll be back in a
+        moment — please resend shortly.
+      to: ⏳ Этот агент завершает текущую работу перед техническим обслуживанием и временно не принимает новые запросы. Он
+        скоро вернётся — отправьте сообщение ещё раз через несколько секунд.
+    - id: hardcoded.gateway.run.17784
+      family: gateway.concurrency
+      from: ⏳ Another turn is still running on this session. To protect the transcript, this message was not processed. Wait
+        for the active turn to finish, then resend it.
+      to: ⏳ В этой сессии ещё выполняется другой запрос. Чтобы защитить историю диалога, это сообщение не было обработано.
+        Дождитесь завершения активного запроса и отправьте сообщение ещё раз.
+    - id: hardcoded.gateway.run.20686
+      family: gateway.unexpected_error
+      from: 'Sorry, I encountered an unexpected error.{status_hint}
+
+        Try again or use /reset to start a fresh session.'
+      to: 'Произошла непредвиденная ошибка.{status_hint}
+
+        Повторите попытку или используйте /reset, чтобы начать новую сессию.'
+      placeholders:
+        status_hint: .*?
+    - id: hardcoded.gateway.run.20798
+      family: gateway.access
+      from: ⛔ /{canonical_cmd} is admin-only here. {suffix}
+      to: ⛔ Команда /{canonical_cmd} здесь доступна только администратору. {suffix}
+      placeholders:
+        canonical_cmd: .+?
+        suffix: .+?
+    - id: hardcoded.gateway.run.22199
+      family: gateway.background_task
+      from: '❌ Background task {task_id} failed: no provider credentials configured.'
+      to: '❌ Фоновая задача {task_id} завершилась ошибкой: не настроены учётные данные провайдера.'
+      placeholders:
+        task_id: .+?
+    - id: hardcoded.gateway.run.22362
+      family: gateway.background_task
+      from: '✅ Background task complete
+
+        Prompt: "{preview}"
+
+
+        (No response generated)'
+      to: '✅ Фоновая задача завершена
+
+        Запрос: «{preview}»
+
+
+        (Ответ не создан)'
+      placeholders:
+        preview: .+?
+    - id: hardcoded.gateway.run.22371
+      family: gateway.background_task
+      from: '❌ Background task {task_id} failed: {e}'
+      to: '❌ Фоновая задача {task_id} завершилась ошибкой: {e}'
+      placeholders:
+        task_id: .+?
+        e: (?!no provider credentials configured\.$).+?
+    - id: hardcoded.gateway.run.22431
+      family: gateway.telegram_topics
+      from: System topic for Hermes commands and status.
+      to: Системная тема для команд Hermes и сообщений о состоянии.
+    - id: hardcoded.gateway.run.22474
+      family: gateway.telegram_topics
+      from: Hermes Chat
+      to: Чат Hermes
+    - id: hardcoded.gateway.run.22928
+      family: gateway.telegram_topics
+      from: Could not determine chat ID.
+      to: Не удалось определить ID чата.
+    - id: hardcoded.gateway.run.22938
+      family: gateway.telegram_topics
+      from: Multi-session topic mode is not currently enabled for this chat.
+      to: Режим тем с несколькими сессиями сейчас не включён для этого чата.
+    - id: hardcoded.gateway.run.22943
+      family: gateway.telegram_topics
+      from: 'Failed to disable topic mode: {exc}'
+      to: 'Не удалось отключить режим тем: {exc}'
+      placeholders:
+        exc: .+?
+    - id: hardcoded.gateway.run.22950
+      family: gateway.telegram_topics
+      from: 'Multi-session topic mode is now OFF for this chat.
+
+
+        Existing topics in Telegram aren''t removed — they''ll just stop being gated as independent sessions. The root DM
+        works as a normal Hermes chat again. Run /topic to re-enable later.'
+      to: 'Режим тем с несколькими сессиями теперь ОТКЛЮЧЁН для этого чата.
+
+
+        Существующие темы в Telegram не будут удалены — они лишь перестанут работать как отдельные сессии. Основной чат снова
+        работает как обычный чат Hermes. Чтобы снова включить режим, выполните /topic.'
+    - id: hardcoded.gateway.run.23009
+      family: gateway.telegram_topics
+      from: 'Session not found: {session}'
+      to: 'Сессия не найдена: {session}'
+      placeholders:
+        session: .+?
+    - id: hardcoded.gateway.run.23015
+      family: gateway.telegram_topics
+      from: That session is not a Telegram session and cannot be restored into this topic.
+      to: Эта сессия создана не в Telegram, поэтому её нельзя восстановить в этой теме.
+    - id: hardcoded.gateway.run.23017
+      family: gateway.telegram_topics
+      from: That session does not belong to this Telegram user.
+      to: Эта сессия не принадлежит данному пользователю Telegram.
+    - id: hardcoded.gateway.run.23026
+      family: gateway.telegram_topics
+      from: That session is already linked to another Telegram topic.
+      to: Эта сессия уже связана с другой темой Telegram.
+    - id: hardcoded.gateway.run.23649
+      family: gateway.update
+      from: ✅ Hermes update finished.
+      to: ✅ Обновление Hermes завершено.
+    - id: hardcoded.gateway.run.23724
+      family: gateway.update
+      from: '⚕ **Update needs your input:**
+
+
+        {prompt_text}{default_hint}
+
+
+        Reply `{p}approve` (yes) or `{p_2}deny` (no), or type your answer directly.'
+      to: '⚕ **Для обновления нужен ваш ответ:**
+
+
+        {prompt_text}{default_hint}
+
+
+        Ответьте `{p}approve` (да) или `{p_2}deny` (нет) либо введите свой ответ.'
+      placeholders:
+        prompt_text: .*?
+        default_hint: .*?
+        p: .+?
+        p_2: .+?
+    - id: hardcoded.gateway.run.23753
+      family: gateway.update
+      from: ❌ Hermes update timed out after 30 minutes.
+      to: ❌ Обновление Hermes не завершилось за 30 минут.
+    - id: hardcoded.gateway.run.28822
+      family: gateway.inactivity
+      from: ⚠️ No activity for {elapsed_warn} min. If the agent does not respond soon, it will be timed out in {remaining_mins}
+        min. You can continue waiting or use /reset.
+      to: ⚠️ Нет активности уже {elapsed_warn} мин. Если агент вскоре не ответит, ожидание будет прервано через {remaining_mins}
+        мин. Можно продолжить ждать или использовать /reset.
+      placeholders:
+        elapsed_warn: .+?
+        remaining_mins: .+?
+    - id: hardcoded.gateway.run.3466
+      family: gateway.skills
+      from: 'The **{command_name}** skill is installed but disabled.
+
+        Enable it with: `hermes skills config`'
+      to: 'Навык **{command_name}** установлен, но отключён.
+
+        Включите его командой: `hermes skills config`'
+      placeholders:
+        command_name: .+?
+    - id: hardcoded.gateway.run.3487
+      family: gateway.skills
+      from: 'The **{command_name}** skill is available but not installed.
+
+        Install it with: `hermes skills install {install_path}`'
+      to: 'Навык **{command_name}** доступен, но не установлен.
+
+        Установите его командой: `hermes skills install {install_path}`'
+      placeholders:
+        command_name: .+?
+        install_path: .+?
+    - id: hardcoded.gateway.run.3916
+      family: gateway.session_storage
+      from: ⚠️ Session storage was temporarily unavailable, so this turn was stopped to protect your conversation history.
+        Please check available disk space, then send your message again.
+      to: ⚠️ Хранилище сессий временно недоступно, поэтому обработка сообщения остановлена, чтобы защитить историю диалога.
+        Проверьте свободное место на диске и отправьте сообщение ещё раз.
+    - id: hardcoded.gateway.run.3922
+      family: gateway.session_storage
+      from: ⚠️ Session storage was temporarily unavailable, so this turn was stopped to protect your conversation history.
+        Your message should already be saved — please send it again in a moment.
+      to: ⚠️ Хранилище сессий временно недоступно, поэтому обработка сообщения остановлена, чтобы защитить историю диалога.
+        Ваше сообщение уже должно быть сохранено — отправьте его ещё раз через несколько секунд.
+    - id: hardcoded.gateway.run.3933
+      family: gateway.empty_response
+      from: '⚠️ Session too large for the model''s context window.
+
+        Use /compact to compress the conversation, or /reset to start fresh.'
+      to: '⚠️ Сессия слишком велика для контекстного окна модели.
+
+        Используйте /compact, чтобы сжать диалог, или /reset, чтобы начать новую сессию.'
+    - id: hardcoded.gateway.run.3938
+      family: gateway.empty_response
+      from: 'The request failed: {value}
+
+        Try again or use /reset to start a fresh session.'
+      to: 'Не удалось выполнить запрос: {value}
+
+        Повторите попытку или используйте /reset, чтобы начать новую сессию.'
+      placeholders:
+        value: .+?
+    - id: hardcoded.gateway.run.3954
+      family: gateway.empty_response
+      from: ⚠️ Your message was interrupted before processing started (likely by a recent /stop). Please send it again.
+      to: ⚠️ Обработка вашего сообщения была прервана до начала (вероятно, из-за недавней команды /stop). Отправьте его ещё
+        раз.
+    - id: hardcoded.gateway.run.3965
+      family: gateway.empty_response
+      from: ⚠️ Processing completed but no response was generated. This may be a transient error — try sending your message
+        again.
+      to: ⚠️ Обработка завершилась, но ответ не был создан. Возможно, это временная ошибка — отправьте сообщение ещё раз.
+    - id: hardcoded.gateway.run.3981
+      family: gateway.empty_response
+      from: ⚠️ Your message wasn't processed (the previous turn was still being cleaned up). Please send it again.
+      to: ⚠️ Ваше сообщение не было обработано, поскольку предыдущий запрос ещё завершался. Отправьте его ещё раз.
+    - id: hardcoded.gateway.run.711
+      family: gateway.provider_error
+      from: ⚠️ Provider authentication failed. Check the configured credentials; raw provider details are in the gateway logs.
+      to: ⚠️ Ошибка аутентификации у провайдера. Проверьте настроенные учётные данные; технические подробности от провайдера
+        сохранены в журналах сервиса Hermes.
+    - id: hardcoded.gateway.run.716
+      family: gateway.provider_error
+      from: ⚠️ The model provider rejected the request. I kept the raw provider error out of chat; check gateway logs for
+        details or try rephrasing.
+      to: ⚠️ Провайдер модели отклонил запрос. Технические подробности от провайдера не показаны в чате; проверьте журналы
+        сервиса Hermes или переформулируйте запрос.
+    - id: hardcoded.gateway.run.721
+      family: gateway.provider_error
+      from: ⏱️ The model provider is rate-limiting requests. Please wait a moment and try again.
+      to: ⏱️ Провайдер модели временно ограничивает частоту запросов. Подождите немного и повторите попытку.
+    - id: hardcoded.gateway.run.723
+      family: gateway.provider_error
+      from: ⚠️ The model server is not responding — it looks like the configured model endpoint is not running or is unreachable.
+      to: ⚠️ Сервер модели не отвечает — похоже, настроенная конечная точка модели не запущена или недоступна.
+    - id: hardcoded.gateway.run.727
+      family: gateway.provider_error
+      from: ⚠️ The model provider failed after retries. I kept raw provider details out of chat; check gateway logs for diagnostics.
+      to: ⚠️ Провайдер модели не ответил после нескольких попыток. Технические подробности от провайдера не показаны в чате;
+        диагностику смотрите в журналах сервиса Hermes.
+    - id: hardcoded.gateway.topic_new_started
+      family: gateway.telegram_topic
+      from: Started a new Hermes session in this topic.
+      to: В этой теме начат новый сеанс Hermes.
+    - id: hardcoded.gateway.update_failed_exit
+      family: gateway.update
+      from: ❌ Hermes update failed (exit code {code}).
+      to: ❌ Обновление Hermes завершилось ошибкой (код {code}).
+      placeholders:
+        code: -?[0-9]+
+  hardcoded.gateway.slash.commands.py:
+    source_file: gateway/slash_commands.py
+    rules:
+    - id: hardcoded.slash.approvals.3976
+      family: gateway.slash.approvals
+      from: Only gateway admins can change the persistent approval mode.
+      to: Только администраторы сервиса Hermes могут изменять постоянный режим подтверждений.
+    - id: hardcoded.slash.codex-runtime.2553
+      family: gateway.slash.codex-runtime
+      from: '❌ Could not load config: {exc}'
+      to: '❌ Не удалось загрузить конфигурацию: {exc}'
+      placeholders:
+        exc: .*?
+    - id: hardcoded.slash.goal.2771
+      family: gateway.slash.goal
+      from: 'Usage: /goal wait <pid> [reason]'
+      to: 'Использование: /goal wait <pid> [reason]'
+    - id: hardcoded.slash.goal.2776
+      family: gateway.slash.goal
+      from: '/goal wait: <pid> must be an integer process id.'
+      to: '/goal wait: <pid> должен быть целочисленным идентификатором процесса.'
+    - id: hardcoded.slash.goal.2783
+      family: gateway.slash.goal
+      from: ⏳ Goal parked on pid {pid}{rtxt}. Loop pauses until it exits.
+      to: ⏳ Цель ожидает завершения процесса с pid {pid}{rtxt}. Цикл приостановлен до завершения процесса.
+      placeholders:
+        pid: .+?
+        rtxt: .*?
+    - id: hardcoded.slash.goal.2788
+      family: gateway.slash.goal
+      from: ▶ Wait barrier cleared — goal loop resumes.
+      to: ▶ Барьер ожидания снят — цикл цели возобновлён.
+    - id: hardcoded.slash.goal.2789
+      family: gateway.slash.goal
+      from: No wait barrier set.
+      to: Барьер ожидания не установлен.
+    - id: hardcoded.slash.goal.2803
+      family: gateway.slash.goal
+      from: '⚿ Gate added: $ {command} ({max_retries} retries, {timeout_seconds}s timeout). It must pass before the goal can
+        complete.'
+      to: '⚿ Проверка добавлена: $ {command} (повторных попыток: {max_retries}, тайм-аут: {timeout_seconds} с). Для завершения
+        цели проверка должна пройти успешно.'
+      placeholders:
+        command: .+?
+        max_retries: .+?
+        timeout_seconds: .+?
+    - id: hardcoded.slash.goal.2814
+      family: gateway.slash.goal
+      from: '✓ Gate removed: $ {removed}'
+      to: '✓ Проверка удалена: $ {removed}'
+      placeholders:
+        removed: .+?
+    - id: hardcoded.slash.goal.2821
+      family: gateway.slash.goal
+      from: 'Usage: /goal gate [list | add <command> | remove <N> | clear]'
+      to: 'Использование: /goal gate [list | add <command> | remove <N> | clear]'
+    - id: hardcoded.slash.goal.2829
+      family: gateway.slash.goal
+      from: 'Usage: /goal draft <objective in plain language>'
+      to: 'Использование: /goal draft <objective in plain language>'
+    - id: hardcoded.slash.goal.2877
+      family: gateway.slash.goal
+      from: '{base}
+
+        Completion contract:
+
+        {value}'
+      to: '{base}
+
+        Условия завершения:
+
+        {value}'
+      placeholders:
+        base: .*?
+        value: .*?
+    - id: hardcoded.slash.goal.2880
+      family: gateway.slash.goal
+      from: '{base}
+
+        (Couldn''t draft a contract — running as a free-form goal.)'
+      to: '{base}
+
+        (Не удалось составить условия завершения — цель выполняется в свободной форме.)'
+      placeholders:
+        base: .*?
+    - id: hardcoded.slash.heartbeat.2897
+      family: gateway.slash.heartbeat
+      from: Heartbeats unavailable (no session).
+      to: Heartbeat недоступен (нет сессии).
+    - id: hardcoded.slash.heartbeat.2911
+      family: gateway.slash.heartbeat
+      from: No heartbeat to resume.
+      to: Нет приостановленного heartbeat для возобновления.
+    - id: hardcoded.slash.heartbeat.2914
+      family: gateway.slash.heartbeat
+      from: '▶ Heartbeat resumed (every {value}): {prompt}'
+      to: '▶ Heartbeat возобновлён (каждые {value}): {prompt}'
+      placeholders:
+        value: .+?
+        prompt: .*?
+    - id: hardcoded.slash.heartbeat.2934
+      family: gateway.slash.heartbeat
+      from: 'Usage: /heartbeat every <interval> <prompt>  (e.g. /heartbeat every 10m Check CI)
+
+        Also: /heartbeat status | pause | resume | clear'
+      to: 'Использование: /heartbeat every <interval> <prompt>  (например, /heartbeat every 10m Check CI)
+
+        Также: /heartbeat status | pause | resume | clear'
+    - id: hardcoded.slash.heartbeat.2939
+      family: gateway.slash.heartbeat
+      from: Interval too small — minimum is {MIN_INTERVAL_SECONDS}s.
+      to: Интервал слишком мал — минимум {MIN_INTERVAL_SECONDS} с.
+      placeholders:
+        MIN_INTERVAL_SECONDS: .+?
+    - id: hardcoded.slash.heartbeat.2941
+      family: gateway.slash.heartbeat
+      from: 'Usage: /heartbeat every <interval> <prompt> — the prompt is required.'
+      to: 'Использование: /heartbeat every <interval> <prompt> — необходимо указать prompt.'
+    - id: hardcoded.slash.heartbeat.2946
+      family: gateway.slash.heartbeat
+      from: 'Invalid heartbeat: {exc}'
+      to: 'Некорректный heartbeat: {exc}'
+      placeholders:
+        exc: .*?
+    - id: hardcoded.slash.heartbeat.2949
+      family: gateway.slash.heartbeat
+      from: '♥ Heartbeat set (every {value}): {prompt}
+
+        Fires as a normal turn whenever this session is idle and the interval has elapsed. Lives while the gateway runs —
+        use `hermes cron` for durable schedules.'
+      to: '♥ Heartbeat настроен (каждые {value}): {prompt}
+
+        Запускается как обычный ход, когда эта сессия простаивает и заданный интервал истёк. Действует, пока работает сервис
+        Hermes; для постоянных расписаний используйте `hermes cron`.'
+      placeholders:
+        value: .+?
+        prompt: .*?
+    - id: hardcoded.slash.loop.3087
+      family: gateway.slash.loop
+      from: Loops unavailable.
+      to: Циклы недоступны.
+    - id: hardcoded.slash.loop.3091
+      family: gateway.slash.loop
+      from: Loops unavailable (no active session).
+      to: Циклы недоступны (нет активной сессии).
+    - id: hardcoded.slash.model.2506
+      family: gateway.slash.model
+      from: 🟡 Model switch cancelled. Current model unchanged ({model}).
+      to: 🟡 Смена модели отменена. Текущая модель не изменилась ({model}).
+      placeholders:
+        model: .+?
+    - id: hardcoded.slash.platform.1562
+      family: gateway.slash.platform
+      from: 'Usage: /platform {action} <name>'
+      to: 'Использование: /platform {action} <name>'
+      placeholders:
+        action: .+?
+    - id: hardcoded.slash.platform.1565
+      family: gateway.slash.platform
+      from: 'Unknown platform: {target}'
+      to: 'Неизвестная платформа: {target}'
+      placeholders:
+        target: .+?
+    - id: hardcoded.slash.platform.1569
+      family: gateway.slash.platform
+      from: '{value} is not in the retry queue (it''s either connected or not enabled).'
+      to: '{value} отсутствует в очереди повторных подключений (платформа либо подключена, либо не включена).'
+      placeholders:
+        value: .+?
+    - id: hardcoded.slash.platform.1574
+      family: gateway.slash.platform
+      from: '{value} is already paused.'
+      to: Повторные подключения для {value} уже приостановлены.
+      placeholders:
+        value: .+?
+    - id: hardcoded.slash.platform.1576
+      family: gateway.slash.platform
+      from: ✓ {value} paused. Resume with `/platform resume {value_2}` or `hermes gateway restart` to reset.
+      to: ✓ Повторные подключения для {value} приостановлены. Чтобы возобновить их, выполните `/platform resume {value_2}`;
+        чтобы сбросить состояние, выполните `hermes gateway restart`.
+      placeholders:
+        value: .+?
+        value_2: .+?
+    - id: hardcoded.slash.platform.1583
+      family: gateway.slash.platform
+      from: '{value} is not in the retry queue — nothing to resume.'
+      to: '{value} отсутствует в очереди повторных подключений — возобновлять нечего.'
+      placeholders:
+        value: .+?
+    - id: hardcoded.slash.platform.1588
+      family: gateway.slash.platform
+      from: '{value} is already retrying — no resume needed.'
+      to: Для {value} уже выполняются повторные попытки — возобновление не требуется.
+      placeholders:
+        value: .+?
+    - id: hardcoded.slash.platform.1593
+      family: gateway.slash.platform
+      from: ✓ {value} resumed — retrying on next watcher tick.
+      to: ✓ Повторные подключения для {value} возобновлены — следующая попытка будет выполнена при очередном проходе наблюдателя.
+      placeholders:
+        value: .+?
+    - id: hardcoded.slash.platform.1595
+      family: gateway.slash.platform
+      from: "Usage: /platform <list|pause|resume> [name]\n  /platform list — show platform status\n  /platform pause <name>\
+        \ — stop retrying a failing platform\n  /platform resume <name> — re-queue a paused platform"
+      to: "Использование: /platform <list|pause|resume> [name]\n  /platform list — показать состояние платформ\n  /platform\
+        \ pause <name> — прекратить повторные подключения к недоступной платформе\n  /platform resume <name> — вернуть приостановленную\
+        \ платформу в очередь"
+    - id: hardcoded.slash.refine.2966
+      family: gateway.slash.refine
+      from: Refine unavailable (no session).
+      to: Команда /refine недоступна (нет сессии).
+    - id: hardcoded.slash.refine.2968
+      family: gateway.slash.refine
+      from: Agent is running — wait for the turn to finish, then /refine.
+      to: Агент выполняет задачу — дождитесь завершения текущего хода, затем вызовите /refine.
+    - id: hardcoded.slash.refine.2977
+      family: gateway.slash.refine
+      from: Nothing to refine yet — send a message first.
+      to: Пока нечего анализировать — сначала отправьте сообщение.
+    - id: hardcoded.slash.refine.2981
+      family: gateway.slash.refine
+      from: Nothing to refine yet — the conversation is empty.
+      to: Пока нечего анализировать — диалог пуст.
+    - id: hardcoded.slash.refine.2992
+      family: gateway.slash.refine
+      from: '/refine failed to start: {exc}'
+      to: 'Не удалось запустить /refine: {exc}'
+      placeholders:
+        exc: .*?
+    - id: hardcoded.slash.refine.2994
+      family: gateway.slash.refine
+      from: ⚗ Reviewing this conversation in the background{tail} — any memory/skill updates will be reported when done.
+      to: ⚗ Диалог анализируется в фоновом режиме{tail} — о внесённых изменениях в память или навыки будет сообщено после
+        завершения.
+      placeholders:
+        tail: .*?
+    - id: hardcoded.slash.save.4664
+      family: gateway.slash.save
+      from: No stored messages found for this session ({session_id}).
+      to: Для этой сессии ({session_id}) не найдено сохранённых сообщений.
+      placeholders:
+        session_id: .+?
+    - id: hardcoded.slash.save.4688
+      family: gateway.slash.save
+      from: Export complete.
+      to: Экспорт завершён.
+    - id: hardcoded.slash.save.4689
+      family: gateway.slash.save
+      from: Platform adapter not found to send the document.
+      to: Не найден адаптер платформы для отправки документа.
+    - id: hardcoded.slash.save.4692
+      family: gateway.slash.save
+      from: 'Error exporting session: {e}'
+      to: 'Ошибка при экспорте сессии: {e}'
+      placeholders:
+        e: .*?
+    - id: hardcoded.slash.sessions.4961
+      family: gateway.slash.sessions
+      from: 'Usage: `/sessions search <query>`'
+      to: 'Использование: `/sessions search <query>`'
+    - id: hardcoded.slash.skills.3847
+      family: gateway.slash.skills
+      from: Skill write approval is off (skills.write_approval). Enable it with /skills approval on, then review staged writes
+        here with /skills pending.
+      to: Подтверждение записи навыков отключено (skills.write_approval). Включите его командой /skills approval on, затем
+        просмотрите ожидающие записи здесь с помощью /skills pending.
+    - id: hardcoded.slash.skills.3865
+      family: gateway.slash.skills
+      from: 'Unknown /skills subcommand on this platform. Use: pending, approve <id>, reject <id>, diff <id>, approval <on|off>.
+        (Search/install are CLI-only.)'
+      to: 'Неизвестная подкоманда /skills для этой платформы. Доступны: pending, approve <id>, reject <id>, diff <id>, approval
+        <on|off>. (Поиск и установка доступны только через CLI.)'
+    - id: hardcoded.slash.subgoal.3011
+      family: gateway.slash.subgoal
+      from: No active goal. Set one with /goal <text>.
+      to: Нет активной цели. Задайте её командой /goal <text>.
+    - id: hardcoded.slash.subgoal.3023
+      family: gateway.slash.subgoal
+      from: 'Usage: /subgoal remove <n>'
+      to: 'Использование: /subgoal remove <n>'
+    - id: hardcoded.slash.subgoal.3027
+      family: gateway.slash.subgoal
+      from: '/subgoal remove: <n> must be an integer (1-based index).'
+      to: '/subgoal remove: <n> должен быть целым числом (индекс начинается с 1).'
+    - id: hardcoded.slash.subgoal.3032
+      family: gateway.slash.subgoal
+      from: '✓ Removed subgoal {idx}: {removed}'
+      to: '✓ Подцель {idx} удалена: {removed}'
+      placeholders:
+        idx: .+?
+        removed: .*?
+    - id: hardcoded.slash.subgoal.3041
+      family: gateway.slash.subgoal
+      from: No subgoals to clear.
+      to: Нет подцелей для удаления.
+    - id: hardcoded.slash.subgoal.3048
+      family: gateway.slash.subgoal
+      from: '✓ Added subgoal {idx}: {text}'
+      to: '✓ Добавлена подцель {idx}: {text}'
+      placeholders:
+        idx: .+?
+        text: .*?
+  hardcoded.hermes.cli.commands.py:
+    source_file: hermes_cli/commands.py
+    rules:
+    - id: telegram.command_menu.agents
+      family: telegram.command_menu
+      from: Show active agents and running tasks
+      to: Показать активных агентов и выполняемые задачи
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.approvals
+      family: telegram.command_menu
+      from: Show or set the persistent dangerous-command approval mode
+      to: Показать или изменить постоянный режим подтверждений
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.approve
+      family: telegram.command_menu
+      from: Approve a pending dangerous command
+      to: Подтвердить ожидающую опасную команду
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.background
+      family: telegram.command_menu
+      from: Run a prompt in the background
+      to: Выполнить запрос в фоне
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.blueprint
+      family: telegram.command_menu
+      from: Set up an automation from a blueprint template
+      to: Настроить автоматизацию по шаблону blueprint
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.branch
+      family: telegram.command_menu
+      from: Branch the current session (explore a different path)
+      to: Создать ветку текущего сеанса
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.bundles
+      family: telegram.command_menu
+      from: List skill bundles (aliases /<name> for multiple skills)
+      to: Показать наборы навыков (алиасы /<name>)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.codex_runtime
+      family: telegram.command_menu
+      from: Toggle codex app-server runtime for OpenAI/Codex models
+      to: Переключить codex app-server для моделей OpenAI/Codex
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.commands
+      family: telegram.command_menu
+      from: Browse all commands and skills (paginated)
+      to: Просмотреть все команды и навыки (по страницам)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.compress
+      family: telegram.command_menu
+      from: Compress conversation context (add 'here [N]' to keep recent N turns; --preview shows what would happen)
+      to: Сжать контекст (`here [N]` сохранит N последних ходов; --preview покажет результат)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.context
+      family: telegram.command_menu
+      from: Show detailed context window view with usage gauge, category breakdown, compression stats, and throughput
+      to: Показать подробную статистику окна контекста
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.curator
+      family: telegram.command_menu
+      from: Background skill maintenance (status, run, pin, archive, list-archived)
+      to: Фоновое обслуживание навыков
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.debug
+      family: telegram.command_menu
+      from: Upload debug report (system info + logs) and get shareable links
+      to: Загрузить диагностический отчёт и получить ссылки
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.deny
+      family: telegram.command_menu
+      from: Deny a pending dangerous command (optionally with a reason)
+      to: Отклонить опасную команду (можно указать причину)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.diff
+      family: telegram.command_menu
+      from: Show git changes in the working directory
+      to: Показать изменения Git в рабочем каталоге
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.egress
+      family: telegram.command_menu
+      from: Show Docker egress proxy status
+      to: Показать состояние Docker egress proxy
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.fast
+      family: telegram.command_menu
+      from: Toggle fast mode — OpenAI Priority Processing / Anthropic Fast Mode (Normal/Fast)
+      to: Переключить быстрый режим OpenAI/Anthropic (Normal/Fast)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.footer
+      family: telegram.command_menu
+      from: Toggle gateway runtime-metadata footer on final replies
+      to: Переключить служебный footer в финальных ответах
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.goal
+      family: telegram.command_menu
+      from: Set a standing goal Hermes works on across turns until achieved
+      to: Задать постоянную цель для Hermes до её достижения
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.heartbeat
+      family: telegram.command_menu
+      from: Set a recurring prompt that re-enters this session when idle
+      to: Задать повторяющийся запрос для свободного сеанса
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.help
+      family: telegram.command_menu
+      from: Show available commands
+      to: Показать доступные команды
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.init
+      family: telegram.command_menu
+      from: Generate or update AGENTS.md project instructions from a repo scan
+      to: Создать или обновить AGENTS.md по репозиторию
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.kanban
+      family: telegram.command_menu
+      from: Multi-profile collaboration board (tasks, links, comments)
+      to: Доска совместной работы профилей
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.learn
+      family: telegram.command_menu
+      from: Learn a reusable skill from anything you describe (dirs, URLs, this chat, notes)
+      to: Создать повторно используемый навык из описания
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.loop
+      family: telegram.command_menu
+      from: Re-run a prompt on a recurring interval in this session
+      to: Повторять запрос с заданным интервалом в этом сеансе
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.memory
+      family: telegram.command_menu
+      from: Review pending memory writes / toggle the approval gate
+      to: Проверить записи памяти и режим их подтверждения
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.moa
+      family: telegram.command_menu
+      from: Run one prompt through the default Mixture of Agents preset, then restore your model
+      to: Выполнить запрос через Mixture of Agents и вернуть исходную модель
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.model
+      family: telegram.command_menu
+      from: Switch model (session-scoped; --global to persist)
+      to: Сменить модель (для сеанса; --global сохраняет выбор)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.new
+      family: telegram.command_menu
+      from: Start a new session (fresh session ID + history)
+      to: Начать новый сеанс (новые ID и история)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.pause
+      family: telegram.command_menu
+      from: Pause new work globally (emergency stop); '/pause off' resumes
+      to: Глобально приостановить новую работу; `/pause off` возобновляет
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.personality
+      family: telegram.command_menu
+      from: Set a predefined personality
+      to: Выбрать готовую личность
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.platform
+      family: telegram.command_menu
+      from: Pause, resume, or list a failing gateway platform
+      to: Приостановить, возобновить или показать проблемную платформу
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.profile
+      family: telegram.command_menu
+      from: Show active profile name and home directory
+      to: Показать активный профиль и его домашний каталог
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.queue
+      family: telegram.command_menu
+      from: Queue a prompt for the next turn (doesn't interrupt)
+      to: Поставить запрос в очередь на следующий ход
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.reasoning
+      family: telegram.command_menu
+      from: Manage reasoning effort and display
+      to: Настроить глубину и отображение рассуждений
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.refine
+      family: telegram.command_menu
+      from: Review this conversation now and save lessons to memory/skills
+      to: Разобрать диалог и сохранить выводы в память или навыки
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.reload_mcp
+      family: telegram.command_menu
+      from: Reload MCP servers from config
+      to: Перезагрузить MCP-серверы из конфигурации
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.reload_skills
+      family: telegram.command_menu
+      from: Re-scan ~/.hermes/skills/ for newly installed or removed skills
+      to: Повторно просканировать ~/.hermes/skills/
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.restart
+      family: telegram.command_menu
+      from: Gracefully restart the gateway after draining active runs
+      to: Перезапустить сервис после завершения активных задач
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.resume
+      family: telegram.command_menu
+      from: Resume a previously-named session
+      to: Возобновить ранее именованный сеанс
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.retry
+      family: telegram.command_menu
+      from: Retry the last message (resend to agent)
+      to: Повторить последнее сообщение агенту
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.rollback
+      family: telegram.command_menu
+      from: List or restore filesystem checkpoints (restores keep your hand-edits; --all overrides)
+      to: Показать или восстановить контрольные точки файловой системы
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.save
+      family: telegram.command_menu
+      from: Export the current conversation (bare /save shows usage)
+      to: Экспортировать текущий диалог (/save без аргументов покажет справку)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.sessions
+      family: telegram.command_menu
+      from: Browse and resume previous sessions
+      to: Просмотреть и возобновить предыдущие сеансы
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.sethome
+      family: telegram.command_menu
+      from: Set this chat as the home channel
+      to: Назначить этот чат домашним каналом
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.start
+      family: telegram.command_menu
+      from: Acknowledge platform start pings without a reply
+      to: Подтвердить запуск платформы без ответа
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.status
+      family: telegram.command_menu
+      from: Show session, model, token, and context info
+      to: Показать сведения о сеансе, модели, токенах и контексте
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.steer
+      family: telegram.command_menu
+      from: Inject a message after the next tool call without interrupting
+      to: Передать сообщение после следующего вызова инструмента
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.stop
+      family: telegram.command_menu
+      from: Kill all running background processes
+      to: Остановить все запущенные фоновые процессы
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.subgoal
+      family: telegram.command_menu
+      from: Add or manage extra criteria on the active goal
+      to: Добавить или изменить критерии активной цели
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.title
+      family: telegram.command_menu
+      from: Set a title for the current session
+      to: Задать название текущего сеанса
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.topic
+      family: telegram.command_menu
+      from: Enable or inspect Telegram DM topic sessions
+      to: Включить или проверить сеансы в темах Telegram DM
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.topup
+      family: telegram.command_menu
+      from: Show your Nous balance and manage billing on the portal
+      to: Показать баланс Nous и открыть управление оплатой
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.undo
+      family: telegram.command_menu
+      from: Back up N user turns and re-prompt (default 1)
+      to: Откатить N ходов пользователя и повторить запрос (по умолчанию 1)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.update
+      family: telegram.command_menu
+      from: Update Hermes Agent to the latest version
+      to: Обновить Hermes Agent до последней версии
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.usage
+      family: telegram.command_menu
+      from: Show token usage and rate limits; `reset` redeems a banked Codex limit reset
+      to: Показать расход токенов и лимиты; `reset` применяет сброс лимита Codex
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.voice
+      family: telegram.command_menu
+      from: Toggle voice mode
+      to: Переключить голосовой режим
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.whoami
+      family: telegram.command_menu
+      from: Show your slash command access (admin / user)
+      to: Показать ваш доступ к slash-командам (admin / user)
+      boundaries:
+      - telegram.BotCommand.description
+    - id: telegram.command_menu.yolo
+      family: telegram.command_menu
+      from: Toggle YOLO mode (skip all dangerous command approvals)
+      to: Переключить YOLO-режим без подтверждений опасных команд
+      boundaries:
+      - telegram.BotCommand.description
+  hardcoded.locales.en.yaml.locales.ru.yaml:
+    source_file: locales/en.yaml + locales/ru.yaml
+    rules:
+    - id: locale.gateway.goal.resumed.current
+      family: gateway.goal
+      from: '▶ Goal resumed: {goal}
+
+        Continuing now — I''ll take the next step right away.'
+      to: '▶ Цель возобновлена: {goal}
+
+        Продолжаю прямо сейчас — немедленно сделаю следующий шаг.'
+      placeholders:
+        goal: .*?
+  hardcoded.plugins.platforms.telegram.adapter.py:
+    source_file: plugins/platforms/telegram/adapter.py
+    rules:
+    - id: hardcoded.telegram.choice-picker-expired
+      family: telegram.picker
+      from: Picker expired.
+      to: Меню выбора устарело.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.choice-picker-expired-rerun
+      family: telegram.picker
+      from: Picker expired — run the command again.
+      to: Меню выбора устарело — выполните команду ещё раз.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.choice-picker-invalid-selection
+      family: telegram.picker
+      from: Invalid selection.
+      to: Недопустимый вариант.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.choice-picker-unauthorized
+      family: telegram.picker
+      from: ⛔ You are not authorized to change this setting.
+      to: ⛔ У вас нет прав для изменения этой настройки.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.clarify-awaiting-response-state
+      family: telegram.edit_state
+      from: '❓ {value}
+
+
+        <i>Awaiting typed response from {user}…</i>'
+      to: '❓ {value}
+
+
+        <i>Ожидается ответ от {user}…</i>'
+      placeholders:
+        value: .*?
+        user: .*?
+    - id: hardcoded.telegram.clarify-expired-alert
+      family: telegram.callback
+      from: ⚠️ This prompt expired — please /retry.
+      to: ⚠️ Этот запрос устарел — используйте /retry.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.clarify-expired-state
+      family: telegram.edit_state
+      from: '❓ {value}
+
+
+        <i>⚠️ This question expired or the session reset — please /retry.</i>'
+      to: '❓ {value}
+
+
+        <i>⚠️ Этот вопрос устарел или сессия была сброшена — используйте /retry.</i>'
+      placeholders:
+        value: .*?
+    - id: hardcoded.telegram.clarify-invalid-choice
+      family: telegram.callback
+      from: Invalid choice.
+      to: Недопустимый вариант.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.clarify-type-answer
+      family: telegram.callback
+      from: ✏️ Type your answer in the chat.
+      to: ✏️ Введите ответ в чате.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail-triage-invalid-data
+      family: telegram.callback
+      from: Invalid gmail-triage data.
+      to: Недопустимые данные gmail-triage.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail-triage-unauthorized
+      family: telegram.callback
+      from: ⛔ You are not authorized to act on this email.
+      to: ⛔ У вас нет прав для выполнения действий с этим письмом.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail-triage-unknown-verb
+      family: telegram.callback
+      from: 'Unknown verb: {verb}'
+      to: 'Неизвестное действие: {verb}'
+      placeholders:
+        verb: .*?
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail.archived
+      family: telegram.gmail_triage
+      from: ✓ archived
+      to: ✓ письмо архивировано
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.by_user_line
+      family: telegram.gmail_triage
+      from: — {label} by {user}
+      to: '— {label}. Пользователь: {user}'
+      placeholders:
+        label: .+?
+        user: .+?
+      boundaries:
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.drafted_reply
+      family: telegram.gmail_triage
+      from: ✓ drafted reply
+      to: ✓ создан черновик ответа
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.error
+      family: telegram.gmail_triage
+      from: '❌ {verb} error: {error}'
+      to: '❌ Ошибка действия {verb}: {error}'
+      placeholders:
+        verb: .+?
+        error: .+?
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail.failed
+      family: telegram.gmail_triage
+      from: '❌ {verb} failed: {detail}'
+      to: '❌ Действие {verb} завершилось ошибкой: {detail}'
+      placeholders:
+        verb: .+?
+        detail: .+?
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail.marked_spam
+      family: telegram.gmail_triage
+      from: ✓ marked spam
+      to: ✓ помечено как спам
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.marked_vip
+      family: telegram.gmail_triage
+      from: ✓ marked VIP
+      to: ✓ отправитель отмечен как VIP
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.marked_vip_domain
+      family: telegram.gmail_triage
+      from: ✓ marked VIP domain
+      to: ✓ домен отмечен как VIP
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.muted
+      family: telegram.gmail_triage
+      from: ✓ muted
+      to: ✓ отправитель заглушён
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.muted_domain
+      family: telegram.gmail_triage
+      from: ✓ muted domain
+      to: ✓ домен заглушён
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.script_missing
+      family: telegram.gmail_triage
+      from: ❌ {script_name} missing
+      to: ❌ Скрипт {script_name} не найден
+      placeholders:
+        script_name: .+?
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail.sent_draft
+      family: telegram.gmail_triage
+      from: ✓ sent draft
+      to: ✓ черновик отправлен
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.timeout
+      family: telegram.gmail_triage
+      from: ❌ {verb} timed out
+      to: ❌ Время ожидания действия {verb} истекло
+      placeholders:
+        verb: .+?
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.gmail.trusted
+      family: telegram.gmail_triage
+      from: ✓ trusted
+      to: ✓ отправитель добавлен в доверенные
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.gmail.trusted_domain
+      family: telegram.gmail_triage
+      from: ✓ trusted domain
+      to: ✓ домен добавлен в доверенные
+      boundaries:
+      - telegram.CallbackQuery.answer
+      - telegram.CallbackQuery.edit_message_text
+    - id: hardcoded.telegram.model-picker-invalid-index
+      family: telegram.picker
+      from: Invalid model index.
+      to: Недопустимый индекс модели.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.model-picker-provider-not-found
+      family: telegram.picker
+      from: Provider not found.
+      to: Провайдер не найден.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.update-answer-sent
+      family: telegram.callback
+      from: Sent '{answer}' to the update process.
+      to: Ответ '{answer}' отправлен процессу обновления.
+      placeholders:
+        answer: .*?
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.update-answer-unauthorized
+      family: telegram.callback
+      from: ⛔ You are not authorized to answer update prompts.
+      to: ⛔ У вас нет прав для ответа на запросы обновления.
+      boundaries:
+      - telegram.CallbackQuery.answer

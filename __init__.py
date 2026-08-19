@@ -7,7 +7,10 @@ from pathlib import Path
 from typing import Any
 
 from .reporter import JsonlReporter
-from .runtime import RuntimeState, activate_from_gateway_event
+from .runtime import (
+    RuntimeState,
+    activate_from_gateway_event,
+)
 from .translator import Catalog
 
 
