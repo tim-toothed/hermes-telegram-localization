@@ -1395,6 +1395,72 @@ groups:
       family: telegram
       from: ⚙ *Model Configuration*
       to: ⚙ *Настройка модели*
+    - id: telegram.model_picker.screen.providers
+      family: telegram.model_picker
+      from: '⚙ *Model Configuration*
+
+
+        Current model: `{model}`
+
+        Provider: {provider}
+
+
+        Select a provider:{page_info}'
+      to: '⚙ *Настройка модели*
+
+
+        Текущая модель: `{model}`
+
+        Провайдер: {provider}
+
+
+        Выберите провайдера:{page_info}'
+      placeholders:
+        model: .+?
+        provider: .+?
+        page_info: .*?
+      boundaries:
+      - TelegramAdapter.format_message
+    - id: telegram.model_picker.screen.models
+      family: telegram.model_picker
+      from: '⚙ *Model Configuration*
+
+
+        Provider: *{provider}*{page_info}
+
+        Select a model:{extra}'
+      to: '⚙ *Настройка модели*
+
+
+        Провайдер: *{provider}*{page_info}
+
+        Выберите модель:{extra}'
+      placeholders:
+        provider: .+?
+        page_info: .*?
+        extra: .*?
+      boundaries:
+      - TelegramAdapter.format_message
+    - id: telegram.model_picker.screen.provider_family
+      family: telegram.model_picker
+      from: '⚙ *Model Configuration*
+
+
+        Provider family: *{provider_family}*
+
+
+        Select a provider:'
+      to: '⚙ *Настройка модели*
+
+
+        Семейство провайдеров: *{provider_family}*
+
+
+        Выберите провайдера:'
+      placeholders:
+        provider_family: .+?
+      boundaries:
+      - TelegramAdapter.format_message
   run.agent.py:
     source_file: run_agent.py
     rules:
