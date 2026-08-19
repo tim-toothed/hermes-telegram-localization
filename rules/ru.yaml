@@ -1,0 +1,1452 @@
+# Generated from the factual DESKTOP-2 en/ru catalogs.
+# Rules are grouped by the Hermes source module that emits them.
+version: 1
+locale: ru
+groups:
+  agent.account.usage.py:
+    source_file: agent/account_usage.py
+    rules:
+    - id: account_usage.label_api_key_quota
+      family: account_usage
+      from: API key quota
+      to: Квота API-ключа
+    - id: account_usage.label_subscription
+      family: account_usage
+      from: Subscription
+      to: Подписка
+    - id: account_usage.provider
+      family: account_usage
+      from: 'Provider: {provider}'
+      to: 'Провайдер: {provider}'
+      placeholders:
+        provider: .+?
+    - id: account_usage.provider_plan
+      family: account_usage
+      from: 'Provider: {provider} ({plan})'
+      to: 'Провайдер: {provider} ({plan})'
+      placeholders:
+        provider: .+?
+        plan: .+?
+    - id: account_usage.reset_days_hours
+      family: account_usage
+      from: in {days}d {hours}h ({timestamp})
+      to: через {days} д {hours} ч ({timestamp})
+      placeholders:
+        days: .+?
+        hours: .+?
+        timestamp: .+?
+    - id: account_usage.reset_hours_minutes
+      family: account_usage
+      from: in {hours}h {minutes}m ({timestamp})
+      to: через {hours} ч {minutes} мин ({timestamp})
+      placeholders:
+        hours: .+?
+        minutes: '[0-9][0-9.,]*'
+        timestamp: .+?
+    - id: account_usage.reset_minutes
+      family: account_usage
+      from: in {minutes}m ({timestamp})
+      to: через {minutes} мин ({timestamp})
+      placeholders:
+        minutes: '[0-9][0-9.,]*'
+        timestamp: .+?
+    - id: account_usage.reset_now
+      family: account_usage
+      from: now ({timestamp})
+      to: сейчас ({timestamp})
+      placeholders:
+        timestamp: .+?
+    - id: account_usage.title_account_limits
+      family: account_usage
+      from: Account limits
+      to: Ограничения аккаунта
+    - id: account_usage.title_nous_credits
+      family: account_usage
+      from: Nous credits
+      to: Кредиты Nous
+    - id: account_usage.unavailable
+      family: account_usage
+      from: 'Unavailable: {reason}'
+      to: 'Недоступно: {reason}'
+      placeholders:
+        reason: .+?
+    - id: account_usage.window_unavailable
+      family: account_usage
+      from: '{label}: unavailable'
+      to: '{label}: недоступно'
+      placeholders:
+        label: .+?
+    - id: account_usage.window_usage
+      family: account_usage
+      from: '{label}: {remaining}% remaining ({used}% used)'
+      to: '{label}: осталось {remaining}% (использовано {used}%)'
+      placeholders:
+        label: .+?
+        remaining: '[0-9][0-9.,]*'
+        used: '[0-9][0-9.,]*'
+  agent.chat.completion.helpers.py:
+    source_file: agent/chat_completion_helpers.py
+    rules:
+    - id: provider_progress.aborting_call
+      family: provider_progress
+      from: Aborting call.
+      to: Останавливаю запрос.
+    - id: provider_progress.auto_reconnect
+      family: provider_progress
+      from: ; auto-reconnect at {seconds}s
+      to: ; автоматическое переподключение после {seconds} с ожидания
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: provider_progress.bedrock_no_events
+      family: provider_progress
+      from: '⚠️ No events from Bedrock for {seconds}s (model: {model}). Aborting...'
+      to: '⚠️ Bedrock не отвечает {seconds} с (модель: {model}). Останавливаю запрос…'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        model: .+?
+    - id: provider_progress.codex_no_events
+      family: provider_progress
+      from: '⚠️ Codex stream sent no events for {seconds}s after first byte (model: {model}). Reconnecting.'
+      to: '⚠️ Поток Codex не передаёт данные {seconds} с после начала ответа (модель: {model}). Переподключаюсь.'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        model: .+?
+    - id: provider_progress.fallback_switched
+      family: provider_progress
+      from: '🔄 Switched to fallback model: {old_model} via {old_provider} → {new_model} via {new_provider}'
+      to: '🔄 Переключился на резервную модель: {old_model} через {old_provider} → {new_model} через {new_provider}'
+      placeholders:
+        old_model: .+?
+        old_provider: .+?
+        new_model: .+?
+        new_provider: .+?
+    - id: provider_progress.no_first_byte
+      family: provider_progress
+      from: '⚠️ No first byte from provider in {seconds}s (codex stream, model: {model}). Reconnecting.{hint_suffix}'
+      to: '⚠️ Провайдер не начал передачу ответа за {seconds} с (поток Codex, модель: {model}). Переподключаюсь.{hint_suffix}'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        model: .+?
+        hint_suffix: .+?
+    - id: provider_progress.no_output_reconnecting
+      family: provider_progress
+      from: ⚠ no output from provider for {seconds}s — reconnecting...
+      to: ⚠ Провайдер не передаёт данные {seconds} с — переподключаюсь…
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: provider_progress.no_response_reconnecting
+      family: provider_progress
+      from: ⚠ no response from provider in {seconds}s — reconnecting...
+      to: ⚠ Провайдер не отвечает {seconds} с — переподключаюсь…
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: provider_progress.nonstream_no_response
+      family: provider_progress
+      from: '⚠️ No response from provider for {seconds}s (non-streaming, model: {model}). {action}'
+      to: '⚠️ Провайдер не отвечает уже {seconds} с (без потока, модель: {model}). {action}'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        model: .+?
+        action: .+?
+    - id: provider_progress.primary_fallback
+      family: provider_progress
+      from: '🔄 Primary model failed — switching to fallback: {model} via {provider}'
+      to: '🔄 Основная модель не смогла выполнить запрос — переключаюсь на резервную: {model} через {provider}'
+      placeholders:
+        model: .+?
+        provider: .+?
+    - id: provider_progress.stream_no_response
+      family: provider_progress
+      from: '⚠️ No response from provider for {seconds}s (model: {model}, context: ~{tokens} tokens). Reconnecting...'
+      to: '⚠️ Провайдер не отвечает {seconds} с (модель: {model}, контекст: около {tokens} токенов). Переподключаюсь…'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        model: .+?
+        tokens: '[0-9][0-9.,]*'
+    - id: provider_progress.waiting_no_output
+      family: provider_progress
+      from: ⏳ waiting on {model} — {seconds}s with no output yet (provider may be slow or overloaded, or the model is thinking{recovery})
+      to: '⏳ Жду ответ модели {model}: данных нет {seconds} с. Провайдер может отвечать медленно, быть перегружен или модель
+        ещё формирует ответ{recovery}.'
+      placeholders:
+        model: .+?
+        seconds: '[0-9][0-9.,]*'
+        recovery: .*?
+    - id: provider_progress.waiting_no_response
+      family: provider_progress
+      from: ⏳ waiting on {model} — {seconds}s with no response yet (provider may be slow or overloaded{recovery})
+      to: '⏳ Жду ответ модели {model}: данных нет {seconds} с. Провайдер может отвечать медленно или быть перегружен{recovery}.'
+      placeholders:
+        model: .+?
+        seconds: '[0-9][0-9.,]*'
+        recovery: .*?
+  agent.display.py:
+    source_file: agent/display.py
+    rules:
+    - id: tool_progress.live_status
+      family: tool_progress
+      from: is {action}
+      to: '{action}'
+      placeholders:
+        action: .+?
+    - id: tool_progress.verbs.browser_click
+      family: tool_progress
+      from: Clicking
+      to: Нажимаю
+    - id: tool_progress.verbs.browser_navigate
+      family: tool_progress
+      from: Browsing
+      to: Открываю страницу
+    - id: tool_progress.verbs.cronjob
+      family: tool_progress
+      from: Scheduling
+      to: Управляю расписанием
+    - id: tool_progress.verbs.delegate_task
+      family: tool_progress
+      from: Delegating
+      to: Передаю задачу агенту
+    - id: tool_progress.verbs.execute_code
+      family: tool_progress
+      from: Running code
+      to: Выполняю код
+    - id: tool_progress.verbs.image_generate
+      family: tool_progress
+      from: Generating image
+      to: Создаю изображение
+    - id: tool_progress.verbs.memory
+      family: tool_progress
+      from: Updating memory
+      to: Обновляю память
+    - id: tool_progress.verbs.search_files
+      family: tool_progress
+      from: Searching files
+      to: Ищу в файлах
+    - id: tool_progress.verbs.session_search
+      family: tool_progress
+      from: Searching past sessions
+      to: Ищу в истории диалогов
+    - id: tool_progress.verbs.skill_manage
+      family: tool_progress
+      from: Updating skill
+      to: Обновляю навык
+    - id: tool_progress.verbs.skill_view
+      family: tool_progress
+      from: Reading skill
+      to: Изучаю навык
+    - id: tool_progress.verbs.skills_list
+      family: tool_progress
+      from: Listing skills
+      to: Получаю список навыков
+    - id: tool_progress.verbs.text_to_speech
+      family: tool_progress
+      from: Generating speech
+      to: Озвучиваю текст
+    - id: tool_progress.verbs.todo
+      family: tool_progress
+      from: Updating tasks
+      to: Обновляю список задач
+    - id: tool_progress.verbs.video_generate
+      family: tool_progress
+      from: Generating video
+      to: Создаю видео
+    - id: tool_progress.verbs.vision_analyze
+      family: tool_progress
+      from: Looking at the image
+      to: Анализирую изображение
+    - id: tool_progress.verbs.web_search
+      family: tool_progress
+      from: Searching the web
+      to: Ищу в интернете
+  agent.onboarding.py:
+    source_file: agent/onboarding.py
+    rules:
+    - id: runtime_status.hint_tool_progress
+      family: runtime_status
+      from: '💡 First-time tip: this tool took a while, so progress is shown step by step. If this is noisy, use `/verbose`
+        to cycle modes (all → new → off). This notice will not appear again.'
+      to: '💡 Первая подсказка: инструмент выполняется долго, поэтому прогресс показывается по шагам. Если сообщений слишком
+        много, `/verbose` переключает режимы (all → new → off). Подсказка больше не появится.'
+  cron.scheduler.py:
+    source_file: cron/scheduler.py
+    rules:
+    - id: runtime_warning.cron_blocked_config
+      family: runtime_warning
+      from: '⛔ Cron ''{job_name}'' was blocked by configuration validation; no LLM call was made: {error} This alert is sent
+        once. The job remains blocked until the configuration is fixed.'
+      to: '⛔ Задача Cron «{job_name}» заблокирована проверкой конфигурации; модель не запускалась: {error} Это уведомление
+        отправляется один раз. Задача останется заблокированной до исправления конфигурации.'
+      placeholders:
+        job_name: .+?
+        error: .+?
+    - id: runtime_warning.cron_drift_consumed
+      family: runtime_warning
+      from: This finite one-shot job is consumed; create a new one-shot job for a future time with an explicit provider and
+        model.
+      to: Эта одноразовая задача уже израсходована; создайте новую на будущее время и явно укажите провайдера и модель.
+    - id: runtime_warning.cron_drift_pin
+      family: runtime_warning
+      from: 'Pin the job explicitly on the Hermes host: `{command}`.'
+      to: 'Зафиксируйте параметры задачи на хосте Hermes: `{command}`.'
+      placeholders:
+        command: .+?
+    - id: runtime_warning.cron_drift_prevented
+      family: runtime_warning
+      from: ⚠️ Cron '{job_name}' was skipped before inference to prevent unintended spend. {remediation}
+      to: ⚠️ Задача Cron «{job_name}» пропущена до обращения к модели, чтобы избежать непредвиденных расходов. {remediation}
+      placeholders:
+        job_name: .+?
+        remediation: .+?
+    - id: runtime_warning.cron_drift_skipped
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' was skipped: {error}'
+      to: '⚠️ Задача Cron «{job_name}» пропущена: {error}'
+      placeholders:
+        job_name: .+?
+        error: .+?
+    - id: runtime_warning.cron_fallback_exhausted
+      family: runtime_warning
+      from: The fallback chain was exhausted or unavailable.
+      to: Цепочка резервных провайдеров исчерпана или недоступна.
+    - id: runtime_warning.cron_generic
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: {error}'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: {error}'
+      placeholders:
+        job_name: .+?
+        error: .+?
+    - id: runtime_warning.cron_missing_skills
+      family: runtime_warning
+      from: '⚠️ Skills were not found and were skipped: {skills}'
+      to: '⚠️ Скиллы не найдены и пропущены: {skills}'
+      placeholders:
+        skills: .+?
+    - id: runtime_warning.cron_monitor_failed
+      family: runtime_warning
+      from: '⚠ Cron monitor ''{job_name}'': source check failed
+
+
+        {error}
+
+
+        Time: {time}'
+      to: '⚠ Cron monitor «{job_name}»: ошибка проверки источника
+
+
+        {error}
+
+
+        Время: {time}'
+      placeholders:
+        job_name: .+?
+        error: .+?
+        time: .+?
+    - id: runtime_warning.cron_no_fallback
+      family: runtime_warning
+      from: No fallback chain is configured. Add one with `hermes fallback add` or set `cron.model` and `cron.model_provider`
+        in `config.yaml`.
+      to: Цепочка резервных провайдеров не настроена. Добавьте её командой `hermes fallback add` или задайте `cron.model`
+        и `cron.model_provider` в `config.yaml`.
+    - id: runtime_warning.cron_provider_auth
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: provider authentication was rejected. Check OAuth/credentials and `/usage`. Full
+        details were saved in the Cron output.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: провайдер отклонил авторизацию. Проверьте OAuth/credentials и
+        `/usage`. Подробности сохранены в выводе Cron.'
+      placeholders:
+        job_name: .+?
+    - id: runtime_warning.cron_provider_limit
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: provider {reason}. {fallback} Full details were saved in the Cron output.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: провайдер сообщил про {reason}. {fallback} Подробности сохранены
+        в выводе Cron.'
+      placeholders:
+        job_name: .+?
+        reason: .+?
+        fallback: .+?
+    - id: runtime_warning.cron_provider_timeout
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: the provider timed out. {fallback} Full details were saved in the Cron output.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: провайдер не ответил вовремя. {fallback} Подробности сохранены
+        в выводе Cron.'
+      placeholders:
+        job_name: .+?
+        fallback: .+?
+    - id: runtime_warning.cron_reason_quota
+      family: runtime_warning
+      from: quota limit
+      to: лимит квоты
+    - id: runtime_warning.cron_reason_rate
+      family: runtime_warning
+      from: request rate limit
+      to: временное ограничение частоты запросов
+    - id: runtime_warning.cron_reason_weekly
+      family: runtime_warning
+      from: weekly usage limit
+      to: недельный лимит использования
+    - id: runtime_warning.cron_script_timeout
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: the script timed out. No model was invoked. Full details were saved in the Cron
+        output.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: превышено время выполнения скрипта. Модель не запускалась. Подробности
+        сохранены в выводе Cron.'
+      placeholders:
+        job_name: .+?
+    - id: runtime_warning.cron_stalled
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: the job itself stalled; no tool/API activity occurred during the configured inactivity
+        window. This is not a provider or fallback-chain issue. Check what the job was doing when it stopped. Full details
+        were saved in the Cron output.'
+      to: '⚠️ Задача Cron «{job_name}» зависла: в течение настроенного интервала не было активности инструментов/API. Это
+        не ошибка провайдера или резервной цепочки. Проверьте, на какой операции остановилась задача. Подробности сохранены
+        в выводе Cron.'
+      placeholders:
+        job_name: .+?
+    - id: runtime_warning.cron_watchdog_failed
+      family: runtime_warning
+      from: '⚠ Cron watchdog ''{job_name}'': script execution failed
+
+
+        {error}
+
+
+        Time: {time}'
+      to: '⚠ Cron watchdog «{job_name}»: ошибка выполнения скрипта
+
+
+        {error}
+
+
+        Время: {time}'
+      placeholders:
+        job_name: .+?
+        error: .+?
+        time: .+?
+    - id: runtime_warning.cron_workdir_lock
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: the scheduler working-directory lock could not be acquired because another job
+        held it too long. This is not a provider or fallback-chain issue. Stagger the schedules or remove the holder''s `workdir`.
+        Full details were saved in the Cron output.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: не удалось получить блокировку рабочего каталога, потому что другая
+        задача удерживала её слишком долго. Это не ошибка провайдера или резервной цепочки. Разнесите расписания или уберите
+        `workdir` у удерживающей задачи. Подробности сохранены в выводе Cron.'
+      placeholders:
+        job_name: .+?
+  gateway.platforms.base.py:
+    source_file: gateway/platforms/base.py
+    rules:
+    - id: runtime_warning.delivery_audio
+      family: runtime_warning
+      from: ⚠️ Couldn't deliver the audio attachment.
+      to: ⚠️ Не удалось доставить аудиофайл.
+    - id: runtime_warning.delivery_file
+      family: runtime_warning
+      from: ⚠️ Couldn't deliver the file attachment.
+      to: ⚠️ Не удалось доставить файл.
+    - id: runtime_warning.delivery_file_named
+      family: runtime_warning
+      from: ⚠️ Couldn't deliver the file attachment ({file_name}).
+      to: ⚠️ Не удалось доставить файл ({file_name}).
+      placeholders:
+        file_name: .+?
+    - id: runtime_warning.delivery_image
+      family: runtime_warning
+      from: ⚠️ Couldn't deliver the image attachment.
+      to: ⚠️ Не удалось доставить изображение.
+    - id: runtime_warning.delivery_message
+      family: runtime_warning
+      from: ⚠️ Message delivery failed after multiple attempts. Please try again — your request was processed but the response
+        could not be sent.
+      to: ⚠️ Не удалось доставить ответ после нескольких попыток. Запрос обработан, но ответ не был отправлен. Попробуйте
+        ещё раз.
+    - id: runtime_warning.delivery_video
+      family: runtime_warning
+      from: ⚠️ Couldn't deliver the video attachment.
+      to: ⚠️ Не удалось доставить видеофайл.
+  gateway.run.py:
+    source_file: gateway/run.py
+    rules:
+    - id: gateway.provider_error.auth
+      family: gateway
+      from: '⚠️ **Could not get a response from the provider.** Possible causes: a temporary failure, an expired authorization
+        session, or an exhausted subscription limit. Check `/usage` and retry. If the error persists, refresh OAuth/credentials.
+        Technical details were saved in the Hermes service logs.'
+      to: '⚠️ **Не удалось получить ответ от провайдера.** Возможные причины: временный сбой, истёкшая авторизация или исчерпан
+        лимит подписки. Проверьте `/usage` и повторите запрос. Если ошибка сохраняется, обновите OAuth/credentials. Технические
+        подробности сохранены в журналах сервиса Hermes.'
+    - id: gateway.provider_error.billing
+      family: gateway
+      from: '⚠️ **The provider limit is exhausted.** Check `/usage`: if the limit is temporary, wait for it to reset; if credits
+        are depleted, top up the balance. The request was not completed.'
+      to: '⚠️ **Лимит провайдера исчерпан.** Проверьте `/usage`: если лимит временный — дождитесь его сброса; если закончились
+        кредиты — пополните баланс. Запрос не выполнен.'
+    - id: gateway.provider_error.billing_unverified
+      family: gateway
+      from: ⚠️ **The provider did not complete the request.** The extra-usage limit may be exhausted, or the request may have
+        been rejected by the provider filter. Check `/usage` and try rephrasing the request.
+      to: ⚠️ **Провайдер не выполнил запрос.** Возможно, исчерпан дополнительный лимит либо запрос отклонён фильтром провайдера.
+        Проверьте `/usage` и попробуйте переформулировать запрос.
+    - id: gateway.provider_error.connection
+      family: gateway
+      from: ⚠️ **The model server is not responding.** Check the configured endpoint or try again later. The request was not
+        completed.
+      to: ⚠️ **Сервер модели не отвечает.** Проверьте настроенный endpoint или попробуйте позже. Запрос не выполнен.
+    - id: gateway.provider_error.empty_after_tools
+      family: gateway
+      from: ⚠️ **The model returned no answer after processing tool results.** Try the request again or switch models with
+        `/model`.
+      to: ⚠️ **Модель не вернула ответ после обработки результатов инструментов.** Повторите запрос или переключите модель
+        через `/model`.
+    - id: gateway.provider_error.failed_after_retries
+      family: gateway
+      from: ⚠️ **The provider did not respond after repeated attempts.** Try again later or switch models with `/model`. Technical
+        details were saved in the Hermes service logs.
+      to: ⚠️ **Провайдер не ответил после повторных попыток.** Попробуйте позже или переключите модель через `/model`. Технические
+        подробности сохранены в журналах сервиса Hermes.
+    - id: gateway.provider_error.policy
+      family: gateway
+      from: ⚠️ **The provider rejected the request.** Try rephrasing it. Technical details were saved in the Hermes service
+        logs.
+      to: ⚠️ **Провайдер отклонил запрос.** Попробуйте переформулировать его. Технические подробности сохранены в журналах
+        сервиса Hermes.
+    - id: gateway.provider_error.rate_limit
+      family: gateway
+      from: ⏱️ **The provider temporarily limited request frequency.** Wait a moment and try again.
+      to: ⏱️ **Провайдер временно ограничил частоту запросов.** Подождите и повторите запрос.
+    - id: gateway.reset.confirm_new_detail
+      family: gateway
+      from: A new session will be created. The current conversation will remain available in session history.
+      to: Будет создан новый сеанс. Текущий диалог сохранится в истории сеансов.
+    - id: gateway.reset.confirm_undo_many_detail
+      family: gateway
+      from: This removes the last {count} user turns from history.
+      to: 'Последние ходы пользователя будут удалены из истории: {count}.'
+      placeholders:
+        count: '[0-9][0-9.,]*'
+    - id: gateway.reset.confirm_undo_one_detail
+      family: gateway
+      from: This removes the last user/assistant exchange from history.
+      to: Последняя пара сообщений пользователя и ассистента будет удалена из истории.
+    - id: gateway.reset.context_source_default
+      family: gateway
+      from: default — set model.context_length in config to override
+      to: по умолчанию — задайте model.context_length в config.yaml, чтобы переопределить
+    - id: gateway.reset.context_source_detected
+      family: gateway
+      from: detected
+      to: определено автоматически
+    - id: gateway.reset.info_context
+      family: gateway
+      from: '◆ Context: {context} tokens ({source})'
+      to: '◆ Контекст: {context} токенов ({source})'
+      placeholders:
+        context: .+?
+        source: .+?
+    - id: gateway.reset.info_endpoint
+      family: gateway
+      from: '◆ Endpoint: {endpoint}'
+      to: '◆ Адрес: {endpoint}'
+      placeholders:
+        endpoint: .+?
+    - id: gateway.reset.info_model
+      family: gateway
+      from: '◆ Model: `{model}`'
+      to: '◆ Модель: `{model}`'
+      placeholders:
+        model: .+?
+    - id: gateway.reset.info_provider
+      family: gateway
+      from: '◆ Provider: {provider}'
+      to: '◆ Провайдер: {provider}'
+      placeholders:
+        provider: .+?
+    - id: gateway.restart.in_progress
+      family: gateway
+      from: ⏳ Gateway restart already in progress...
+      to: ⏳ Перезапуск сервиса Hermes уже выполняется...
+    - id: gateway.restart.restarting
+      family: gateway
+      from: ♻ Restarting gateway. If you aren't notified within 60 seconds, restart from the console with `hermes gateway
+        restart`.
+      to: ♻ Перезапуск сервиса Hermes. Если уведомление не придёт в течение 60 секунд, перезапустите его из консоли командой
+        `hermes gateway restart`.
+    - id: gateway.slash_confirm.prompt
+      family: gateway
+      from: '⚠️ **Confirm /{command}**
+
+
+        {detail}
+
+
+        Choose:
+
+        • **Approve Once** — proceed this time only
+
+        • **Always Approve** — proceed and silence this prompt permanently
+
+        • **Cancel** — keep current conversation'
+      to: '⚠️ **Подтверждение /{command}**
+
+
+        {detail}
+
+
+        Выберите:
+
+        • **Подтвердить один раз** — выполнить только сейчас
+
+        • **Подтверждать всегда** — выполнить и больше не показывать этот запрос
+
+        • **Отмена** — сохранить текущий диалог'
+      placeholders:
+        command: .+?
+        detail: .*?
+    - id: gateway.slash_confirm.text_fallback
+      family: gateway
+      from: Reply `{prefix}approve`, `{prefix}always`, or `{prefix}cancel`.
+      to: Ответьте `{prefix}approve`, `{prefix}always` или `{prefix}cancel`.
+      placeholders:
+        prefix: .*?
+    - id: gateway.status.context
+      family: gateway
+      from: '**Context:** {used} / {total} ({pct}%)'
+      to: '**Контекст:** {used} / {total} ({pct}%)'
+      placeholders:
+        used: '[0-9][0-9.,]*'
+        total: '[0-9][0-9.,]*'
+        pct: .+?
+    - id: gateway.status.context_used
+      family: gateway
+      from: '**Context:** ~{used} tokens'
+      to: '**Контекст:** ~{used} токенов'
+      placeholders:
+        used: '[0-9][0-9.,]*'
+    - id: gateway.status.model
+      family: gateway
+      from: '**Model:** `{model}`'
+      to: '**Модель:** `{model}`'
+      placeholders:
+        model: .+?
+    - id: gateway.status.model_provider
+      family: gateway
+      from: '**Model:** `{model}` ({provider})'
+      to: '**Модель:** `{model}` ({provider})'
+      placeholders:
+        model: .+?
+        provider: .+?
+    - id: gateway.status.tokens
+      family: gateway
+      from: '**Lifetime tokens billed:** {tokens} _(not your current context size; use `/context`)_'
+      to: '**Всего использовано токенов:** {tokens} _(это не размер текущего контекста; используйте `/context`)_'
+      placeholders:
+        tokens: '[0-9][0-9.,]*'
+    - id: gateway.stop.online
+      family: gateway
+      from: ♻️ Gateway online — Hermes is back and ready.
+      to: ♻️ Сервис Hermes запущен и снова готов к работе.
+    - id: gateway.stop.restarted_ok
+      family: gateway
+      from: ♻ Gateway restarted successfully. Your session continues.
+      to: ♻ Сервис Hermes успешно перезапущен. Ваш сеанс продолжается.
+    - id: gateway.stop.restarting_notification
+      family: gateway
+      from: ⚠️ Gateway restarting — Your current task will be interrupted. Send any message after restart and I'll try to
+        resume where you left off.
+      to: ⚠️ Сервис Hermes перезапускается — ваша текущая задача будет прервана. Отправьте любое сообщение после перезапуска,
+        и я попробую возобновить с места остановки.
+    - id: gateway.stop.shutting_down
+      family: gateway
+      from: ⚠️ Gateway shutting down — Your current task will be interrupted.
+      to: ⚠️ Сервис Hermes завершает работу — ваша текущая задача будет прервана.
+    - id: gateway.whoami.scope_group
+      family: gateway
+      from: group/channel
+      to: группа/канал
+    - id: runtime_status.api_completed
+      family: runtime_status
+      from: 'model request #{number} completed'
+      to: запрос к модели №{number} завершён
+      placeholders:
+        number: .+?
+    - id: runtime_status.api_recovery
+      family: runtime_status
+      from: recovering from API error (attempt {attempt}/{maximum})
+      to: восстанавливаюсь после ошибки API (попытка {attempt}/{maximum})
+      placeholders:
+        attempt: '[0-9][0-9.,]*'
+        maximum: .+?
+    - id: runtime_status.api_start
+      family: runtime_status
+      from: 'starting model request #{number}'
+      to: запускаю запрос к модели №{number}
+      placeholders:
+        number: .+?
+    - id: runtime_status.busy_compression_queue
+      family: runtime_status
+      from: ⏳ Context compression is running{detail}; your message is queued until it finishes. Use `/stop` to cancel everything.
+      to: ⏳ Идёт сжатие контекста{detail}; сообщение поставлено в очередь до завершения. `/stop` отменит всю работу.
+      placeholders:
+        detail: .*?
+    - id: runtime_status.busy_interrupt
+      family: runtime_status
+      from: ⚡ Interrupting the current task{detail}. I will respond shortly.
+      to: ⚡ Прерываю текущую задачу{detail}. Скоро отвечу на сообщение.
+      placeholders:
+        detail: .*?
+    - id: runtime_status.busy_queue
+      family: runtime_status
+      from: ⏳ Queued for the next turn{detail}. I will respond after the current task finishes.
+      to: ⏳ Сообщение поставлено в очередь на следующий ход{detail}. Отвечу после завершения текущей задачи.
+      placeholders:
+        detail: .*?
+    - id: runtime_status.busy_redirect
+      family: runtime_status
+      from: ↪ Redirected the current run using your correction{detail}. I will adjust the work.
+      to: ↪ Уточнение принято{detail}. Продолжаю работу с его учётом.
+      placeholders:
+        detail: .*?
+    - id: runtime_status.busy_steer
+      family: runtime_status
+      from: ⏩ Steered into the current run{detail}. Your message will arrive after the next tool call.
+      to: ⏩ Сообщение передано в текущую работу{detail}. Оно будет учтено после следующего вызова инструмента.
+      placeholders:
+        detail: .*?
+    - id: runtime_status.busy_subagent_queue
+      family: runtime_status
+      from: ⏳ A subagent is working{detail}; your message is queued until it finishes. Use `/stop` to cancel everything.
+      to: ⏳ Субагент работает{detail}; сообщение поставлено в очередь до его завершения. `/stop` отменит всю работу.
+      placeholders:
+        detail: .*?
+    - id: runtime_status.codex_no_events
+      family: runtime_status
+      from: Codex stream stopped after {seconds}s without SSE events
+      to: поток Codex остановлен после {seconds} с без SSE-событий
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_status.codex_no_first_byte
+      family: runtime_status
+      from: Codex stream stopped after {seconds}s without a first byte
+      to: поток Codex остановлен после {seconds} с без первого байта
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_status.concurrent_tools
+      family: runtime_status
+      from: 'concurrent tools running for {seconds}s; {count} remaining: {tools}'
+      to: 'параллельные инструменты работают {seconds} с; осталось {count}: {tools}'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        count: '[0-9][0-9.,]*'
+        tools: .+?
+    - id: runtime_status.current_tool
+      family: runtime_status
+      from: 'running: {tool}'
+      to: 'инструмент: {tool}'
+      placeholders:
+        tool: .+?
+    - id: runtime_status.elapsed
+      family: runtime_status
+      from: '{minutes} min elapsed'
+      to: прошло {minutes} мин
+      placeholders:
+        minutes: '[0-9][0-9.,]*'
+    - id: runtime_status.empty_retry
+      family: runtime_status
+      from: empty response; retry {attempt}/{maximum} in {seconds}s
+      to: получен пустой ответ; повтор {attempt}/{maximum} через {seconds} с
+      placeholders:
+        attempt: '[0-9][0-9.,]*'
+        maximum: .+?
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_status.executing_tool
+      family: runtime_status
+      from: 'running tool: {tool}'
+      to: 'выполняю инструмент: {tool}'
+      placeholders:
+        tool: .+?
+    - id: runtime_status.executing_tools
+      family: runtime_status
+      from: 'running {count} tools concurrently: {tools}'
+      to: 'параллельно выполняю инструменты ({count}): {tools}'
+      placeholders:
+        count: '[0-9][0-9.,]*'
+        tools: .+?
+    - id: runtime_status.generic_working
+      family: runtime_status
+      from: ⏳ Working
+      to: ⏳ Работаю
+    - id: runtime_status.heartbeat
+      family: runtime_status
+      from: ⏳ Working — {minutes} min{detail}
+      to: ⏳ Работаю — {minutes} мин{detail}
+      placeholders:
+        minutes: '[0-9][0-9.,]*'
+        detail: .*?
+    - id: runtime_status.hint_interrupt
+      family: runtime_status
+      from: '💡 First-time tip: I interrupted the current task to answer you. Use `/busy queue` to queue follow-ups, `/busy
+        steer` to inject them without interrupting, or `/busy status` to check. This notice will not appear again.'
+      to: '💡 Первая подсказка: текущая задача прервана для ответа. `/busy queue` ставит следующие сообщения в очередь, `/busy
+        steer` передаёт их в текущую работу без прерывания, `/busy status` показывает режим. Подсказка больше не появится.'
+    - id: runtime_status.hint_queue
+      family: runtime_status
+      from: '💡 First-time tip: I queued your message instead of interrupting. Use `/busy interrupt` to make new messages stop
+        the current task immediately, or `/busy status` to check. This notice will not appear again.'
+      to: '💡 Первая подсказка: сообщение поставлено в очередь без прерывания работы. `/busy interrupt` переключает новые сообщения
+        в режим немедленного прерывания, `/busy status` показывает режим. Подсказка больше не появится.'
+    - id: runtime_status.hint_redirect
+      family: runtime_status
+      from: '💡 First-time tip: I redirected the current run using your message. Completed work remains in context, and `/stop`
+        still cancels the task. Use `/busy queue` for a separate turn or `/busy status` to check. This notice will not appear
+        again.'
+      to: '💡 Первая подсказка: текущая работа скорректирована вашим сообщением. Уже выполненная работа остаётся в контексте,
+        `/stop` отменяет задачу. `/busy queue` ставит сообщение на отдельный ход, `/busy status` показывает режим. Подсказка
+        больше не появится.'
+    - id: runtime_status.hint_steer
+      family: runtime_status
+      from: '💡 First-time tip: I steered your message into the current run; it will arrive after the next tool call. Use `/busy
+        interrupt`, `/busy queue`, or `/busy status` to change/check this. This notice will not appear again.'
+      to: '💡 Первая подсказка: сообщение передано в текущую работу и будет учтено после следующего вызова инструмента. Режим
+        меняется через `/busy interrupt` или `/busy queue`, проверяется через `/busy status`. Подсказка больше не появится.'
+    - id: runtime_status.iteration
+      family: runtime_status
+      from: iteration {current}/{maximum}
+      to: итерация {current}/{maximum}
+      placeholders:
+        current: .+?
+        maximum: .+?
+    - id: runtime_status.receiving_provider
+      family: runtime_status
+      from: receiving provider response
+      to: получаю ответ провайдера
+    - id: runtime_status.retry_backoff
+      family: runtime_status
+      from: retrying after error ({attempt}/{maximum}) in {seconds}s
+      to: повтор после ошибки ({attempt}/{maximum}) через {seconds} с
+      placeholders:
+        attempt: '[0-9][0-9.,]*'
+        maximum: .+?
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_status.sequential_tool
+      family: runtime_status
+      from: 'tool running for {seconds}s: {tool}'
+      to: 'инструмент работает {seconds} с: {tool}'
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+        tool: .+?
+    - id: runtime_status.stale_nonstream
+      family: runtime_status
+      from: non-streaming request stopped after {seconds}s without a response
+      to: запрос без потока остановлен после {seconds} с без ответа
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_status.stream_reconnecting
+      family: runtime_status
+      from: stream inactive for {seconds}s; reconnecting
+      to: поток не отвечает {seconds} с; переподключаюсь
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_status.stream_retry
+      family: runtime_status
+      from: stream retry {attempt}/{maximum} after {error}
+      to: повтор потока {attempt}/{maximum} после {error}
+      placeholders:
+        attempt: '[0-9][0-9.,]*'
+        maximum: .+?
+        error: .+?
+    - id: runtime_status.tool_completed
+      family: runtime_status
+      from: 'tool completed: {tool} ({seconds}s){suffix}'
+      to: 'инструмент завершён: {tool} ({seconds} с){suffix}'
+      placeholders:
+        tool: .+?
+        seconds: '[0-9][0-9.,]*'
+        suffix: .*?
+    - id: runtime_status.tool_results_posted
+      family: runtime_status
+      from: 'tool results sent to the model; continuing iteration #{number}'
+      to: результаты инструментов отправлены модели; продолжаю итерацию №{number}
+      placeholders:
+        number: .+?
+    - id: runtime_status.waiting_provider
+      family: runtime_status
+      from: waiting for provider response
+      to: ожидаю ответ провайдера
+    - id: runtime_status.waiting_stream
+      family: runtime_status
+      from: waiting for provider response ({seconds}s, no data yet)
+      to: ожидаю ответ провайдера ({seconds} с, данных пока нет)
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_warning.approval_fallback_always
+      family: runtime_warning
+      from: '`{prefix}approve always` to approve permanently'
+      to: '`{prefix}approve always`, чтобы разрешить постоянно'
+      placeholders:
+        prefix: .*?
+    - id: runtime_warning.approval_fallback_deny
+      family: runtime_warning
+      from: '`{prefix}deny` to cancel'
+      to: '`{prefix}deny`, чтобы отменить'
+      placeholders:
+        prefix: .*?
+    - id: runtime_warning.approval_fallback_heading
+      family: runtime_warning
+      from: ⚠️ **Dangerous command requires approval:**
+      to: ⚠️ **Потенциально опасная команда требует подтверждения:**
+    - id: runtime_warning.approval_fallback_once
+      family: runtime_warning
+      from: Reply `{prefix}approve` to execute this one operation
+      to: Ответьте `{prefix}approve`, чтобы выполнить эту операцию
+      placeholders:
+        prefix: .*?
+    - id: runtime_warning.approval_fallback_prompt
+      family: runtime_warning
+      from: '{heading}
+
+        ```
+
+        {command}
+
+        ```
+
+        Reason: {description}
+
+
+        {choices}, or {last_choice}.'
+      to: '{heading}
+
+        ```
+
+        {command}
+
+        ```
+
+        Причина: {description}
+
+
+        {choices} или {last_choice}.'
+      placeholders:
+        heading: .+?
+        command: .+?
+        description: .+?
+        choices: .+?
+        last_choice: .+?
+    - id: runtime_warning.approval_fallback_session
+      family: runtime_warning
+      from: '`{prefix}approve session` to approve this pattern for the session'
+      to: '`{prefix}approve session`, чтобы разрешить этот шаблон до конца сеанса'
+      placeholders:
+        prefix: .*?
+    - id: runtime_warning.approval_fallback_smart_heading
+      family: runtime_warning
+      from: ⚠️ **Smart DENY — owner override for one operation:**
+      to: ⚠️ **Smart DENY — разрешение владельца для одной операции:**
+    - id: runtime_warning.compression_aborted
+      family: runtime_warning
+      from: ⚠️ Context compression was aborted ({error}). No messages were removed; the conversation is unchanged. Use `/compress`
+        to retry, `/new` to continue in a new session, or check `auxiliary.compression`.
+      to: ⚠️ Сжатие контекста прервано ({error}). Сообщения не удалены, диалог не изменён. Используйте `/compress` для повторной
+        попытки, `/new` для продолжения в новом сеансе или проверьте `auxiliary.compression`.
+      placeholders:
+        error: .+?
+    - id: runtime_warning.compression_timeout
+      family: runtime_warning
+      from: ⚠️ Context compression produced no result within {seconds}s. No messages were removed; the conversation is unchanged.
+        Use `/compress` to retry, `/new` to continue in a new session, or check `auxiliary.compression`.
+      to: ⚠️ Сжатие контекста не дало результата за {seconds} с. Сообщения не удалены, диалог не изменён. Используйте `/compress`
+        для повторной попытки, `/new` для продолжения в новом сеансе или проверьте `auxiliary.compression`.
+      placeholders:
+        seconds: '[0-9][0-9.,]*'
+    - id: runtime_warning.context_too_large
+      family: runtime_warning
+      from: ⚠️ The session is too large for the model context. Use `/compact` to compress the conversation or `/new` to continue
+        in a new session; the current session will remain in history.
+      to: ⚠️ Сеанс не помещается в контекст модели. Используйте `/compact`, чтобы сжать диалог, или `/new`, чтобы продолжить
+        в новом сеансе; текущий сеанс останется в истории.
+    - id: runtime_warning.cron_interrupted
+      family: runtime_warning
+      from: '⚠️ Cron job ''{job_name}'' was interrupted: the Hermes service is {action} and stopped the run before completion.
+        No result was produced.'
+      to: '⚠️ Задача Cron «{job_name}» прервана: сервис Hermes {action} и остановил выполнение до завершения. Результат не
+        сформирован.'
+      placeholders:
+        job_name: .+?
+        action: .+?
+    - id: runtime_warning.db_corrupt
+      family: runtime_warning
+      from: '⚠️ Session database corruption detected. Messages may not be saved. Recovery options:
+
+        1. Run `hermes doctor --fix`
+
+        2. Salvage with `sqlite3 ~/.hermes/state.db ".recover"`, then replace `state.db`
+
+        3. Restore a backup from `~/.hermes/backups/`
+
+        Error: {error}'
+      to: '⚠️ Обнаружено повреждение базы данных сеансов. Сообщения могут не сохраняться. Варианты восстановления:
+
+        1. Выполните `hermes doctor --fix`
+
+        2. Извлеките данные командой `sqlite3 ~/.hermes/state.db ".recover"`, затем замените `state.db`
+
+        3. Восстановите резервную копию из `~/.hermes/backups/`
+
+        Ошибка: {error}'
+      placeholders:
+        error: .+?
+    - id: runtime_warning.db_unavailable
+      family: runtime_warning
+      from: '⚠️ Session database is unavailable; messages may not be saved. {hint}
+
+        Run `hermes doctor` for diagnostics.'
+      to: '⚠️ База данных сеансов недоступна; сообщения могут не сохраняться. {hint}
+
+        Для диагностики выполните `hermes doctor`.'
+      placeholders:
+        hint: .*?
+    - id: runtime_warning.empty_response
+      family: runtime_warning
+      from: ⚠️ Processing completed, but no response was generated. This may be a transient error — send your message again.
+      to: ⚠️ Обработка завершилась без ответа. Возможно, это временный сбой — отправьте сообщение ещё раз.
+    - id: runtime_warning.inactivity
+      family: runtime_warning
+      from: ⚠️ No activity for {elapsed} min. If the agent does not respond, it will time out in {remaining} min. You can
+        keep waiting or use `/reset`.
+      to: ⚠️ Нет активности {elapsed} мин. Если агент не ответит, через {remaining} мин выполнение будет остановлено по тайм-ауту.
+        Можно продолжить ожидание или использовать `/reset`.
+      placeholders:
+        elapsed: .+?
+        remaining: '[0-9][0-9.,]*'
+    - id: runtime_warning.media_kind_audio
+      family: runtime_warning
+      from: audio file
+      to: аудиофайл
+    - id: runtime_warning.media_kind_document
+      family: runtime_warning
+      from: document
+      to: документ
+    - id: runtime_warning.media_kind_video
+      family: runtime_warning
+      from: video file
+      to: видеофайл
+    - id: runtime_warning.media_kind_voice
+      family: runtime_warning
+      from: voice message
+      to: голосовое сообщение
+    - id: runtime_warning.message_interrupted
+      family: runtime_warning
+      from: ⚠️ Your message was interrupted before processing started, likely by a recent `/stop`. Send it again.
+      to: ⚠️ Обработка сообщения была прервана до начала, вероятно, недавней командой `/stop`. Отправьте сообщение ещё раз.
+    - id: runtime_warning.previous_turn_cleanup
+      family: runtime_warning
+      from: ⚠️ Your message was not processed because the previous turn was still being cleaned up. Send it again.
+      to: '⚠️ Сообщение не обработано: предыдущая операция ещё завершалась. Отправьте сообщение ещё раз.'
+    - id: runtime_warning.processing_stopped
+      family: runtime_warning
+      from: '⚠️ Processing stopped: {error}. Try again.'
+      to: '⚠️ Обработка остановлена: {error}. Повторите попытку.'
+      placeholders:
+        error: .+?
+    - id: runtime_warning.proxy_aiohttp
+      family: runtime_warning
+      from: ⚠️ Proxy mode requires `aiohttp`. Install it with `pip install aiohttp`.
+      to: ⚠️ Для proxy-режима требуется `aiohttp`. Установите его командой `pip install aiohttp`.
+    - id: runtime_warning.proxy_connection
+      family: runtime_warning
+      from: '⚠️ Proxy connection error: {error}'
+      to: '⚠️ Ошибка подключения к proxy: {error}'
+      placeholders:
+        error: .+?
+    - id: runtime_warning.proxy_error
+      family: runtime_warning
+      from: '⚠️ Proxy error ({status}): {error}'
+      to: '⚠️ Ошибка proxy ({status}): {error}'
+      placeholders:
+        status: .+?
+        error: .+?
+    - id: runtime_warning.proxy_url
+      family: runtime_warning
+      from: ⚠️ Proxy URL is not configured (`GATEWAY_PROXY_URL` or `gateway.proxy_url`).
+      to: ⚠️ URL proxy не настроен (`GATEWAY_PROXY_URL` или `gateway.proxy_url`).
+    - id: runtime_warning.request_failed
+      family: runtime_warning
+      from: 'The request failed: {error}
+
+        Try again or use `/new` to continue in a new session.'
+      to: 'Не удалось выполнить запрос: {error}
+
+        Повторите попытку или используйте `/new`, чтобы продолжить в новом сеансе.'
+      placeholders:
+        error: .+?
+    - id: runtime_warning.service_restarting
+      family: runtime_warning
+      from: restarting
+      to: перезапускается
+    - id: runtime_warning.service_stopping
+      family: runtime_warning
+      from: shutting down
+      to: останавливается
+    - id: runtime_warning.session_storage
+      family: runtime_warning
+      from: ⚠️ Session storage was temporarily unavailable, so this turn was stopped to protect your conversation history.
+        Your message should already be saved — send it again in a moment.
+      to: ⚠️ Хранилище сеансов временно недоступно, поэтому обработка остановлена для защиты истории диалога. Сообщение уже
+        должно быть сохранено — отправьте его ещё раз через несколько секунд.
+    - id: runtime_warning.session_storage_disk
+      family: runtime_warning
+      from: ⚠️ Session storage was temporarily unavailable, so this turn was stopped to protect your conversation history.
+        Check available disk space, then send your message again.
+      to: ⚠️ Хранилище сеансов временно недоступно, поэтому обработка остановлена для защиты истории диалога. Проверьте свободное
+        место на диске и отправьте сообщение ещё раз.
+    - id: runtime_warning.steer_failed
+      family: runtime_warning
+      from: '⚠️ Could not intervene in the agent run: {error}'
+      to: '⚠️ Не удалось вмешаться в работу агента: {error}'
+      placeholders:
+        error: .+?
+    - id: runtime_warning.unexpected_error
+      family: runtime_warning
+      from: 'An unexpected error occurred.{status_hint}
+
+        Try again or use `/new` to continue in a new session.'
+      to: 'Произошла непредвиденная ошибка.{status_hint}
+
+        Повторите попытку или используйте `/new`, чтобы продолжить в новом сеансе.'
+      placeholders:
+        status_hint: .+?
+  gateway.session.stall.py:
+    source_file: gateway/session_stall.py
+    rules:
+    - id: runtime_warning.session_stall
+      family: runtime_warning
+      from: ⚠️ The agent session appears stalled (last activity {minutes} min ago). Try `/new` to start a new session.
+      to: '⚠️ Сеанс агента, вероятно, завис: последняя активность была {minutes} мин назад. Используйте `/new`, чтобы начать
+        новый сеанс.'
+      placeholders:
+        minutes: '[0-9][0-9.,]*'
+  gateway.slash.commands.py:
+    source_file: gateway/slash_commands.py
+    rules:
+    - id: gateway.whoami.admin
+      family: gateway
+      from: '**You** — {platform} ({scope})
+
+        User ID: `{user_id}`
+
+        Tier: **admin**
+
+        Slash commands: all available'
+      to: '**Вы** — {platform} ({scope})
+
+        ID пользователя: `{user_id}`
+
+        Уровень доступа: **администратор**
+
+        Slash-команды: доступны все'
+      placeholders:
+        platform: .+?
+        scope: .+?
+        user_id: .+?
+    - id: gateway.whoami.unrestricted
+      family: gateway
+      from: '**You** — {platform} ({scope})
+
+        User ID: `{user_id}`
+
+        Tier: unrestricted (no admin list configured for this scope)
+
+        Slash commands: all available'
+      to: '**Вы** — {platform} ({scope})
+
+        ID пользователя: `{user_id}`
+
+        Уровень доступа: без ограничений (для этой области не настроен список администраторов)
+
+        Slash-команды: доступны все'
+      placeholders:
+        platform: .+?
+        scope: .+?
+        user_id: .+?
+    - id: gateway.whoami.user
+      family: gateway
+      from: '**You** — {platform} ({scope})
+
+        User ID: `{user_id}`
+
+        Tier: user
+
+        Slash commands you can run: {commands}'
+      to: '**Вы** — {platform} ({scope})
+
+        ID пользователя: `{user_id}`
+
+        Уровень доступа: пользователь
+
+        Доступные slash-команды: {commands}'
+      placeholders:
+        platform: .+?
+        scope: .+?
+        user_id: .+?
+        commands: .+?
+    - id: runtime_warning.model_warning_prompt
+      family: runtime_warning
+      from: '⚠️ **{title}**
+
+
+        {message}
+
+
+        _Text fallback: reply `{prefix}approve` to switch or `{prefix}cancel` to keep the current model._'
+      to: '⚠️ **{title}**
+
+
+        {message}
+
+
+        _Текстовый вариант: ответьте `{prefix}approve`, чтобы переключиться, или `{prefix}cancel`, чтобы оставить текущую
+        модель._'
+      placeholders:
+        title: .+?
+        message: .+?
+        prefix: .*?
+  hermes.cli.debug.py:
+    source_file: hermes_cli/debug.py
+    rules:
+    - id: gateway.debug.privacy_notice
+      family: gateway
+      from: '⚠️ **Privacy notice:** This uploads system info + recent log tails (may contain conversation fragments) to a
+        public paste service. Full logs are NOT included from the gateway — use `hermes debug share` from the CLI for full
+        log uploads.
+
+        Pastes auto-delete after 6 hours.'
+      to: '⚠️ **Уведомление о конфиденциальности:** системная информация и последние фрагменты журналов (они могут содержать
+        части переписки) будут загружены в публичный сервис вставок. Полные журналы из сервиса Hermes не загружаются — для
+        их загрузки используйте `hermes debug share` в CLI.
+
+        Вставки автоматически удаляются через 6 часов.'
+  hermes.cli.model.cost.guard.py:
+    source_file: hermes_cli/model_cost_guard.py
+    rules:
+    - id: runtime_warning.model_cost_banner
+      family: runtime_warning
+      from: '!!! EXPENSIVE MODEL WARNING !!!'
+      to: '!!! ПРЕДУПРЕЖДЕНИЕ: ДОРОГАЯ МОДЕЛЬ !!!'
+    - id: runtime_warning.model_cost_confirm
+      family: runtime_warning
+      from: Confirm only if you intend to use this model.
+      to: Подтверждайте только при осознанном выборе этой модели.
+    - id: runtime_warning.model_cost_gpt55_suggestion
+      family: runtime_warning
+      from: did you mean to select openai/gpt-5.5?
+      to: Возможно, вы хотели выбрать openai/gpt-5.5?
+    - id: runtime_warning.model_cost_input
+      family: runtime_warning
+      from: 'Input tokens: {cost}'
+      to: 'Входные токены: {cost}'
+      placeholders:
+        cost: .+?
+    - id: runtime_warning.model_cost_known
+      family: runtime_warning
+      from: '{model} has known pricing above Hermes'' safety threshold.'
+      to: Известная стоимость {model} превышает безопасный порог Hermes.
+      placeholders:
+        model: .+?
+    - id: runtime_warning.model_cost_output
+      family: runtime_warning
+      from: 'Output tokens: {cost}'
+      to: 'Выходные токены: {cost}'
+      placeholders:
+        cost: .+?
+    - id: runtime_warning.model_cost_source
+      family: runtime_warning
+      from: 'Pricing source: {source}.'
+      to: 'Источник цен: {source}.'
+      placeholders:
+        source: .+?
+    - id: runtime_warning.model_cost_threshold
+      family: runtime_warning
+      from: 'Threshold: more than $20/M input tokens or more than $100/M output tokens.'
+      to: 'Порог: более $20 за 1 млн входных токенов или более $100 за 1 млн выходных токенов.'
+  hermes.cli.model.data.policy.guard.py:
+    source_file: hermes_cli/model_data_policy_guard.py
+    rules:
+    - id: runtime_warning.model_data_contributor
+      family: runtime_warning
+      from: "!!! CONTRIBUTOR TIER — TRAINS ON YOUR DATA !!!\n\nmuse-spark-1.2-contributor is Meta's contributor tier: heavily\
+        \ discounted\ntoken pricing in exchange for permission to use your prompts and completions\nto train future Meta models.\n\
+        \n  Price per 1M tokens:  input $0.10  |  output $0.20  |  cached input $0.002\n  (vs. standard muse-spark-1.2:  input\
+        \ $1.25  |  output $4.25  |  cached $0.15)\n\nIt lowers the barrier to entry for prototyping, testing integrations,\
+        \ and\nscaling experiments where training on your data is acceptable. Do NOT use it\nfor confidential, proprietary,\
+        \ personal, or otherwise sensitive data. For the\nsame model at standard pricing with no training on your data, select\
+        \ the\nstandard variant, muse-spark-1.2.\n\nSource: https://dev.meta.ai/docs/pricing-rate-limits/\nConfirm only if\
+        \ training on your prompts and completions is acceptable."
+      to: "!!! CONTRIBUTOR TIER — ДАННЫЕ ИСПОЛЬЗУЮТСЯ ДЛЯ ОБУЧЕНИЯ !!!\n\nmuse-spark-1.2-contributor — contributor-тариф Meta:\
+        \ сильно сниженная\nстоимость токенов в обмен на разрешение использовать ваши запросы и ответы\nдля обучения будущих\
+        \ моделей Meta.\n\n  Цена за 1 млн токенов: вход $0.10 | выход $0.20 | кэшированный вход $0.002\n  (стандартная muse-spark-1.2:\
+        \ вход $1.25 | выход $4.25 | кэш $0.15)\n\nТариф подходит только для задач, где использование данных для обучения\n\
+        приемлемо. Не используйте его для конфиденциальных, коммерческих, персональных\nили иных чувствительных данных. Для\
+        \ той же модели без обучения на ваших данных\nвыберите стандартную muse-spark-1.2.\n\nИсточник: https://dev.meta.ai/docs/pricing-rate-limits/\n\
+        Подтверждайте только если использование запросов и ответов для обучения приемлемо."
+  hermes.cli.model.selection.guards.py:
+    source_file: hermes_cli/model_selection_guards.py
+    rules:
+    - id: runtime_warning.model_data_title
+      family: runtime_warning
+      from: Data-Training Tier Warning
+      to: Предупреждение об использовании данных для обучения
+    - id: runtime_warning.model_expensive_title
+      family: runtime_warning
+      from: Expensive Model Warning
+      to: Предупреждение о дорогой модели
+    - id: runtime_warning.model_selection_title
+      family: runtime_warning
+      from: Model Selection Warning
+      to: Предупреждение при выборе модели
+  plugins.platforms.telegram.adapter.py:
+    source_file: plugins/platforms/telegram/adapter.py
+    rules:
+    - id: runtime_warning.model_confirm_selection
+      family: runtime_warning
+      from: Confirm model selection
+      to: Подтвердите выбор модели
+    - id: runtime_warning.model_switch_anyway
+      family: runtime_warning
+      from: Switch anyway
+      to: Всё равно переключить
+    - id: runtime_warning.model_switch_error
+      family: runtime_warning
+      from: 'Error switching model: {error}'
+      to: 'Не удалось переключить модель: {error}'
+      placeholders:
+        error: .+?
+    - id: runtime_warning.telegram_media_download
+      family: runtime_warning
+      from: ⚠️ Couldn't download your {kind}{name_part} ({error_type}). Please send it again.
+      to: ⚠️ Не удалось скачать {kind}{name_part} ({error_type}). Отправьте файл ещё раз.
+      placeholders:
+        kind: .+?
+        name_part: .+?
+        error_type: .+?
+    - id: runtime_warning.telegram_prompt_expired
+      family: runtime_warning
+      from: ⚠️ This prompt expired — please use /retry.
+      to: ⚠️ Срок действия запроса истёк — используйте /retry.
+    - id: runtime_warning.telegram_question_expired_html
+      family: runtime_warning
+      from: <i>⚠️ This question expired or the session was reset — please use /retry.</i>
+      to: <i>⚠️ Срок действия вопроса истёк или сеанс был сброшен — используйте /retry.</i>
+    - id: telegram.model_picker.cancel_button
+      family: telegram
+      from: ✗ Cancel
+      to: ✗ Отмена
+    - id: telegram.model_picker.cancelled
+      family: telegram
+      from: Model selection cancelled.
+      to: Выбор модели отменён.
+    - id: telegram.model_picker.current_model
+      family: telegram
+      from: 'Current model: `{model}`'
+      to: 'Текущая модель: `{model}`'
+      placeholders:
+        model: .+?
+    - id: telegram.model_picker.expired
+      family: telegram
+      from: Picker expired — use /model again.
+      to: Меню устарело — снова используйте /model.
+    - id: telegram.model_picker.group_not_found
+      family: telegram
+      from: Group not found.
+      to: Группа провайдеров не найдена.
+    - id: telegram.model_picker.invalid_page
+      family: telegram
+      from: Invalid page.
+      to: Недопустимая страница.
+    - id: telegram.model_picker.provider
+      family: telegram
+      from: 'Provider: {provider}'
+      to: 'Провайдер: {provider}'
+      placeholders:
+        provider: .+?
+    - id: telegram.model_picker.provider_family
+      family: telegram
+      from: 'Provider family: *{provider}*'
+      to: 'Семейство провайдеров: *{provider}*'
+      placeholders:
+        provider: .+?
+    - id: telegram.model_picker.provider_selected
+      family: telegram
+      from: 'Provider: *{provider}*{page_info}'
+      to: 'Провайдер: *{provider}*{page_info}'
+      placeholders:
+        provider: .+?
+        page_info: .+?
+    - id: telegram.model_picker.select_model
+      family: telegram
+      from: Select a model:{extra}
+      to: Выберите модель:{extra}
+      placeholders:
+        extra: .*?
+    - id: telegram.model_picker.select_provider
+      family: telegram
+      from: Select a provider:{page_info}
+      to: Выберите провайдера:{page_info}
+      placeholders:
+        page_info: .+?
+    - id: telegram.model_picker.title
+      family: telegram
+      from: ⚙ *Model Configuration*
+      to: ⚙ *Настройка модели*
+  run.agent.py:
+    source_file: run_agent.py
+    rules:
+    - id: provider_progress.codex_silent_rejection
+      family: provider_progress
+      from: 'Codex backend appears to be silently rejecting ''{model}'' on chatgpt.com/backend-api/codex (no stream events,
+        no error). This is a known backend-side pattern that has affected ChatGPT Plus accounts intermittently. Workaround:
+        try `gpt-5.4` on the same OAuth profile, or `gpt-5.3-codex`, or switch to a different model/provider in your fallback
+        chain. Some ChatGPT Codex accounts do not support `gpt-5.4-codex`. See hermes-agent#21444 for symptom history.'
+      to: 'Похоже, серверная часть Codex молча отклоняет модель ''{model}'' на chatgpt.com/backend-api/codex: поток не передаёт
+        данные и ошибка не возвращается. Это известная проблема на стороне сервиса, которая периодически затрагивает аккаунты
+        ChatGPT Plus. Временное решение: попробуйте `gpt-5.4` с тем же профилем OAuth, `gpt-5.3-codex` либо другую модель
+        или провайдера из цепочки резервных вариантов. Некоторые аккаунты ChatGPT Codex не поддерживают `gpt-5.4-codex`. История
+        проблемы: hermes-agent#21444.'
+      placeholders:
+        model: .+?
+  plugins.platforms.telegram.adapter.buttons:
+    source_file: plugins/platforms/telegram/adapter.py
+    rules:
+    - id: telegram.update_prompt.yes_button
+      family: telegram.update_prompt
+      from: ✓ Yes
+      to: ✓ Да
+      boundaries:
+      - telegram.InlineKeyboardButton
+    - id: telegram.update_prompt.no_button
+      family: telegram.update_prompt
+      from: ✗ No
+      to: ✗ Нет
+      boundaries:
+      - telegram.InlineKeyboardButton
+    - id: telegram.clarify.other_button
+      family: telegram.clarify
+      from: ✏️ Other (type answer)
+      to: ✏️ Другой вариант (ввести ответ)
+      boundaries:
+      - telegram.InlineKeyboardButton
+    - id: telegram.model_picker.previous_button
+      family: telegram.model_picker
+      from: ◀ Prev
+      to: ◀ Назад
+      boundaries:
+      - telegram.InlineKeyboardButton
+    - id: telegram.model_picker.next_button
+      family: telegram.model_picker
+      from: Next ▶
+      to: Далее ▶
+      boundaries:
+      - telegram.InlineKeyboardButton
+    - id: telegram.model_picker.back_button
+      family: telegram.model_picker
+      from: ◀ Back
+      to: ◀ К провайдерам
+      boundaries:
+      - telegram.InlineKeyboardButton

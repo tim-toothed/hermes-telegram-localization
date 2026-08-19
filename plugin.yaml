@@ -1,0 +1,11 @@
+name: procvetaev-localization
+version: 0.1.0
+description: Russian runtime localization for Hermes Telegram
+kind: standalone
+author: PROCVETAEV
+platforms:
+  - windows
+  - linux
+  - macos
+hooks:
+  - pre_gateway_dispatch

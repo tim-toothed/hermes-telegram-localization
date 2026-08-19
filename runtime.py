@@ -1,0 +1,197 @@
+"""Install translation boundaries on the live Telegram adapter instance."""
+
+from __future__ import annotations
+
+import inspect
+import sys
+from collections import Counter
+from contextvars import ContextVar
+from typing import Any, Callable
+
+from .translator import Catalog, TranslationResult
+
+
+class RuntimeState:
+    def __init__(self, catalog: Catalog, reporter: Any) -> None:
+        self.catalog = catalog
+        self.reporter = reporter
+        self.counters: Counter[str] = Counter()
+        self.boundaries: dict[str, str] = {}
+        self.adapter_class = ""
+        self._suppress_translation: ContextVar[bool] = ContextVar(
+            "procvetaev_localization_suppress", default=False
+        )
+
+    def translate(self, text: Any, boundary: str) -> Any:
+        if self._suppress_translation.get():
+            return text
+        if not isinstance(text, str) or not text:
+            return text
+        result = self.catalog.translate(text, boundary=boundary)
+        self.counters[result.status] += 1
+        if result.status != "passthrough":
+            self.reporter.emit(
+                {
+                    "event": "translation",
+                    "status": result.status,
+                    "boundary": boundary,
+                    "rule_id": result.rule_id,
+                    "source_file": result.source_file,
+                    "family": result.family,
+                    "variables": dict(result.variables or {}),
+                },
+                input_text=text,
+                output_text=result.text,
+            )
+        return result.text
+
+    def summary(self) -> str:
+        boundaries = ", ".join(
+            f"{name}={status}" for name, status in sorted(self.boundaries.items())
+        ) or "не установлены"
+        return (
+            "Плагин локализации загружен.\n"
+            f"Telegram adapter: {self.adapter_class or 'ещё не активирован'}\n"
+            f"Границы: {boundaries}\n"
+            f"Переведено: {self.counters['translated']}\n"
+            f"Неоднозначно: {self.counters['ambiguous']}\n"
+            f"Пропущено без изменений: {self.counters['passthrough']}\n"
+            f"Правил: {self.catalog.rule_count}"
+        )
+
+
+def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
+    """Do not translate model-authored final replies that share adapter boundaries."""
+    for method_name in ("send", "edit_message"):
+        boundary = f"TelegramAdapter.{method_name}.final_reply_guard"
+        original = getattr(adapter, method_name, None)
+        if not callable(original):
+            state.boundaries[boundary] = "method_missing"
+            continue
+        signature = inspect.signature(original)
+
+        async def guarded(
+            *args: Any,
+            _original: Any = original,
+            _signature: Any = signature,
+            **kwargs: Any,
+        ) -> Any:
+            try:
+                bound = _signature.bind_partial(*args, **kwargs)
+                metadata = bound.arguments.get("metadata")
+            except Exception:
+                metadata = kwargs.get("metadata")
+            suppress = bool(
+                isinstance(metadata, dict) and metadata.get("notify") is True
+            )
+            token = state._suppress_translation.set(suppress)
+            try:
+                return await _original(*args, **kwargs)
+            finally:
+                state._suppress_translation.reset(token)
+
+        setattr(adapter, method_name, guarded)
+        state.boundaries[boundary] = "installed"
+
+
+def _install_format_boundary(adapter: Any, state: RuntimeState) -> None:
+    name = "TelegramAdapter.format_message"
+    original = getattr(adapter, "format_message", None)
+    if not callable(original):
+        state.boundaries[name] = "method_missing"
+        return
+
+    def wrapped(content: str, *args: Any, **kwargs: Any) -> Any:
+        translated = state.translate(content, name)
+        return original(translated, *args, **kwargs)
+
+    setattr(adapter, "format_message", wrapped)
+    state.boundaries[name] = "installed"
+
+
+def _install_transport_boundary(adapter: Any, state: RuntimeState) -> None:
+    name = "TelegramAdapter._send_message_with_thread_fallback"
+    original = getattr(adapter, "_send_message_with_thread_fallback", None)
+    if not callable(original):
+        state.boundaries[name] = "method_missing"
+        return
+
+    async def wrapped(*args: Any, **kwargs: Any) -> Any:
+        call_kwargs = dict(kwargs)
+        for field in ("text", "caption"):
+            if field in call_kwargs:
+                call_kwargs[field] = state.translate(
+                    call_kwargs[field], f"{name}.{field}"
+                )
+        return await original(*args, **call_kwargs)
+
+    setattr(adapter, "_send_message_with_thread_fallback", wrapped)
+    state.boundaries[name] = "installed"
+
+
+def _install_button_boundary(adapter: Any, state: RuntimeState) -> None:
+    name = "telegram.InlineKeyboardButton"
+    module = sys.modules.get(adapter.__class__.__module__)
+    original = getattr(module, "InlineKeyboardButton", None) if module else None
+    if not callable(original):
+        state.boundaries[name] = "method_missing"
+        return
+    if getattr(module, "_procvetaev_localization_button_wrapped", False):
+        state.boundaries[name] = "already_installed"
+        return
+
+    def wrapped(*args: Any, **kwargs: Any) -> Any:
+        call_args = list(args)
+        call_kwargs = dict(kwargs)
+        if call_args and isinstance(call_args[0], str):
+            call_args[0] = state.translate(call_args[0], name)
+        elif isinstance(call_kwargs.get("text"), str):
+            call_kwargs["text"] = state.translate(call_kwargs["text"], name)
+        return original(*call_args, **call_kwargs)
+
+    setattr(module, "InlineKeyboardButton", wrapped)
+    setattr(module, "_procvetaev_localization_button_wrapped", True)
+    state.boundaries[name] = "installed"
+
+
+def install_on_adapter(adapter: Any, state: RuntimeState) -> bool:
+    if getattr(adapter, "_procvetaev_localization_installed", False):
+        return False
+    setattr(adapter, "_procvetaev_localization_installed", True)
+    state.adapter_class = (
+        f"{adapter.__class__.__module__}.{adapter.__class__.__qualname__}"
+    )
+    _install_final_reply_guards(adapter, state)
+    _install_format_boundary(adapter, state)
+    _install_transport_boundary(adapter, state)
+    _install_button_boundary(adapter, state)
+    state.reporter.emit(
+        {
+            "event": "adapter_install",
+            "status": "installed",
+            "adapter_class": state.adapter_class,
+            "boundaries": dict(state.boundaries),
+            "rule_count": state.catalog.rule_count,
+        }
+    )
+    return True
+
+
+def activate_from_gateway_event(
+    *, event: Any, gateway: Any, state: RuntimeState
+) -> None:
+    source = getattr(event, "source", None)
+    platform = getattr(getattr(source, "platform", None), "value", "")
+    if str(platform).lower() != "telegram":
+        return
+    adapter_for_source: Callable[..., Any] | None = getattr(
+        gateway, "_adapter_for_source", None
+    )
+    if not callable(adapter_for_source):
+        state.boundaries["GatewayRunner._adapter_for_source"] = "method_missing"
+        return
+    adapter = adapter_for_source(source)
+    if adapter is None:
+        state.boundaries["GatewayRunner._adapter_for_source"] = "adapter_missing"
+        return
+    install_on_adapter(adapter, state)
