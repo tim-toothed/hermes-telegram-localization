@@ -34,7 +34,9 @@ hermes plugins update procvetaev-localization
 - Linux: plugin import, catalog loading, and translation smoke passed on Linux/Python 3.12. The runtime contains no OS-specific paths or APIs.
 - macOS: supported by the same platform-neutral runtime, but not yet exercised in this release.
 
-The plugin currently cannot translate three early or unsupported surfaces safely: the Gateway restart notification sent before adapter activation, callback popups, and Telegram command-menu descriptions. These remain English rather than using unsafe global monkey-patches.
+The plugin currently cannot translate three early or unsupported surfaces safely: the Gateway restart notification sent before adapter activation, callback popups, and Telegram command-menu descriptions. These remain English rather than using unsafe global Telegram class monkey-patches.
+
+The plugin does apply a display-only filter to `hermes_cli.commands.telegram_menu_commands()` during normal plugin registration, before Telegram connects. Commands listed in `HIDDEN_TELEGRAM_COMMANDS` disappear from the `/` menu on every Gateway start/reconnect registration while their handlers, `/help` entries, and manual invocation remain unchanged.
 
 ## Acceptance tests
 
@@ -49,6 +51,7 @@ The suite performs no Telegram network calls. It exercises the real installed Te
 ## Design
 
 - `plugin.yaml` and `register(ctx)` use the normal Hermes standalone plugin loader.
+- During plugin registration, a fail-open display filter wraps the shared Telegram menu generator before adapter connection; it does not modify command dispatch.
 - `pre_gateway_dispatch` obtains the real adapter instance through `GatewayRunner._adapter_for_source()` before message dispatch.
 - Translation boundaries cover Telegram Markdown formatting, control-message transport, and inline-button labels.
 - Known unique rules are translated; unknown or ambiguous text passes through unchanged.

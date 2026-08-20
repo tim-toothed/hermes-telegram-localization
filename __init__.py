@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 from typing import Any
 
+from .menu_filter import HIDDEN_TELEGRAM_COMMANDS, install_telegram_menu_filter
 from .reporter import JsonlReporter
 from .runtime import (
     RuntimeState,
@@ -76,6 +77,28 @@ def register(ctx: Any) -> None:
             "rule_count": catalog.rule_count,
             "report_path": str(report_path),
         }
+    )
+    try:
+        menu_filter_status = install_telegram_menu_filter()
+    except Exception as exc:
+        menu_filter_status = "install_failed"
+        reporter.emit(
+            {
+                "event": "telegram_menu_filter",
+                "status": menu_filter_status,
+                "error_type": type(exc).__name__,
+            }
+        )
+    else:
+        reporter.emit(
+            {
+                "event": "telegram_menu_filter",
+                "status": menu_filter_status,
+                "hidden_command_count": len(HIDDEN_TELEGRAM_COMMANDS),
+            }
+        )
+    _STATE.boundaries["hermes_cli.commands.telegram_menu_commands"] = (
+        menu_filter_status
     )
 
     def on_pre_gateway_dispatch(**kwargs: Any) -> None:
