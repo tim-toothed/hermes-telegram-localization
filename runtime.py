@@ -8,6 +8,8 @@ from collections import Counter
 from contextvars import ContextVar
 from typing import Any, Callable
 
+from .background_review_localization import translate_background_review_notification
+from .model_switch_localization import translate_model_switch_card
 from .translator import Catalog, TranslationResult
 
 
@@ -30,21 +32,61 @@ class RuntimeState:
             return text
         if not isinstance(text, str) or not text:
             return text
-        result = self.catalog.translate(text, boundary=boundary)
-        self.counters[result.status] += 1
-        self.reporter.emit(
-            {
-                "event": "translation",
-                "status": result.status,
-                "boundary": boundary,
-                "rule_id": result.rule_id,
-                "source_file": result.source_file,
-                "family": result.family,
-                "variable_names": sorted((result.variables or {}).keys()),
-            },
-            input_text=text,
-            output_text=result.text,
-        )
+        try:
+            translated_background = translate_background_review_notification(text)
+            translated_model_card = translate_model_switch_card(text)
+            if translated_background != text:
+                result = TranslationResult(
+                    text=translated_background,
+                    status="translated",
+                    rule_id="background_review.notification",
+                    source_file="agent/background_review.py",
+                    family="background_review",
+                    variables={},
+                )
+            elif translated_model_card != text:
+                result = TranslationResult(
+                    text=translated_model_card,
+                    status="translated",
+                    rule_id="telegram.model_switch.card",
+                    source_file="gateway/slash_commands.py",
+                    family="telegram.model_picker",
+                    variables={},
+                )
+            else:
+                result = self.catalog.translate(text, boundary=boundary)
+            self.counters[result.status] += 1
+        except Exception as exc:
+            self.counters["wrapper_error"] += 1
+            try:
+                self.reporter.emit(
+                    {
+                        "event": "translation",
+                        "status": "wrapper_error",
+                        "boundary": boundary,
+                        "error_type": type(exc).__name__,
+                    }
+                )
+            except Exception:
+                pass
+            return text
+
+        try:
+            self.reporter.emit(
+                {
+                    "event": "translation",
+                    "status": result.status,
+                    "boundary": boundary,
+                    "rule_id": result.rule_id,
+                    "source_file": result.source_file,
+                    "family": result.family,
+                    "variable_names": sorted((result.variables or {}).keys()),
+                },
+                input_text=text,
+                output_text=result.text,
+            )
+        except Exception:
+            self.counters["reporter_error"] += 1
         return result.text
 
     def summary(self) -> str:
@@ -158,6 +200,55 @@ def _install_button_boundary(adapter: Any, state: RuntimeState) -> None:
     state.boundaries[name] = "installed"
 
 
+def _install_callback_boundaries(adapter: Any, state: RuntimeState) -> None:
+    """Translate callback popups/edits only after the live adapter is available."""
+    try:
+        from telegram import CallbackQuery
+    except Exception:
+        state.boundaries["telegram.CallbackQuery"] = "class_missing"
+        return
+
+    setattr(CallbackQuery, "_procvetaev_localization_state", state)
+    for method_name, text_position in (("answer", 0), ("edit_message_text", 0)):
+        boundary = f"telegram.CallbackQuery.{method_name}"
+        original = getattr(CallbackQuery, method_name, None)
+        if not callable(original):
+            state.boundaries[boundary] = "method_missing"
+            continue
+        if getattr(original, "_procvetaev_localization_wrapped", False):
+            state.boundaries[boundary] = "already_installed"
+            continue
+
+        async def wrapped(
+            self: Any,
+            *args: Any,
+            _original: Any = original,
+            _boundary: str = boundary,
+            _text_position: int = text_position,
+            **kwargs: Any,
+        ) -> Any:
+            current_state = getattr(
+                type(self), "_procvetaev_localization_state", state
+            )
+            call_args = list(args)
+            call_kwargs = dict(kwargs)
+            if len(call_args) > _text_position and isinstance(
+                call_args[_text_position], str
+            ):
+                call_args[_text_position] = current_state.translate(
+                    call_args[_text_position], _boundary
+                )
+            elif isinstance(call_kwargs.get("text"), str):
+                call_kwargs["text"] = current_state.translate(
+                    call_kwargs["text"], _boundary
+                )
+            return await _original(self, *call_args, **call_kwargs)
+
+        setattr(wrapped, "_procvetaev_localization_wrapped", True)
+        setattr(CallbackQuery, method_name, wrapped)
+        state.boundaries[boundary] = "installed"
+
+
 def install_on_adapter(adapter: Any, state: RuntimeState) -> bool:
     if getattr(adapter, "_procvetaev_localization_installed", False):
         return False
@@ -169,6 +260,7 @@ def install_on_adapter(adapter: Any, state: RuntimeState) -> bool:
     _install_format_boundary(adapter, state)
     _install_transport_boundary(adapter, state)
     _install_button_boundary(adapter, state)
+    _install_callback_boundaries(adapter, state)
     state.reporter.emit(
         {
             "event": "adapter_install",

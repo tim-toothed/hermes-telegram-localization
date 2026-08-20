@@ -5101,3 +5101,21 @@ groups:
       to: ⛔ У вас нет прав для ответа на запросы обновления.
       boundaries:
       - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.model-switched-popup
+      family: telegram.callback
+      from: Model switched!
+      to: Модель изменена.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.model-switch-failed-popup
+      family: telegram.callback
+      from: Switch failed.
+      to: Не удалось изменить модель.
+      boundaries:
+      - telegram.CallbackQuery.answer
+    - id: hardcoded.telegram.expensive-model-confirm-popup
+      family: telegram.callback
+      from: Confirm expensive model
+      to: Подтвердите выбор дорогой модели
+      boundaries:
+      - telegram.CallbackQuery.answer

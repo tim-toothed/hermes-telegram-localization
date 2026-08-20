@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 from typing import Any
 
+from .cron_delivery import install_cron_delivery_wrapper
 from .menu_filter import HIDDEN_TELEGRAM_COMMANDS, install_telegram_menu_filter
 from .reporter import JsonlReporter
 from .runtime import (
@@ -123,6 +124,26 @@ def register(ctx: Any) -> None:
     _STATE.boundaries[
         "GatewayRunner._notify_active_sessions_of_shutdown"
     ] = shutdown_status
+
+    try:
+        cron_delivery_status = install_cron_delivery_wrapper(_STATE)
+    except Exception as exc:
+        cron_delivery_status = "install_failed"
+        reporter.emit(
+            {
+                "event": "cron_delivery",
+                "status": cron_delivery_status,
+                "error_type": type(exc).__name__,
+            }
+        )
+    else:
+        reporter.emit(
+            {
+                "event": "cron_delivery",
+                "status": cron_delivery_status,
+            }
+        )
+    _STATE.boundaries["cron.scheduler._deliver_result"] = cron_delivery_status
 
     def on_pre_gateway_dispatch(**kwargs: Any) -> None:
         if _STATE is None:

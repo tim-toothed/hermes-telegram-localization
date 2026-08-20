@@ -6,6 +6,11 @@ from collections.abc import Callable, Iterable
 from functools import wraps
 from typing import Any
 
+try:
+    from .command_descriptions import localize_command_descriptions
+except ImportError:  # Direct execution from the plugin checkout.
+    from command_descriptions import localize_command_descriptions
+
 
 HIDDEN_TELEGRAM_COMMANDS = frozenset(
     {
@@ -67,7 +72,11 @@ def install_telegram_menu_filter() -> str:
     @wraps(original)
     def wrapped(*args: Any, **kwargs: Any) -> tuple[list[tuple[str, str]], int]:
         commands, hidden_count = original(*args, **kwargs)
-        filtered, removed_count = filter_menu_commands(commands)
+        try:
+            localized = localize_command_descriptions(commands)
+            filtered, removed_count = filter_menu_commands(localized)
+        except Exception:
+            return commands, hidden_count
         return filtered, hidden_count + removed_count
 
     setattr(wrapped, "_procvetaev_menu_filter", True)

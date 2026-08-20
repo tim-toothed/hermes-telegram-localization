@@ -34,9 +34,9 @@ hermes plugins update procvetaev-localization
 - Linux: plugin import, catalog loading, and translation smoke passed on Linux/Python 3.12. The runtime contains no OS-specific paths or APIs.
 - macOS: supported by the same platform-neutral runtime, but not yet exercised in this release.
 
-The plugin currently cannot translate three early or unsupported surfaces safely: the Gateway restart notification sent before adapter activation, callback popups, and Telegram command-menu descriptions. These remain English rather than using unsafe global Telegram class monkey-patches.
+The plugin does not translate early restart/startup/update notifications or the optional Telegram profile status indicator. Callback popups and callback message edits are covered through narrow live Telegram callback boundaries installed after adapter activation; callback data and command IDs remain unchanged.
 
-The plugin does apply a display-only filter to `hermes_cli.commands.telegram_menu_commands()` during normal plugin registration, before Telegram connects. Commands listed in `HIDDEN_TELEGRAM_COMMANDS` disappear from the `/` menu on every Gateway start/reconnect registration while their handlers, `/help` entries, and manual invocation remain unchanged.
+During normal plugin registration, before Telegram connects, the plugin wraps `hermes_cli.commands.telegram_menu_commands()`. The wrapper applies Russian descriptions to every known command and then removes entries listed in `HIDDEN_TELEGRAM_COMMANDS` from the `/` menu. Hidden commands retain Russian descriptions for future re-enabling; their handlers, `/help` entries, and manual invocation remain unchanged. Unknown future plugin commands fail open with their original descriptions.
 
 ## Acceptance tests
 
@@ -51,7 +51,11 @@ The suite performs no Telegram network calls. It exercises the real installed Te
 ## Design
 
 - `plugin.yaml` and `register(ctx)` use the normal Hermes standalone plugin loader.
-- During plugin registration, a fail-open display filter wraps the shared Telegram menu generator before adapter connection; it does not modify command dispatch.
+- During plugin registration, a fail-open menu wrapper localizes known command descriptions and applies a display-only filter before adapter connection; it does not modify command dispatch.
+- Background self-improvement summaries are translated structurally when Hermes emits them; names and dynamic content remain literal. The `Memory updated` live notification is not yet exercised in this release.
+- Callback popups and callback edits are translated at narrow live Telegram callback boundaries. Model/provider identifiers remain literal, and model-switch confirmation cards are translated structurally.
+- Cron deliveries use a compact `⏰ <task name>` header without job IDs or management boilerplate.
+- A narrow shutdown wrapper activates localization on the still-connected Telegram adapter before Hermes emits shutdown notices; startup/restart notifications remain a separate uncovered lifecycle.
 - `pre_gateway_dispatch` obtains the real adapter instance through `GatewayRunner._adapter_for_source()` before message dispatch.
 - Translation boundaries cover Telegram Markdown formatting, control-message transport, and inline-button labels.
 - Known unique rules are translated; unknown or ambiguous text passes through unchanged.
@@ -89,3 +93,5 @@ Rules are grouped by the Hermes source module that emits them. Optional `boundar
 - `wrapper_error`
 
 The plugin is fail-open: translation or reporting failures do not block Telegram delivery.
+
+The current covered, partial, and blocked Telegram surfaces are tracked in [`docs/LOCALIZATION_SURFACE_INVENTORY.md`](docs/LOCALIZATION_SURFACE_INVENTORY.md).
