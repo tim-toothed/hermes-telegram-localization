@@ -12,6 +12,7 @@ from .runtime import (
     RuntimeState,
     activate_from_gateway_event,
 )
+from .shutdown_localization import install_shutdown_localization
 from .translator import Catalog
 
 
@@ -100,6 +101,28 @@ def register(ctx: Any) -> None:
     _STATE.boundaries["hermes_cli.commands.telegram_menu_commands"] = (
         menu_filter_status
     )
+
+    try:
+        shutdown_status = install_shutdown_localization(_STATE)
+    except Exception as exc:
+        shutdown_status = "install_failed"
+        reporter.emit(
+            {
+                "event": "shutdown_localization",
+                "status": shutdown_status,
+                "error_type": type(exc).__name__,
+            }
+        )
+    else:
+        reporter.emit(
+            {
+                "event": "shutdown_localization",
+                "status": shutdown_status,
+            }
+        )
+    _STATE.boundaries[
+        "GatewayRunner._notify_active_sessions_of_shutdown"
+    ] = shutdown_status
 
     def on_pre_gateway_dispatch(**kwargs: Any) -> None:
         if _STATE is None:
