@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.3
+## Covered by plugin 0.3.4
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -21,7 +21,7 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 
 | Surface | Coverage | Pending evidence |
 |---|---|---|
-| Background self-improvement review | Structured translator handles the fixed envelope, exact memory/profile labels, and bounded skill actions. Unknown or dynamic payloads fail open unchanged. | `Memory updated` was not emitted during D2 acceptance and will be checked during production rollout. |
+| Background self-improvement review | Structured translator handles the fixed envelope, exact memory/profile labels, bounded skill create/update/full-rewrite actions, and single-action file-patch counts. Mixed summaries containing a file patch, unknown actions, and dynamic previews fail open unchanged. | Attended Telegram emission after plugin update and Gateway restart. |
 
 ## Confirmed gaps and deferred surfaces
 
