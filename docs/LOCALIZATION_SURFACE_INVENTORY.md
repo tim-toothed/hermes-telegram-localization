@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.7
+## Covered by plugin 0.3.8
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -16,6 +16,7 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 | Cron delivery | `cron.scheduler._deliver_result` | Real D2 delivery verified with `⏰ <task name>`, separator, and literal payload; job ID and management footer are omitted. |
 | Gateway shutdown notification | `GatewayRunner._notify_active_sessions_of_shutdown` | Real D2 graceful shutdown verified; localization activates before the notice is sent. |
 | Long-running heartbeat and busy activity | `gateway/run.py` activity heartbeat and busy acknowledgements | Structured translator localizes elapsed time, iterations, known built-in tools, provider waits/retries, and context compression. Unknown plugin/MCP tool IDs fail open unchanged. D2 verification is pending because the stand is offline. |
+| Context compaction completion | `agent/conversation_compression.py` `status_callback("compacted", ...)` → live `TelegramAdapter.format_message` | Exact terminal edge is translated to `✅ Сжатие контекста завершено — продолжаю текущий запрос...`; telemetry confirms the English source reached this boundary as passthrough before 0.3.8. |
 
 ## Implemented but awaiting live notification
 

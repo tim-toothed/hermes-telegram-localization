@@ -255,6 +255,13 @@ groups:
       family: tool_progress
       from: Searching the web
       to: Ищу в интернете
+  agent.conversation.compression.py:
+    source_file: agent/conversation_compression.py
+    rules:
+    - id: compression.compaction_complete
+      family: runtime_status
+      from: ✓ Context compaction complete — continuing turn...
+      to: ✅ Сжатие контекста завершено — продолжаю текущий запрос...
   cron.scheduler.py:
     source_file: cron/scheduler.py
     rules:
