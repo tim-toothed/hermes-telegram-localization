@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.4
+## Covered by plugin 0.3.5
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -22,6 +22,7 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 | Surface | Coverage | Pending evidence |
 |---|---|---|
 | Background self-improvement review | Structured translator handles the fixed envelope, exact memory/profile labels, bounded skill create/update/full-rewrite actions, and single-action file-patch counts. Mixed summaries containing a file patch, unknown actions, and dynamic previews fail open unchanged. | Attended Telegram emission after plugin update and Gateway restart. |
+| Delivery-ledger recovered reply | Startup wrapper activates the live Telegram adapter boundary before recovery replay; only the fixed marker is translated and stored reply content remains literal. | Attended recovery after an actual interrupted delivery and Gateway restart. |
 
 ## Confirmed gaps and deferred surfaces
 

@@ -9,6 +9,7 @@ from contextvars import ContextVar
 from typing import Any, Callable
 
 from .background_review_localization import translate_background_review_notification
+from .delivery_recovery_localization import translate_delivery_recovery_notice
 from .model_switch_localization import translate_model_switch_card
 from .runtime_status_localization import translate_runtime_status
 from .translator import Catalog, TranslationResult
@@ -35,6 +36,7 @@ class RuntimeState:
             return text
         try:
             translated_background = translate_background_review_notification(text)
+            translated_recovery = translate_delivery_recovery_notice(text)
             translated_model_card = translate_model_switch_card(text)
             translated_runtime_status = translate_runtime_status(text)
             if translated_background != text:
@@ -44,6 +46,15 @@ class RuntimeState:
                     rule_id="background_review.notification",
                     source_file="agent/background_review.py",
                     family="background_review",
+                    variables={},
+                )
+            elif translated_recovery != text:
+                result = TranslationResult(
+                    text=translated_recovery,
+                    status="translated",
+                    rule_id="delivery_recovery.notice",
+                    source_file="gateway/delivery_ledger.py",
+                    family="delivery_recovery",
                     variables={},
                 )
             elif translated_model_card != text:
@@ -129,26 +140,51 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
             *args: Any,
             _original: Any = original,
             _signature: Any = signature,
+            _method_name: str = method_name,
             **kwargs: Any,
         ) -> Any:
+            bound = None
             try:
                 bound = _signature.bind_partial(*args, **kwargs)
                 metadata = bound.arguments.get("metadata")
             except Exception:
                 metadata = kwargs.get("metadata")
-            suppress = bool(
+
+            suppress_final_reply = bool(
                 isinstance(metadata, dict)
                 and metadata.get("notify") is True
                 and not state._command_dispatch.get()
             )
-            token = state._suppress_translation.set(suppress)
+            recovery_translated = False
+            if bound is not None and _method_name == "send" and not suppress_final_reply:
+                content = bound.arguments.get("content")
+                if isinstance(content, str):
+                    candidate = translate_delivery_recovery_notice(content)
+                    if candidate != content:
+                        bound.arguments["content"] = state.translate(
+                            content, "TelegramAdapter.send.delivery_recovery_entry"
+                        )
+                        recovery_translated = True
+
+            # Once the fixed recovery prefix is translated at send entry, suppress
+            # downstream format/transport translation so the stored reply body is
+            # preserved literally on both rich and legacy Telegram paths.
+            token = state._suppress_translation.set(
+                suppress_final_reply or recovery_translated
+            )
             try:
+                if bound is not None and recovery_translated:
+                    return await _original(*bound.args, **bound.kwargs)
                 return await _original(*args, **kwargs)
             finally:
                 state._suppress_translation.reset(token)
 
         setattr(adapter, method_name, guarded)
         state.boundaries[boundary] = "installed"
+        if method_name == "send":
+            state.boundaries[
+                "TelegramAdapter.send.delivery_recovery_entry"
+            ] = "installed"
 
 
 def _install_format_boundary(adapter: Any, state: RuntimeState) -> None:

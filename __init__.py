@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from .cron_delivery import install_cron_delivery_wrapper
+from .delivery_recovery_activation import install_delivery_recovery_localization
 from .menu_filter import HIDDEN_TELEGRAM_COMMANDS, install_telegram_menu_filter
 from .reporter import JsonlReporter
 from .runtime import (
@@ -144,6 +145,28 @@ def register(ctx: Any) -> None:
             }
         )
     _STATE.boundaries["cron.scheduler._deliver_result"] = cron_delivery_status
+
+    try:
+        delivery_recovery_status = install_delivery_recovery_localization(_STATE)
+    except Exception as exc:
+        delivery_recovery_status = "install_failed"
+        reporter.emit(
+            {
+                "event": "delivery_recovery_localization",
+                "status": delivery_recovery_status,
+                "error_type": type(exc).__name__,
+            }
+        )
+    else:
+        reporter.emit(
+            {
+                "event": "delivery_recovery_localization",
+                "status": delivery_recovery_status,
+            }
+        )
+    _STATE.boundaries[
+        "GatewayRunner._redeliver_pending_obligations"
+    ] = delivery_recovery_status
 
     def on_pre_gateway_dispatch(**kwargs: Any) -> None:
         if _STATE is None:
