@@ -53,6 +53,7 @@ The suite performs no Telegram network calls. It exercises the real installed Te
 - `plugin.yaml` and `register(ctx)` use the normal Hermes standalone plugin loader.
 - During plugin registration, a fail-open menu wrapper localizes known command descriptions and applies a display-only filter before adapter connection; it does not modify command dispatch.
 - Background self-improvement summaries are translated structurally when Hermes emits them; names and dynamic content remain literal. The `Memory updated` live notification is not yet exercised in this release.
+- Long-running heartbeat and busy-input details are translated structurally, including elapsed time, iterations, known built-in tool activity, provider waits/retries, and context compression. Unknown plugin/MCP tool identifiers remain literal. D2 runtime verification is pending because the stand is offline.
 - Callback popups and callback edits are translated at narrow live Telegram callback boundaries. Model/provider identifiers remain literal, and model-switch confirmation cards are translated structurally.
 - Cron deliveries use a compact `⏰ <task name>` header without job IDs or management boilerplate.
 - A narrow shutdown wrapper activates localization on the still-connected Telegram adapter before Hermes emits shutdown notices; startup/restart notifications remain a separate uncovered lifecycle.

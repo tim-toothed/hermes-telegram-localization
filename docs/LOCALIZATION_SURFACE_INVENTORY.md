@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.2
+## Covered by plugin 0.3.3
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -15,6 +15,7 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 | Model-switch confirmation card | `gateway/slash_commands.py` result card | Structured translator localizes labels and known capabilities while preserving model/provider values. Final D2 card verification is pending. |
 | Cron delivery | `cron.scheduler._deliver_result` | Real D2 delivery verified with `⏰ <task name>`, separator, and literal payload; job ID and management footer are omitted. |
 | Gateway shutdown notification | `GatewayRunner._notify_active_sessions_of_shutdown` | Real D2 graceful shutdown verified; localization activates before the notice is sent. |
+| Long-running heartbeat and busy activity | `gateway/run.py` activity heartbeat and busy acknowledgements | Structured translator localizes elapsed time, iterations, known built-in tools, provider waits/retries, and context compression. Unknown plugin/MCP tool IDs fail open unchanged. D2 verification is pending because the stand is offline. |
 
 ## Implemented but awaiting live notification
 

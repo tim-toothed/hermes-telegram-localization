@@ -10,6 +10,7 @@ from typing import Any, Callable
 
 from .background_review_localization import translate_background_review_notification
 from .model_switch_localization import translate_model_switch_card
+from .runtime_status_localization import translate_runtime_status
 from .translator import Catalog, TranslationResult
 
 
@@ -35,6 +36,7 @@ class RuntimeState:
         try:
             translated_background = translate_background_review_notification(text)
             translated_model_card = translate_model_switch_card(text)
+            translated_runtime_status = translate_runtime_status(text)
             if translated_background != text:
                 result = TranslationResult(
                     text=translated_background,
@@ -51,6 +53,15 @@ class RuntimeState:
                     rule_id="telegram.model_switch.card",
                     source_file="gateway/slash_commands.py",
                     family="telegram.model_picker",
+                    variables={},
+                )
+            elif translated_runtime_status != text:
+                result = TranslationResult(
+                    text=translated_runtime_status,
+                    status="translated",
+                    rule_id="runtime_status.structured",
+                    source_file="gateway/run.py",
+                    family="runtime_status",
                     variables={},
                 )
             else:
