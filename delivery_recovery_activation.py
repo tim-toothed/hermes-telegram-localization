@@ -1,4 +1,4 @@
-"""Activate Telegram localization before delivery-ledger recovery replay."""
+"""Activate Telegram localization before covered startup lifecycle sends."""
 
 from __future__ import annotations
 
@@ -12,38 +12,55 @@ _STATE_ATTR = "_procvetaev_delivery_recovery_localization_state"
 _WRAPPED_ATTR = "_procvetaev_delivery_recovery_localization_wrapped"
 
 
-def install_delivery_recovery_localization(state: RuntimeState) -> str:
-    """Wrap startup replay activation without changing ledger behavior."""
+def install_delivery_recovery_localization(state: RuntimeState) -> dict[str, str]:
+    """Wrap covered startup sends without changing lifecycle behavior."""
     from gateway.run import GatewayRunner
 
     setattr(GatewayRunner, _STATE_ATTR, state)
-    original = getattr(GatewayRunner, "_redeliver_pending_obligations", None)
-    if not callable(original):
-        return "method_missing"
-    if getattr(original, _WRAPPED_ATTR, False):
-        return "already_installed"
+    statuses: dict[str, str] = {}
+    for method_name in (
+        "_send_restart_notification",
+        "_redeliver_pending_obligations",
+    ):
+        original = getattr(GatewayRunner, method_name, None)
+        if not callable(original):
+            statuses[method_name] = "method_missing"
+            continue
+        if getattr(original, _WRAPPED_ATTR, False):
+            statuses[method_name] = "already_installed"
+            continue
 
-    @wraps(original)
-    async def wrapped(self: Any, *args: Any, **kwargs: Any) -> Any:
-        current_state = getattr(type(self), _STATE_ATTR, state)
-        try:
-            for platform, adapter in getattr(self, "adapters", {}).items():
-                platform_name = str(getattr(platform, "value", str(platform))).lower()
-                if platform_name == "telegram":
-                    install_on_adapter(adapter, current_state)
-        except Exception as exc:
+        @wraps(original)
+        async def wrapped(
+            self: Any,
+            *args: Any,
+            _original: Any = original,
+            _method_name: str = method_name,
+            **kwargs: Any,
+        ) -> Any:
+            current_state = getattr(type(self), _STATE_ATTR, state)
             try:
-                current_state.reporter.emit(
-                    {
-                        "event": "delivery_recovery_localization",
-                        "status": "activation_failed",
-                        "error_type": type(exc).__name__,
-                    }
-                )
-            except Exception:
-                pass
-        return await original(self, *args, **kwargs)
+                for platform, adapter in getattr(self, "adapters", {}).items():
+                    platform_name = str(
+                        getattr(platform, "value", str(platform))
+                    ).lower()
+                    if platform_name == "telegram":
+                        install_on_adapter(adapter, current_state)
+            except Exception as exc:
+                try:
+                    current_state.reporter.emit(
+                        {
+                            "event": "startup_localization",
+                            "method": _method_name,
+                            "status": "activation_failed",
+                            "error_type": type(exc).__name__,
+                        }
+                    )
+                except Exception:
+                    pass
+            return await _original(self, *args, **kwargs)
 
-    setattr(wrapped, _WRAPPED_ATTR, True)
-    setattr(GatewayRunner, "_redeliver_pending_obligations", wrapped)
-    return "installed"
+        setattr(wrapped, _WRAPPED_ATTR, True)
+        setattr(GatewayRunner, method_name, wrapped)
+        statuses[method_name] = "installed"
+    return statuses

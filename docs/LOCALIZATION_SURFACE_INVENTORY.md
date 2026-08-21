@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.5
+## Covered by plugin 0.3.6
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -23,14 +23,15 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 |---|---|---|
 | Background self-improvement review | Structured translator handles the fixed envelope, exact memory/profile labels, bounded skill create/update/full-rewrite actions, and single-action file-patch counts. Mixed summaries containing a file patch, unknown actions, and dynamic previews fail open unchanged. | Attended Telegram emission after plugin update and Gateway restart. |
 | Delivery-ledger recovered reply | Startup wrapper activates the live Telegram adapter boundary before recovery replay; only the fixed marker is translated and stored reply content remains literal. | Attended recovery after an actual interrupted delivery and Gateway restart. |
+| Chat-specific restart completion | For a native Telegram adapter, the startup wrapper activates the live adapter boundary before `_send_restart_notification`; the fixed success sentence is translated exactly. Relay-routed Telegram startup delivery remains unchanged. | Attended `/restart` after plugin update. |
 
 ## Confirmed gaps and deferred surfaces
 
 | Status | Surface | Reason |
 |---|---|---|
-| BLOCKED | Chat-specific restart notification after a fresh process starts | It can be emitted before live adapter translation boundaries are activated. |
 | BLOCKED | Home-channel “Gateway online” notification | Same startup-order gap. |
 | BLOCKED | Post-update completion notification after restart | Same startup-order gap; captured update output must remain literal. |
+| BLOCKED | Relay-routed Telegram startup lifecycle delivery | Relay delivery bypasses the native Telegram adapter boundaries owned by this plugin. |
 | OUT OF SCOPE | Optional Bot profile status indicator | Direct Bot API profile mutation; intentionally excluded from this release. |
 | DEFERRED | Language-specific BotCommand menus | Current PROCVETAEV bots intentionally publish one Russian command list. |
 

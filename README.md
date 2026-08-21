@@ -8,7 +8,7 @@ Standalone runtime plugin that translates Hermes system UI in Telegram without m
 hermes plugins install tim-toothed/hermes-telegram-localization --enable
 ```
 
-After enabling the plugin, restart the Gateway normally. The Telegram adapter is discovered from the live `GatewayRunner` and wrapped in memory either before a startup delivery-ledger replay or on the first inbound Telegram event.
+After enabling the plugin, restart the Gateway normally. The Telegram adapter is discovered from the live `GatewayRunner` and wrapped in memory before a chat-specific restart completion notice, before a startup delivery-ledger replay, or on the first inbound Telegram event.
 
 Check plugin state:
 
@@ -34,7 +34,7 @@ hermes plugins update procvetaev-localization
 - Linux: plugin import, catalog loading, and translation smoke passed on Linux/Python 3.12. The runtime contains no OS-specific paths or APIs.
 - macOS: supported by the same platform-neutral runtime, but not yet exercised in this release.
 
-The startup delivery-ledger recovery marker is covered. Other early restart/startup/update notifications and the optional Telegram profile status indicator are not translated. Callback popups and callback message edits are covered through narrow live Telegram callback boundaries installed after adapter activation; callback data and command IDs remain unchanged.
+The chat-specific restart completion notice and startup delivery-ledger recovery marker are covered for a native Telegram adapter. Relay-routed Telegram startup delivery, other early startup/update notifications, and the optional Telegram profile status indicator are not translated. Callback popups and callback message edits are covered through narrow live Telegram callback boundaries installed after adapter activation; callback data and command IDs remain unchanged.
 
 During normal plugin registration, before Telegram connects, the plugin wraps `hermes_cli.commands.telegram_menu_commands()`. The wrapper applies Russian descriptions to every known command and then removes entries listed in `HIDDEN_TELEGRAM_COMMANDS` from the `/` menu. Hidden commands retain Russian descriptions for future re-enabling; their handlers, `/help` entries, and manual invocation remain unchanged. Unknown future plugin commands fail open with their original descriptions.
 
@@ -54,6 +54,7 @@ The suite performs no Telegram network calls. It exercises the real installed Te
 - During plugin registration, a fail-open menu wrapper localizes known command descriptions and applies a display-only filter before adapter connection; it does not modify command dispatch.
 - Background self-improvement summaries are translated structurally when Hermes emits them, including `Memory updated`, profile updates, bounded skill create/update/full-rewrite messages, and single-action file-patch counts. Names, paths, counts, and dynamic previews remain literal. Mixed summaries containing a file patch fail open because the upstream delimiter is not escaped; attended Telegram verification is pending.
 - Delivery-ledger recovery notices are activated during Gateway startup before replay. Only the fixed recovery prefix is translated; the recovered reply body remains literal. Attended restart/recovery verification is pending.
+- Chat-specific `/restart` completion on a native Telegram adapter is activated before its startup send and translated exactly; session and delivery behavior remain unchanged. Relay-routed startup delivery is not covered. Attended Telegram verification is pending.
 - Long-running heartbeat and busy-input details are translated structurally, including elapsed time, iterations, known built-in tool activity, provider waits/retries, and context compression. Unknown plugin/MCP tool identifiers remain literal. D2 runtime verification is pending because the stand is offline.
 - Callback popups and callback edits are translated at narrow live Telegram callback boundaries. Model/provider identifiers remain literal, and model-switch confirmation cards are translated structurally.
 - Cron deliveries use a compact `⏰ <task name>` header without job IDs or management boilerplate.

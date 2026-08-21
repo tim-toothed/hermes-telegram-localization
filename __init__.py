@@ -147,26 +147,28 @@ def register(ctx: Any) -> None:
     _STATE.boundaries["cron.scheduler._deliver_result"] = cron_delivery_status
 
     try:
-        delivery_recovery_status = install_delivery_recovery_localization(_STATE)
+        startup_statuses = install_delivery_recovery_localization(_STATE)
     except Exception as exc:
-        delivery_recovery_status = "install_failed"
+        startup_statuses = {
+            "_send_restart_notification": "install_failed",
+            "_redeliver_pending_obligations": "install_failed",
+        }
         reporter.emit(
             {
-                "event": "delivery_recovery_localization",
-                "status": delivery_recovery_status,
+                "event": "startup_localization",
+                "status": "install_failed",
                 "error_type": type(exc).__name__,
             }
         )
     else:
         reporter.emit(
             {
-                "event": "delivery_recovery_localization",
-                "status": delivery_recovery_status,
+                "event": "startup_localization",
+                "boundaries": startup_statuses,
             }
         )
-    _STATE.boundaries[
-        "GatewayRunner._redeliver_pending_obligations"
-    ] = delivery_recovery_status
+    for method_name, status in startup_statuses.items():
+        _STATE.boundaries[f"GatewayRunner.{method_name}"] = status
 
     def on_pre_gateway_dispatch(**kwargs: Any) -> None:
         if _STATE is None:
