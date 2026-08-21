@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import re
 
+from .background_review_structured import translate_registered_localized_envelope
+
 
 _SOURCE_PREFIX = "💾 Self-improvement review: "
 _TARGET_PREFIX = "💾 Фоновое обновление: "
@@ -82,16 +84,24 @@ def _translate_known_action(action: str) -> str | None:
     )
 
 
+def translate_background_review_action(action: str) -> str | None:
+    """Translate one producer-provided action without parsing an envelope."""
+    return _translate_known_action(action)
+
+
 def translate_background_review_notification(text: str) -> str:
     """Translate only a fully recognized system envelope; otherwise fail open."""
     if not text.startswith(_SOURCE_PREFIX):
         return text
 
+    registered = translate_registered_localized_envelope(text)
+    if registered is not None:
+        return registered
+
     actions = text[len(_SOURCE_PREFIX) :].split(_SEPARATOR)
-    # The producer does not escape its action separator inside file paths.
-    # A mixed summary containing a file-patch action is therefore ambiguous:
-    # the same bytes can represent either multiple actions or one legal path.
-    # Translate single file-patch notices only; fail open for mixed summaries.
+    # Without the producer-side structured wrapper, a mixed summary containing
+    # a file-patch action is ambiguous because paths may contain the separator.
+    # Preserve the original whole envelope rather than infer a partition.
     if len(actions) > 1 and any(
         _PATCHED_SKILL_FILE_PATTERN.fullmatch(action) is not None
         for action in actions

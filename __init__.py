@@ -6,6 +6,8 @@ import argparse
 from pathlib import Path
 from typing import Any
 
+from .background_review_localization import translate_background_review_action
+from .background_review_structured import install_structured_background_review_localization
 from .cron_delivery import install_cron_delivery_wrapper
 from .delivery_recovery_activation import install_delivery_recovery_localization
 from .menu_filter import HIDDEN_TELEGRAM_COMMANDS, install_telegram_menu_filter
@@ -145,6 +147,30 @@ def register(ctx: Any) -> None:
             }
         )
     _STATE.boundaries["cron.scheduler._deliver_result"] = cron_delivery_status
+
+    try:
+        background_review_status = install_structured_background_review_localization(
+            translate_background_review_action
+        )
+    except Exception as exc:
+        background_review_status = "install_failed"
+        reporter.emit(
+            {
+                "event": "background_review_structured_registry",
+                "status": background_review_status,
+                "error_type": type(exc).__name__,
+            }
+        )
+    else:
+        reporter.emit(
+            {
+                "event": "background_review_structured_registry",
+                "status": background_review_status,
+            }
+        )
+    _STATE.boundaries[
+        "background_review.summarize_background_review_actions"
+    ] = background_review_status
 
     try:
         startup_statuses = install_delivery_recovery_localization(_STATE)

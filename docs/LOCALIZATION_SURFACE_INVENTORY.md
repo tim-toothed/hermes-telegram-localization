@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.6
+## Covered by plugin 0.3.7
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -21,7 +21,7 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 
 | Surface | Coverage | Pending evidence |
 |---|---|---|
-| Background self-improvement review | Structured translator handles the fixed envelope, exact memory/profile labels, bounded skill create/update/full-rewrite actions, and single-action file-patch counts. Mixed summaries containing a file patch, unknown actions, and dynamic previews fail open unchanged. | Attended Telegram emission after plugin update and Gateway restart. |
+| Background self-improvement review | A fail-open wrapper translates each producer action independently and returns a new localized list only when every action is recognized; otherwise it returns the original list unchanged. It registers the exact serialized localized envelope in a bounded thread-safe set; the outbound boundary then replaces only the fixed English prefix and preserves the registered payload verbatim. Mixed file-patch summaries need no parsing of the unescaped delimiter, and identical serialized payloads have one deterministic target. Unknown actions and dynamic previews remain unchanged. | Attended Telegram emission after plugin update and Gateway restart. |
 | Delivery-ledger recovered reply | Startup wrapper activates the live Telegram adapter boundary before recovery replay; only the fixed marker is translated and stored reply content remains literal. | Attended recovery after an actual interrupted delivery and Gateway restart. |
 | Chat-specific restart completion | For a native Telegram adapter, the startup wrapper activates the live adapter boundary before `_send_restart_notification`; the fixed success sentence is translated exactly. Relay-routed Telegram startup delivery remains unchanged. | Attended `/restart` after plugin update. |
 
