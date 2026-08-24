@@ -8,11 +8,20 @@ from collections import Counter
 from contextvars import ContextVar
 from typing import Any, Callable
 
+from .account_usage_localization import translate_account_usage_envelope
 from .background_review_localization import translate_background_review_notification
 from .delivery_recovery_localization import translate_delivery_recovery_notice
 from .model_switch_localization import translate_model_switch_card
 from .runtime_status_localization import translate_runtime_status
 from .translator import Catalog, TranslationResult
+
+
+def _safe_transform(transform: Callable[[str], str], text: str) -> str:
+    """Run a pure envelope recognizer without ever blocking delivery."""
+    try:
+        return transform(text)
+    except Exception:
+        return text
 
 
 class RuntimeState:
@@ -28,6 +37,7 @@ class RuntimeState:
         self._command_dispatch: ContextVar[bool] = ContextVar(
             "procvetaev_localization_command_dispatch", default=False
         )
+        self._runtime_status_message_ids: dict[tuple[str, str], None] = {}
 
     def translate(self, text: Any, boundary: str) -> Any:
         if self._suppress_translation.get():
@@ -39,7 +49,30 @@ class RuntimeState:
             translated_recovery = translate_delivery_recovery_notice(text)
             translated_model_card = translate_model_switch_card(text)
             translated_runtime_status = translate_runtime_status(text)
-            if translated_background != text:
+            translated_account_usage = translate_account_usage_envelope(text)
+            if translated_account_usage != text:
+                # The account parser removes ambiguous English account lines first;
+                # then the catalog can safely localize the surrounding /usage card.
+                segmented = self.catalog.translate(
+                    translated_account_usage, boundary=boundary
+                )
+                result = TranslationResult(
+                    text=(
+                        segmented.text
+                        if segmented.status == "translated"
+                        else translated_account_usage
+                    ),
+                    status="translated",
+                    rule_id=(
+                        "account_usage.structured+" + str(segmented.rule_id)
+                        if segmented.status == "translated"
+                        else "account_usage.structured"
+                    ),
+                    source_file="agent/account_usage.py,gateway/slash_commands.py",
+                    family="account_usage",
+                    variables={},
+                )
+            elif translated_background != text:
                 result = TranslationResult(
                     text=translated_background,
                     status="translated",
@@ -156,26 +189,81 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
                 and not state._command_dispatch.get()
             )
             recovery_translated = False
+            runtime_status_translated = False
+            runtime_status_send = False
+            is_stream_preview = bool(
+                isinstance(metadata, dict)
+                and metadata.get("expect_edits") is True
+            )
             if bound is not None and _method_name == "send" and not suppress_final_reply:
                 content = bound.arguments.get("content")
                 if isinstance(content, str):
-                    candidate = translate_delivery_recovery_notice(content)
+                    runtime_status_send = bool(
+                        not is_stream_preview
+                        and _safe_transform(translate_runtime_status, content) != content
+                    )
+                    candidate = _safe_transform(
+                        translate_delivery_recovery_notice, content
+                    )
                     if candidate != content:
-                        bound.arguments["content"] = state.translate(
+                        translated = state.translate(
                             content, "TelegramAdapter.send.delivery_recovery_entry"
                         )
-                        recovery_translated = True
+                        if translated != content:
+                            bound.arguments["content"] = translated
+                            recovery_translated = True
 
-            # Once the fixed recovery prefix is translated at send entry, suppress
-            # downstream format/transport translation so the stored reply body is
-            # preserved literally on both rich and legacy Telegram paths.
+            # Heartbeat refreshes use raw edit_message(finalize=False). Translate
+            # only IDs previously returned by a recognized non-model heartbeat send.
+            if (
+                bound is not None
+                and _method_name == "edit_message"
+                and bound.arguments.get("finalize", False) is False
+            ):
+                status_key = (
+                    str(bound.arguments.get("chat_id")),
+                    str(bound.arguments.get("message_id")),
+                )
+                content = bound.arguments.get("content")
+                if (
+                    status_key in state._runtime_status_message_ids
+                    and isinstance(content, str)
+                ):
+                    candidate = _safe_transform(translate_runtime_status, content)
+                    if candidate != content:
+                        translated = state.translate(
+                            content, "TelegramAdapter.edit_message.runtime_status_entry"
+                        )
+                        if translated != content:
+                            bound.arguments["content"] = translated
+                            runtime_status_translated = True
+
+            # Entry translators already returned their final localized envelope;
+            # suppress downstream reprocessing while preserving model-reply guards.
             token = state._suppress_translation.set(
-                suppress_final_reply or recovery_translated
+                suppress_final_reply or recovery_translated or runtime_status_translated
             )
             try:
-                if bound is not None and recovery_translated:
-                    return await _original(*bound.args, **bound.kwargs)
-                return await _original(*args, **kwargs)
+                if bound is not None and (recovery_translated or runtime_status_translated):
+                    result = await _original(*bound.args, **bound.kwargs)
+                else:
+                    result = await _original(*args, **kwargs)
+                if (
+                    runtime_status_send
+                    and getattr(result, "success", False)
+                    and getattr(result, "message_id", None) is not None
+                    and bound is not None
+                ):
+                    status_key = (
+                        str(bound.arguments.get("chat_id")),
+                        str(result.message_id),
+                    )
+                    if len(state._runtime_status_message_ids) >= 1024:
+                        state._runtime_status_message_ids.pop(
+                            next(iter(state._runtime_status_message_ids))
+                        )
+                    state._runtime_status_message_ids[status_key] = None
+                return result
             finally:
                 state._suppress_translation.reset(token)
 
@@ -184,6 +272,10 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
         if method_name == "send":
             state.boundaries[
                 "TelegramAdapter.send.delivery_recovery_entry"
+            ] = "installed"
+        elif method_name == "edit_message":
+            state.boundaries[
+                "TelegramAdapter.edit_message.runtime_status_entry"
             ] = "installed"
 
 

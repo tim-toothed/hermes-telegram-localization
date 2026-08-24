@@ -2,7 +2,7 @@
 
 Scope: Hermes Telegram user interface outside model output, tool output, logs, and approval UX.
 
-## Covered by plugin 0.3.8
+## Covered by plugin 0.3.9
 
 | Surface | Runtime path | Coverage |
 |---|---|---|
@@ -17,6 +17,8 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 | Gateway shutdown notification | `GatewayRunner._notify_active_sessions_of_shutdown` | Real D2 graceful shutdown verified; localization activates before the notice is sent. |
 | Long-running heartbeat and busy activity | `gateway/run.py` activity heartbeat and busy acknowledgements | Structured translator localizes elapsed time, iterations, known built-in tools, provider waits/retries, and context compression. Unknown plugin/MCP tool IDs fail open unchanged. D2 verification is pending because the stand is offline. |
 | Context compaction completion | `agent/conversation_compression.py` `status_callback("compacted", ...)` → live `TelegramAdapter.format_message` | Exact terminal edge is translated to `✅ Сжатие контекста завершено — продолжаю текущий запрос...`; telemetry confirms the English source reached this boundary as passthrough before 0.3.8. |
+| Account usage blocks in `/usage` | `agent/account_usage.py` → `gateway/slash_commands.py` → Telegram formatter | Structured line translator recognizes both `Account limits` and `Nous credits`, localizes known labels, balances, percentages, reset windows, and fixes the known pending-detail italic marker while preserving provider values, timestamps, URLs, and unknown lines. |
+| Repeated long-running heartbeat edits | `gateway/run.py` → `TelegramAdapter.edit_message(finalize=False)` | Runtime-status translation runs at edit entry only for a full known heartbeat envelope; model-authored edits remain guarded. |
 
 ## Implemented but awaiting live notification
 
