@@ -1,4 +1,4 @@
-# Hermes Telegram Russian Localization
+# Hermes Telegram Localization
 
 Standalone runtime plugin that translates Hermes system UI in Telegram without modifying Hermes core files.
 
@@ -25,7 +25,7 @@ In Telegram:
 Update from GitHub:
 
 ```bash
-hermes plugins update procvetaev-localization
+hermes plugins update hermes-telegram-localization
 ```
 
 ## Compatibility
@@ -65,7 +65,7 @@ The suite performs no Telegram network calls. It exercises the real installed Te
 - Final LLM replies marked with `metadata.notify=true` are excluded from translation.
 - Button-only labels are restricted with `boundaries` and cannot match normal message text.
 - Callback data, command IDs, model names, provider names, and other machine fields are never changed.
-- Runtime events are written to `$HERMES_HOME/plugin-data/procvetaev-localization/reports/localization.jsonl` without message bodies or secrets.
+- Runtime events are written to `$HERMES_HOME/plugin-data/hermes-telegram-localization/reports/localization.jsonl` without message bodies or secrets.
 
 ## Rules
 
@@ -98,3 +98,7 @@ Rules are grouped by the Hermes source module that emits them. Optional `boundar
 The plugin is fail-open: translation or reporting failures do not block Telegram delivery.
 
 The current covered, partial, and blocked Telegram surfaces are tracked in [`docs/LOCALIZATION_SURFACE_INVENTORY.md`](docs/LOCALIZATION_SURFACE_INVENTORY.md).
+
+## Attribution
+
+**Author:** [tim-toothed](https://github.com/tim-toothed)

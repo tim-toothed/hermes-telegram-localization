@@ -66,7 +66,7 @@ def install_telegram_menu_filter() -> str:
     original: Callable[..., tuple[list[tuple[str, str]], int]] = (
         hermes_commands.telegram_menu_commands
     )
-    if getattr(original, "_procvetaev_menu_filter", False):
+    if getattr(original, "_hermes_telegram_localization_menu_filter", False):
         return "already_installed"
 
     @wraps(original)
@@ -79,6 +79,6 @@ def install_telegram_menu_filter() -> str:
             return commands, hidden_count
         return filtered, hidden_count + removed_count
 
-    setattr(wrapped, "_procvetaev_menu_filter", True)
+    setattr(wrapped, "_hermes_telegram_localization_menu_filter", True)
     hermes_commands.telegram_menu_commands = wrapped
     return "installed"

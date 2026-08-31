@@ -7,7 +7,7 @@ from pathlib import Path
 import yaml
 
 PLUGIN = Path(__file__).resolve().parents[1]
-RESULT = Path(tempfile.gettempdir()) / "procvetaev-localization-stratified-result.json"
+RESULT = Path(tempfile.gettempdir()) / "hermes-telegram-localization-stratified-result.json"
 
 spec = importlib.util.spec_from_file_location("loc_stratified_pkg", PLUGIN / "__init__.py", submodule_search_locations=[str(PLUGIN)])
 pkg = importlib.util.module_from_spec(spec)
@@ -30,7 +30,7 @@ original_format = adapter.format_message
 async def no_network_transport(**kwargs):
     raise AssertionError("stratified smoke must not call Telegram transport")
 adapter._send_message_with_thread_fallback = no_network_transport
-state = RuntimeState(Catalog.from_yaml(PLUGIN / "rules" / "ru.yaml"), JsonlReporter(Path(tempfile.gettempdir()) / "procvetaev-localization-stratified.jsonl"))
+state = RuntimeState(Catalog.from_yaml(PLUGIN / "rules" / "ru.yaml"), JsonlReporter(Path(tempfile.gettempdir()) / "hermes-telegram-localization-stratified.jsonl"))
 install_on_adapter(adapter, state)
 
 raw = yaml.safe_load((PLUGIN / "rules" / "ru.yaml").read_text(encoding="utf-8"))

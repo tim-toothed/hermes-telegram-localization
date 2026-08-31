@@ -14,7 +14,7 @@ _SEPARATOR = " · "
 _MAX_ENTRIES = 256
 _LOCK = Lock()
 _LOCALIZED_ENVELOPES: OrderedDict[str, None] = OrderedDict()
-_WRAPPED_ATTR = "_procvetaev_background_review_structured_wrapped"
+_WRAPPED_ATTR = "_hermes_telegram_background_review_structured_wrapped"
 
 
 def _remember_localized_envelope(actions: list[str]) -> None:

@@ -8,8 +8,8 @@ from typing import Any
 from .runtime import RuntimeState, install_on_adapter
 
 
-_STATE_ATTR = "_procvetaev_delivery_recovery_localization_state"
-_WRAPPED_ATTR = "_procvetaev_delivery_recovery_localization_wrapped"
+_STATE_ATTR = "_hermes_telegram_delivery_recovery_localization_state"
+_WRAPPED_ATTR = "_hermes_telegram_delivery_recovery_localization_wrapped"
 
 
 def install_delivery_recovery_localization(state: RuntimeState) -> dict[str, str]:

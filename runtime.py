@@ -32,10 +32,10 @@ class RuntimeState:
         self.boundaries: dict[str, str] = {}
         self.adapter_class = ""
         self._suppress_translation: ContextVar[bool] = ContextVar(
-            "procvetaev_localization_suppress", default=False
+            "hermes_telegram_localization_suppress", default=False
         )
         self._command_dispatch: ContextVar[bool] = ContextVar(
-            "procvetaev_localization_command_dispatch", default=False
+            "hermes_telegram_localization_command_dispatch", default=False
         )
         self._runtime_status_message_ids: dict[tuple[str, str], None] = {}
 
@@ -321,7 +321,7 @@ def _install_button_boundary(adapter: Any, state: RuntimeState) -> None:
     if not callable(original):
         state.boundaries[name] = "method_missing"
         return
-    if getattr(module, "_procvetaev_localization_button_wrapped", False):
+    if getattr(module, "_hermes_telegram_localization_button_wrapped", False):
         state.boundaries[name] = "already_installed"
         return
 
@@ -335,7 +335,7 @@ def _install_button_boundary(adapter: Any, state: RuntimeState) -> None:
         return original(*call_args, **call_kwargs)
 
     setattr(module, "InlineKeyboardButton", wrapped)
-    setattr(module, "_procvetaev_localization_button_wrapped", True)
+    setattr(module, "_hermes_telegram_localization_button_wrapped", True)
     state.boundaries[name] = "installed"
 
 
@@ -347,14 +347,14 @@ def _install_callback_boundaries(adapter: Any, state: RuntimeState) -> None:
         state.boundaries["telegram.CallbackQuery"] = "class_missing"
         return
 
-    setattr(CallbackQuery, "_procvetaev_localization_state", state)
+    setattr(CallbackQuery, "_hermes_telegram_localization_state", state)
     for method_name, text_position in (("answer", 0), ("edit_message_text", 0)):
         boundary = f"telegram.CallbackQuery.{method_name}"
         original = getattr(CallbackQuery, method_name, None)
         if not callable(original):
             state.boundaries[boundary] = "method_missing"
             continue
-        if getattr(original, "_procvetaev_localization_wrapped", False):
+        if getattr(original, "_hermes_telegram_localization_wrapped", False):
             state.boundaries[boundary] = "already_installed"
             continue
 
@@ -367,7 +367,7 @@ def _install_callback_boundaries(adapter: Any, state: RuntimeState) -> None:
             **kwargs: Any,
         ) -> Any:
             current_state = getattr(
-                type(self), "_procvetaev_localization_state", state
+                type(self), "_hermes_telegram_localization_state", state
             )
             call_args = list(args)
             call_kwargs = dict(kwargs)
@@ -383,15 +383,15 @@ def _install_callback_boundaries(adapter: Any, state: RuntimeState) -> None:
                 )
             return await _original(self, *call_args, **call_kwargs)
 
-        setattr(wrapped, "_procvetaev_localization_wrapped", True)
+        setattr(wrapped, "_hermes_telegram_localization_wrapped", True)
         setattr(CallbackQuery, method_name, wrapped)
         state.boundaries[boundary] = "installed"
 
 
 def install_on_adapter(adapter: Any, state: RuntimeState) -> bool:
-    if getattr(adapter, "_procvetaev_localization_installed", False):
+    if getattr(adapter, "_hermes_telegram_localization_installed", False):
         return False
-    setattr(adapter, "_procvetaev_localization_installed", True)
+    setattr(adapter, "_hermes_telegram_localization_installed", True)
     state.adapter_class = (
         f"{adapter.__class__.__module__}.{adapter.__class__.__qualname__}"
     )

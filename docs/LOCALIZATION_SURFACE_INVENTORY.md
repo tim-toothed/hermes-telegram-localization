@@ -36,7 +36,7 @@ Scope: Hermes Telegram user interface outside model output, tool output, logs, a
 | BLOCKED | Post-update completion notification after restart | Same startup-order gap; captured update output must remain literal. |
 | BLOCKED | Relay-routed Telegram startup lifecycle delivery | Relay delivery bypasses the native Telegram adapter boundaries owned by this plugin. |
 | OUT OF SCOPE | Optional Bot profile status indicator | Direct Bot API profile mutation; intentionally excluded from this release. |
-| DEFERRED | Language-specific BotCommand menus | Current PROCVETAEV bots intentionally publish one Russian command list. |
+| DEFERRED | Language-specific BotCommand menus | Current Telegram bots intentionally publish one Russian command list. |
 
 ## Explicit exclusions
 

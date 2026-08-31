@@ -1,4 +1,4 @@
-"""PROCVETAEV Russian localization for Hermes Telegram runtime."""
+"""Russian localization for the Hermes Telegram runtime."""
 
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ def register(ctx: Any) -> None:
     report_path = (
         _hermes_home()
         / "plugin-data"
-        / "procvetaev-localization"
+        / "hermes-telegram-localization"
         / "reports"
         / "localization.jsonl"
     )

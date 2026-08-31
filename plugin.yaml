@@ -1,8 +1,8 @@
-name: procvetaev-localization
+name: hermes-telegram-localization
 version: 0.3.9
-description: Russian runtime localization for Hermes Telegram
+description: Hermes Telegram Localization — Russian runtime UI
 kind: standalone
-author: PROCVETAEV
+author: tim-toothed
 platforms:
   - windows
   - linux

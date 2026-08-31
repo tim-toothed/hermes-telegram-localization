@@ -994,7 +994,7 @@ groups:
       from: ⚠️ No activity for {elapsed} min. If the agent does not respond, it will time out in {remaining} min. You can
         keep waiting or use `/reset`.
       to: ⚠️ Нет активности {elapsed} мин. Если агент не ответит, через {remaining} мин выполнение будет остановлено по тайм-ауту.
-        Можно продолжить ожидание или использовать `/reset`.
+        Можно продолжить ожидание или использовать `/new`.
       placeholders:
         elapsed: .+?
         remaining: '[0-9][0-9.,]*'
@@ -1668,7 +1668,7 @@ groups:
       to: '
 
 
-        ⚠️ Не удалось сохранить настройку: `config.yaml` недоступен для записи. При следующем запуске `/clear`, `/new`, `/reset`
+        ⚠️ Не удалось сохранить настройку: `config.yaml` недоступен для записи. При следующем запуске `/clear`, `/new`
         или `/undo` подтверждение появится снова. Чтобы отключить его постоянно, задайте `approvals.destructive_slash_confirm:
         false` в `config.yaml`.'
     - id: locale.runtime_warning.cron_failure_nudge
@@ -2085,7 +2085,7 @@ groups:
       from: ⚠️ Compression aborted ({error}). No messages were dropped — conversation is unchanged. Run /compress to retry,
         /reset for a clean session, or check your auxiliary.compression model configuration.
       to: ⚠️ Сжатие прервано ({error}). Сообщения не были удалены — разговор не изменился. Запустите /compress для повторной
-        попытки, /reset для новой сессии или проверьте конфигурацию модели auxiliary.compression.
+        попытки, /new для новой сессии или проверьте конфигурацию модели auxiliary.compression.
       placeholders:
         error: .*?
     - id: locale.gateway.compress.aux_failed
@@ -2827,7 +2827,7 @@ groups:
 
         Future messages in this room will use that transcript until `/reset` or another `/resume`.{msg_part}'
       to: '⚠️ Cross-room resume: resumed **{title}** inside Matrix room **{room}**. Future messages in this room will use
-        that transcript until `/reset` or another `/resume`.{msg_part}'
+        that transcript until `/new` or another `/resume`.{msg_part}'
       placeholders:
         title: .*?
         room: .*?
@@ -3761,7 +3761,7 @@ groups:
 
         {error_detail}
 
-        Повторите попытку или используйте /reset, чтобы начать новый сеанс.'
+        Повторите попытку или используйте /new, чтобы начать новый сеанс.'
       placeholders:
         error_type: .+?
         error_detail: .*?
@@ -3978,7 +3978,7 @@ groups:
         Try again or use /reset to start a fresh session.'
       to: 'Произошла непредвиденная ошибка.{status_hint}
 
-        Повторите попытку или используйте /reset, чтобы начать новую сессию.'
+        Повторите попытку или используйте /new, чтобы начать новую сессию.'
       placeholders:
         status_hint: .*?
     - id: hardcoded.gateway.run.20798
@@ -4103,7 +4103,7 @@ groups:
       from: ⚠️ No activity for {elapsed_warn} min. If the agent does not respond soon, it will be timed out in {remaining_mins}
         min. You can continue waiting or use /reset.
       to: ⚠️ Нет активности уже {elapsed_warn} мин. Если агент вскоре не ответит, ожидание будет прервано через {remaining_mins}
-        мин. Можно продолжить ждать или использовать /reset.
+        мин. Можно продолжить ждать или использовать /new.
       placeholders:
         elapsed_warn: .+?
         remaining_mins: .+?
@@ -4147,7 +4147,7 @@ groups:
         Use /compact to compress the conversation, or /reset to start fresh.'
       to: '⚠️ Сессия слишком велика для контекстного окна модели.
 
-        Используйте /compact, чтобы сжать диалог, или /reset, чтобы начать новую сессию.'
+        Используйте /compact, чтобы сжать диалог, или /new, чтобы начать новую сессию.'
     - id: hardcoded.gateway.run.3938
       family: gateway.empty_response
       from: 'The request failed: {value}
@@ -4155,7 +4155,7 @@ groups:
         Try again or use /reset to start a fresh session.'
       to: 'Не удалось выполнить запрос: {value}
 
-        Повторите попытку или используйте /reset, чтобы начать новую сессию.'
+        Повторите попытку или используйте /new, чтобы начать новую сессию.'
       placeholders:
         value: .+?
     - id: hardcoded.gateway.run.3954

@@ -9,7 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 PLUGIN = Path(__file__).resolve().parents[1]
-REPORT = Path(tempfile.gettempdir()) / "procvetaev-localization-acceptance.jsonl"
+REPORT = Path(tempfile.gettempdir()) / "hermes-telegram-localization-acceptance.jsonl"
 
 # Load the deployed plugin package without registering global hooks.
 spec = importlib.util.spec_from_file_location(
@@ -188,7 +188,7 @@ async def main():
         "summary": summary,
         "results": results,
     }
-    (Path(tempfile.gettempdir()) / "procvetaev-localization-acceptance-result.json").write_text(
+    (Path(tempfile.gettempdir()) / "hermes-telegram-localization-acceptance-result.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(json.dumps(payload, ensure_ascii=True))

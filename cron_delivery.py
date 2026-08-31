@@ -10,11 +10,11 @@ from .runtime import RuntimeState
 
 
 _PREWRAPPED: ContextVar[bool] = ContextVar(
-    "procvetaev_cron_delivery_prewrapped", default=False
+    "hermes_telegram_cron_delivery_prewrapped", default=False
 )
-_STATE_ATTR = "_procvetaev_cron_delivery_state"
-_DELIVER_WRAPPED_ATTR = "_procvetaev_cron_delivery_wrapped"
-_CONFIG_WRAPPED_ATTR = "_procvetaev_cron_config_wrapped"
+_STATE_ATTR = "_hermes_telegram_cron_delivery_state"
+_DELIVER_WRAPPED_ATTR = "_hermes_telegram_cron_delivery_wrapped"
+_CONFIG_WRAPPED_ATTR = "_hermes_telegram_cron_config_wrapped"
 
 
 def _report(state: RuntimeState, payload: dict[str, Any]) -> None:

@@ -8,8 +8,8 @@ from typing import Any
 from .runtime import RuntimeState, install_on_adapter
 
 
-_STATE_ATTR = "_procvetaev_shutdown_localization_state"
-_WRAPPED_ATTR = "_procvetaev_shutdown_localization_wrapped"
+_STATE_ATTR = "_hermes_telegram_shutdown_localization_state"
+_WRAPPED_ATTR = "_hermes_telegram_shutdown_localization_wrapped"
 
 
 def install_shutdown_localization(state: RuntimeState) -> str:
