@@ -9,14 +9,12 @@ from typing import Any
 from .background_review_localization import translate_background_review_action
 from .background_review_structured import install_structured_background_review_localization
 from .cron_delivery import install_cron_delivery_wrapper
-from .delivery_recovery_activation import install_delivery_recovery_localization
 from .menu_filter import HIDDEN_TELEGRAM_COMMANDS, install_telegram_menu_filter
 from .reporter import JsonlReporter
 from .runtime import (
     RuntimeState,
     activate_from_gateway_event,
 )
-from .shutdown_localization import install_shutdown_localization
 from .translator import Catalog
 
 
@@ -106,27 +104,10 @@ def register(ctx: Any) -> None:
         menu_filter_status
     )
 
-    try:
-        shutdown_status = install_shutdown_localization(_STATE)
-    except Exception as exc:
-        shutdown_status = "install_failed"
-        reporter.emit(
-            {
-                "event": "shutdown_localization",
-                "status": shutdown_status,
-                "error_type": type(exc).__name__,
-            }
-        )
-    else:
-        reporter.emit(
-            {
-                "event": "shutdown_localization",
-                "status": shutdown_status,
-            }
-        )
-    _STATE.boundaries[
-        "GatewayRunner._notify_active_sessions_of_shutdown"
-    ] = shutdown_status
+    # Disabled: importing gateway.run during threaded plugin discovery can deadlock.
+    shutdown_status = "disabled"
+    reporter.emit({"event": "shutdown_localization", "status": shutdown_status})
+    _STATE.boundaries["GatewayRunner._notify_active_sessions_of_shutdown"] = shutdown_status
 
     try:
         cron_delivery_status = install_cron_delivery_wrapper(_STATE)
@@ -172,27 +153,11 @@ def register(ctx: Any) -> None:
         "background_review.summarize_background_review_actions"
     ] = background_review_status
 
-    try:
-        startup_statuses = install_delivery_recovery_localization(_STATE)
-    except Exception as exc:
-        startup_statuses = {
-            "_send_restart_notification": "install_failed",
-            "_redeliver_pending_obligations": "install_failed",
-        }
-        reporter.emit(
-            {
-                "event": "startup_localization",
-                "status": "install_failed",
-                "error_type": type(exc).__name__,
-            }
-        )
-    else:
-        reporter.emit(
-            {
-                "event": "startup_localization",
-                "boundaries": startup_statuses,
-            }
-        )
+    startup_statuses = {
+        "_send_restart_notification": "disabled",
+        "_redeliver_pending_obligations": "disabled",
+    }
+    reporter.emit({"event": "startup_localization", "boundaries": startup_statuses})
     for method_name, status in startup_statuses.items():
         _STATE.boundaries[f"GatewayRunner.{method_name}"] = status
 
