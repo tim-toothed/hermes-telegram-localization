@@ -37,7 +37,74 @@ class RuntimeState:
         self._command_dispatch: ContextVar[bool] = ContextVar(
             "hermes_telegram_localization_command_dispatch", default=False
         )
+        self._delivery_cycle: ContextVar[dict[str, Any] | None] = ContextVar(
+            "hermes_telegram_localization_delivery_cycle", default=None
+        )
         self._runtime_status_message_ids: dict[tuple[str, str], None] = {}
+
+    def begin_delivery_cycle(self) -> None:
+        """Start narrow duplicate tracking for one incoming gateway event."""
+        self._delivery_cycle.set({"generation": 0, "provider_results": {}})
+
+    def provider_surface(self, text: Any) -> tuple[bool, bool]:
+        """Return ``(provider_failure, fallback_transition)`` for exact catalog surfaces."""
+        if not isinstance(text, str):
+            return False, False
+        translated = self.catalog.translate(text, boundary="telegram.transport")
+        rule_id = translated.rule_id or ""
+        family = translated.family or ""
+        provider_failure = (
+            rule_id.startswith("gateway.provider_error.")
+            or family.startswith("gateway.provider_error")
+        )
+        fallback_transition = (
+            rule_id.startswith("requested.provider.fallback")
+            or "switching to fallback provider..." in text
+        )
+        return provider_failure, fallback_transition
+
+    def provider_result(self) -> tuple[bool, Any]:
+        cycle = self._delivery_cycle.get()
+        if cycle is None:
+            return False, None
+        key = (cycle["generation"], "provider_failure")
+        results = cycle["provider_results"]
+        return key in results, results.get(key)
+
+    def record_provider_result(self, result: Any) -> None:
+        cycle = self._delivery_cycle.get()
+        if cycle is None:
+            return
+        cycle["provider_results"][(cycle["generation"], "provider_failure")] = result
+
+    def advance_provider_generation(self) -> None:
+        cycle = self._delivery_cycle.get()
+        if cycle is not None:
+            cycle["generation"] += 1
+
+    def translate_final_system_surface(self, text: Any) -> tuple[Any, bool]:
+        """Translate only recognized Hermes-owned fragments inside a final reply."""
+        if not isinstance(text, str):
+            return text, False
+        cron = self.catalog.translate(text, boundary="telegram.transport")
+        if (
+            cron.status == "translated"
+            and cron.rule_id == "locale.cron.delivery.wrapper"
+        ):
+            return cron.text, True
+        marker = "⚠️ File-mutation verifier:"
+        replacement = "⚠️ Проверка изменения файла:"
+        if text.startswith(marker):
+            return replacement + text[len(marker):], True
+        footer_marker = "\n\n" + marker
+        if footer_marker in text:
+            head, tail = text.rsplit(footer_marker, 1)
+            return head + "\n\n" + replacement + tail, True
+        provider_failure, _fallback = self.provider_surface(text)
+        if not provider_failure:
+            return text, False
+        translated = self.catalog.translate(text, boundary="telegram.transport")
+        return translated.text, translated.status == "translated"
 
     def translate(self, text: Any, boundary: str) -> Any:
         if self._suppress_translation.get():
@@ -188,6 +255,20 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
                 and metadata.get("notify") is True
                 and not state._command_dispatch.get()
             )
+            content = bound.arguments.get("content") if bound is not None else None
+            provider_failure, fallback_transition = state.provider_surface(content)
+            final_system_translated = False
+            if provider_failure:
+                already_sent, previous_result = state.provider_result()
+                if already_sent:
+                    return previous_result
+            if suppress_final_reply and bound is not None:
+                translated, final_system_translated = (
+                    state.translate_final_system_surface(content)
+                )
+                if final_system_translated:
+                    bound.arguments["content"] = translated
+
             recovery_translated = False
             runtime_status_translated = False
             runtime_status_send = False
@@ -241,13 +322,24 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
             # Entry translators already returned their final localized envelope;
             # suppress downstream reprocessing while preserving model-reply guards.
             token = state._suppress_translation.set(
-                suppress_final_reply or recovery_translated or runtime_status_translated
+                suppress_final_reply
+                or final_system_translated
+                or recovery_translated
+                or runtime_status_translated
             )
             try:
-                if bound is not None and (recovery_translated or runtime_status_translated):
+                if bound is not None and (
+                    final_system_translated
+                    or recovery_translated
+                    or runtime_status_translated
+                ):
                     result = await _original(*bound.args, **bound.kwargs)
                 else:
                     result = await _original(*args, **kwargs)
+                if provider_failure:
+                    state.record_provider_result(result)
+                if fallback_transition:
+                    state.advance_provider_generation()
                 if (
                     runtime_status_send
                     and getattr(result, "success", False)
@@ -424,6 +516,7 @@ def activate_from_gateway_event(
     platform = getattr(getattr(source, "platform", None), "value", "")
     if str(platform).lower() != "telegram":
         return
+    state.begin_delivery_cycle()
     adapter_for_source: Callable[..., Any] | None = getattr(
         gateway, "_adapter_for_source", None
     )

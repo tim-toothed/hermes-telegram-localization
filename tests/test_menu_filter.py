@@ -16,7 +16,9 @@ from menu_filter import (
     HIDDEN_TELEGRAM_COMMANDS,
     filter_menu_commands,
     install_telegram_menu_filter,
+    telegram_commands_module,
 )
+from command_descriptions import localize_command_descriptions
 
 
 class _PluginContext:
@@ -51,7 +53,7 @@ class TelegramMenuFilterTests(unittest.TestCase):
         self.assertEqual(removed, 3)
 
     def test_installed_wrapper_filters_real_telegram_menu_generator(self) -> None:
-        import hermes_cli.commands as hermes_commands
+        hermes_commands = telegram_commands_module()
 
         original = hermes_commands.telegram_menu_commands
         before, _ = original(max_commands=100)
@@ -61,13 +63,17 @@ class TelegramMenuFilterTests(unittest.TestCase):
         finally:
             hermes_commands.telegram_menu_commands = original
 
-        self.assertEqual(status, "installed")
+        self.assertIn(status, {"installed", "already_installed"})
         self.assertFalse({name for name, _ in after} & HIDDEN_TELEGRAM_COMMANDS)
-        expected = [entry for entry in before if entry[0] not in HIDDEN_TELEGRAM_COMMANDS]
+        expected = [
+            entry
+            for entry in localize_command_descriptions(before)
+            if entry[0] not in HIDDEN_TELEGRAM_COMMANDS
+        ]
         self.assertEqual(after, expected)
 
     def test_plugin_register_installs_menu_filter_before_adapter_connect(self) -> None:
-        import hermes_cli.commands as hermes_commands
+        hermes_commands = telegram_commands_module()
 
         original = hermes_commands.telegram_menu_commands
         before, _ = original(max_commands=100)
@@ -89,7 +95,11 @@ class TelegramMenuFilterTests(unittest.TestCase):
             hermes_commands.telegram_menu_commands = original
             sys.modules.pop(spec.name, None)
 
-        expected = [entry for entry in before if entry[0] not in HIDDEN_TELEGRAM_COMMANDS]
+        expected = [
+            entry
+            for entry in localize_command_descriptions(before)
+            if entry[0] not in HIDDEN_TELEGRAM_COMMANDS
+        ]
         self.assertEqual(after, expected)
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterable
 from functools import wraps
+from importlib import import_module
 from typing import Any
 
 try:
@@ -59,9 +60,19 @@ def filter_menu_commands(
     return filtered, len(source) - len(filtered)
 
 
+def telegram_commands_module() -> Any:
+    """Resolve the post-decomposition module, with support for older Hermes releases."""
+    try:
+        return import_module("hermes_cli.commands_platforms")
+    except ModuleNotFoundError as exc:
+        if exc.name != "hermes_cli.commands_platforms":
+            raise
+        return import_module("hermes_cli.commands")
+
+
 def install_telegram_menu_filter() -> str:
     """Wrap Hermes' menu generator before Telegram registers BotCommands."""
-    import hermes_cli.commands as hermes_commands
+    hermes_commands = telegram_commands_module()
 
     original: Callable[..., tuple[list[tuple[str, str]], int]] = (
         hermes_commands.telegram_menu_commands

@@ -58,6 +58,7 @@ def install_cron_delivery_wrapper(state: RuntimeState) -> str:
         content: str,
         adapters: Any = None,
         loop: Any = None,
+        **kwargs: Any,
     ) -> Any:
         current_state = getattr(scheduler, _STATE_ATTR, state)
         try:
@@ -67,19 +68,36 @@ def install_cron_delivery_wrapper(state: RuntimeState) -> str:
                 cron_config = {}
             wrap_response = cron_config.get("wrap_response", True)
             if not wrap_response:
-                return original_deliver(job, content, adapters=adapters, loop=loop)
+                return original_deliver(
+                    job, content, adapters=adapters, loop=loop, **kwargs
+                )
 
             task_name = job.get("name", job.get("id", ""))
+            translated = current_state.catalog.translate(
+                content, boundary="telegram.transport"
+            )
+            localized_rule_id = translated.rule_id or ""
+            localized_content = (
+                translated.text
+                if translated.status == "translated"
+                and localized_rule_id.startswith("runtime_warning.cron_")
+                else content
+            )
             wrapped_content = (
                 f"⏰ {task_name}\n"
                 f"-------------\n\n"
-                f"{content}"
+                f"{localized_content}"
             )
             _report(
                 current_state,
                 {
                     "event": "cron_delivery",
                     "status": "management_footer_removed",
+                    "rule_id": (
+                        localized_rule_id
+                        if localized_content != content
+                        else None
+                    ),
                 },
             )
         except Exception as exc:
@@ -91,12 +109,18 @@ def install_cron_delivery_wrapper(state: RuntimeState) -> str:
                     "error_type": type(exc).__name__,
                 },
             )
-            return original_deliver(job, content, adapters=adapters, loop=loop)
+            return original_deliver(
+                job, content, adapters=adapters, loop=loop, **kwargs
+            )
 
         token = _PREWRAPPED.set(True)
         try:
             return original_deliver(
-                job, wrapped_content, adapters=adapters, loop=loop
+                job,
+                wrapped_content,
+                adapters=adapters,
+                loop=loop,
+                **kwargs,
             )
         finally:
             _PREWRAPPED.reset(token)

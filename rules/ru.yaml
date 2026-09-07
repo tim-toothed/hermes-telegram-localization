@@ -5126,3 +5126,163 @@ groups:
       to: Подтвердите выбор дорогой модели
       boundaries:
       - telegram.CallbackQuery.answer
+  requested.agent_init.py:
+    source_file: agent/agent_init.py
+    rules:
+    - id: requested.compression.codex_autoraise
+      family: runtime_status
+      from: |-
+        ℹ️ Codex model {model} has a {context_window} context window; raising the compaction trigger from {old_percent}% to {new_percent}% so more of it is used before summarizing.
+           Restore the old trigger: hermes config set compression.codex_gpt55_autoraise false
+      to: |-
+        ℹ️ Модель Codex {model} имеет окно контекста {context_window}; порог сжатия повышен с {old_percent}% до {new_percent}%, чтобы использовать больше контекста до создания сводки.
+           Вернуть прежний порог: hermes config set compression.codex_gpt55_autoraise false
+      placeholders:
+        model: \S+?
+        context_window: \S+?
+        old_percent: \d+?
+        new_percent: \d+?
+    - id: requested.compression.codex_autoraise.current
+      family: runtime_status
+      from: |-
+        ℹ Codex {model} caps context at {context_window}, so auto-compaction was raised to {new_percent}% (from {old_percent}%) to use more of the window before summarizing.
+          Opt back out: hermes config set compression.codex_gpt55_autoraise false
+      to: |-
+        ℹ Codex {model} ограничивает контекст до {context_window}, поэтому порог автоматического сжатия повышен до {new_percent}% (с {old_percent}%), чтобы использовать больше окна до создания сводки.
+          Отключить автоповышение: hermes config set compression.codex_gpt55_autoraise false
+      placeholders:
+        model: \S+?
+        context_window: \S+?
+        old_percent: \d+?
+        new_percent: \d+?
+  requested.manual_compression_feedback.py:
+    source_file: agent/manual_compression_feedback.py
+    rules:
+    - id: requested.compression.threshold_exceeded
+      family: runtime_warning
+      from: ⚠ Context is over the compression threshold ({current_tokens} / {threshold_tokens} tokens), but automatic compression was already attempted this turn. Send /new to start fresh or /compress to retry manually.
+      to: ⚠ Контекст превышает порог сжатия ({current_tokens} / {threshold_tokens} токенов), но автоматическое сжатие уже выполнялось в этом запросе. Отправьте /new, чтобы начать новый сеанс, или /compress, чтобы повторить сжатие вручную.
+      placeholders:
+        current_tokens: '[0-9,]+'
+        threshold_tokens: '[0-9,]+'
+    - id: requested.compression.success
+      family: runtime_status
+      from: |-
+        ✓ Compressed: {before_messages} → {after_messages} messages
+        Approx request size: {token_count} tokens{suffix}
+      to: |-
+        ✓ Сжато: {before_messages} → {after_messages} сообщений
+        Примерный размер запроса: {token_count} токенов{suffix}
+      placeholders:
+        before_messages: \d+?
+        after_messages: \d+?
+        token_count: '[0-9,]+'
+        suffix: .*?
+    - id: requested.compression.in_progress
+      family: runtime_warning
+      from: |-
+        ⚠️ Compression already in progress for this session.
+        The current compression holder is still active ({holder}). Use `/compress --cancel` only if it is genuinely stuck.
+      to: |-
+        ⚠️ Сжатие для этого сеанса уже выполняется.
+        Текущий владелец блокировки сжатия всё ещё активен ({holder}). Используйте `/compress --cancel`, только если процесс действительно завис.
+      placeholders:
+        holder: .*?
+    - id: requested.compression.in_progress.current
+      family: runtime_warning
+      from: '⏳ Compression already in progress for this session (holder: {holder}). Please wait for it to finish.'
+      to: '⏳ Сжатие для этого сеанса уже выполняется (holder: {holder}). Дождитесь его завершения.'
+      placeholders:
+        holder: .*?
+    - id: requested.compression.success.current
+      family: runtime_status
+      from: '🗜️ Compressed: {before_messages} → {after_messages} messages'
+      to: '🗜️ Сжато: {before_messages} → {after_messages} сообщений'
+      placeholders:
+        before_messages: \d+?
+        after_messages: \d+?
+    - id: requested.compression.token_size.current
+      family: runtime_status
+      from: 'Approx request size: ~{before_tokens} → ~{after_tokens} tokens'
+      to: 'Примерный размер запроса: ~{before_tokens} → ~{after_tokens} токенов'
+      placeholders:
+        before_tokens: '[0-9,]+'
+        after_tokens: '[0-9,]+'
+  requested.conversation_compression.py:
+    source_file: agent/conversation_compression.py
+    rules:
+    - id: requested.compression.start
+      family: runtime_status
+      from: Compacting context — summarizing earlier conversation so I can continue...
+      to: Сжимаю контекст — создаю сводку предыдущей части диалога, чтобы продолжить...
+    - id: requested.compression.start.current
+      family: runtime_status
+      from: 🗜️ Compacting context — summarizing earlier conversation so I can continue...
+      to: 🗜️ Сжимаю контекст — создаю сводку предыдущей части диалога, чтобы продолжить...
+    - id: requested.compression.heartbeat.current
+      family: runtime_status
+      from: 🗜️ Compacting context — still summarizing earlier conversation so I can continue...
+      to: 🗜️ Сжимаю контекст — всё ещё создаю сводку предыдущей части диалога, чтобы продолжить...
+    - id: requested.compression.threshold_blocked.current
+      family: runtime_warning
+      from: ⚠ Context is over the compression threshold (~{current_tokens} tokens >= {threshold_tokens}) but compression is currently blocked ({reason}). The model may stop responding. Run /new to start a fresh session or /compress to retry immediately.
+      to: ⚠ Контекст превышает порог сжатия (~{current_tokens} токенов >= {threshold_tokens}), но сжатие сейчас заблокировано ({reason}). Модель может перестать отвечать. Используйте /new для нового сеанса или /compress, чтобы немедленно повторить сжатие.
+      placeholders:
+        current_tokens: '[0-9,]+'
+        threshold_tokens: '[0-9,]+'
+        reason: .*?
+  requested.turn_recovery.py:
+    source_file: agent/turn_recovery.py
+    rules:
+    - id: requested.provider.fallback_unreachable
+      family: runtime_status
+      from: ⚠️ Provider unreachable — switching to fallback provider...
+      to: ⚠️ Провайдер недоступен — переключаюсь на резервного провайдера...
+  requested.chat_completion_helpers.py:
+    source_file: agent/chat_completion_helpers.py
+    rules:
+    - id: requested.provider.fallback.current
+      family: runtime_status
+      from: '⚠️ Model fallback: {old_model} via {old_provider} unavailable ({reason}); using {new_model} via {new_provider}.'
+      to: '⚠️ Резервная модель: {old_model} через {old_provider} недоступна ({reason}); используется {new_model} через {new_provider}.'
+      placeholders:
+        old_model: .+?
+        old_provider: .+?
+        reason: .*?
+        new_model: .+?
+        new_provider: .+?
+  requested.gateway.run.py:
+    source_file: gateway/run.py
+    rules:
+    - id: requested.gateway.busy_model_switch
+      family: gateway
+      from: Agent is running — wait or /stop first, then switch models.
+      to: Агент выполняет запрос — дождитесь завершения или сначала используйте /stop, затем переключите модель.
+  requested.gateway.run_turn.py:
+    source_file: gateway/run_turn.py
+    rules:
+    - id: requested.session.daily_reset
+      family: gateway
+      from: |-
+        ◐ Session automatically reset (daily schedule at {reset_time}). Conversation history cleared.
+        Use /resume to continue a previous session, or just keep chatting to start fresh.
+        Adjust reset behavior in config.yaml under session_reset.
+      to: |-
+        ◐ Сеанс автоматически сброшен (ежедневно в {reset_time}). История диалога очищена.
+        Используйте /resume, чтобы продолжить предыдущий сеанс, или просто начните новый диалог.
+        Настройте сброс в config.yaml в разделе session_reset.
+      placeholders:
+        reset_time: '[0-9]{1,2}:[0-9]{2}'
+    - id: requested.session.daily_reset.current
+      family: gateway
+      from: |-
+        ◐ Session automatically reset (daily schedule at {reset_time}). Conversation history cleared.
+        Use /resume to browse and restore a previous session.
+        Adjust reset timing in config.yaml under session_reset.{session_info}
+      to: |-
+        ◐ Сеанс автоматически сброшен (ежедневно в {reset_time}). История диалога очищена.
+        Используйте /resume, чтобы найти и восстановить предыдущий сеанс.
+        Настройте время сброса в config.yaml в разделе session_reset.{session_info}
+      placeholders:
+        reset_time: '[0-9]{1,2}:[0-9]{2}'
+        session_info: .*?

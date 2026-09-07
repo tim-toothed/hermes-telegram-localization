@@ -36,7 +36,7 @@ hermes plugins update hermes-telegram-localization
 
 The chat-specific restart completion notice and startup delivery-ledger recovery marker are covered for a native Telegram adapter. Relay-routed Telegram startup delivery, other early startup/update notifications, and the optional Telegram profile status indicator are not translated. Callback popups and callback message edits are covered through narrow live Telegram callback boundaries installed after adapter activation; callback data and command IDs remain unchanged.
 
-During normal plugin registration, before Telegram connects, the plugin wraps `hermes_cli.commands.telegram_menu_commands()`. The wrapper applies Russian descriptions to every known command and then removes entries listed in `HIDDEN_TELEGRAM_COMMANDS` from the `/` menu. Hidden commands retain Russian descriptions for future re-enabling; their handlers, `/help` entries, and manual invocation remain unchanged. Unknown future plugin commands fail open with their original descriptions.
+During normal plugin registration, before Telegram connects, the plugin wraps `hermes_cli.commands_platforms.telegram_menu_commands()`. The wrapper applies Russian descriptions to every known command and then removes entries listed in `HIDDEN_TELEGRAM_COMMANDS` from the `/` menu. Hidden commands retain Russian descriptions for future re-enabling; their handlers, `/help` entries, and manual invocation remain unchanged. Unknown future plugin commands fail open with their original descriptions.
 
 ## Acceptance tests
 

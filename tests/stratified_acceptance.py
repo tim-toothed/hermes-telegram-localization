@@ -16,6 +16,7 @@ spec.loader.exec_module(pkg)
 from loc_stratified_pkg.reporter import JsonlReporter
 from loc_stratified_pkg.runtime import RuntimeState, install_on_adapter
 from loc_stratified_pkg.translator import Catalog
+from loc_stratified_pkg.menu_filter import HIDDEN_TELEGRAM_COMMANDS, install_telegram_menu_filter, telegram_commands_module
 
 from hermes_cli.plugins import discover_plugins
 discover_plugins(force=True)
@@ -45,6 +46,7 @@ SAMPLES = [
     ("account_usage.title_account_limits", {}),
     ("account_usage.label_api_key_quota", {}),
     ("provider_progress.aborting_call", {}),
+    ("compression.compaction_complete", {}),
     ("tool_progress.verbs.session_search", {}),
     ("tool_progress.verbs.vision_analyze", {}),
     ("runtime_warning.cron_no_fallback", {}),
@@ -67,6 +69,18 @@ SAMPLES = [
     ("runtime_warning.telegram_question_expired_html", {}),
     ("runtime_warning.telegram_prompt_expired", {}),
     ("provider_progress.codex_silent_rejection", {"model": "gpt-5.4-codex"}),
+    ("requested.compression.codex_autoraise", {
+        "model": "gpt-5.6-luna", "context_window": "272K",
+        "old_percent": "50", "new_percent": "85",
+    }),
+    ("requested.compression.success", {
+        "before_messages": "176", "after_messages": "73",
+        "token_count": "123,456", "suffix": " (estimated)",
+    }),
+    ("requested.provider.fallback_unreachable", {}),
+    ("requested.session.daily_reset.current", {
+        "reset_time": "4:00", "session_info": "",
+    }),
 ]
 
 results = []
@@ -87,13 +101,30 @@ for rule_id, values in SAMPLES:
         "expected": expected,
     })
 
+hermes_commands = telegram_commands_module()
+original_menu_generator = hermes_commands.telegram_menu_commands
+try:
+    menu_filter_status = install_telegram_menu_filter()
+    menu_commands, _ = hermes_commands.telegram_menu_commands(max_commands=100)
+finally:
+    hermes_commands.telegram_menu_commands = original_menu_generator
+menu_names = {name for name, _ in menu_commands}
+menu_descriptions = {description for _, description in menu_commands}
+menu_ok = (
+    menu_filter_status in {"installed", "already_installed"}
+    and not (menu_names & HIDDEN_TELEGRAM_COMMANDS)
+    and "Показать доступные команды" in menu_descriptions
+)
 results.append({
     "name": "telegram_command_menu_descriptions",
     "source_file": "hermes_cli/commands.py",
-    "status": "BLOCKED",
-    "actual": state.boundaries.get("telegram.BotCommand.description"),
-    "expected": "supported adapter-level command-menu boundary",
-    "note": "Rules are boundary-scoped; unsafe early global wrapper remains disabled.",
+    "status": "PASS" if menu_ok else "FAIL",
+    "actual": {
+        "install_status": menu_filter_status,
+        "hidden_commands_present": sorted(menu_names & HIDDEN_TELEGRAM_COMMANDS),
+        "russian_help_present": "Показать доступные команды" in menu_descriptions,
+    },
+    "expected": "new module wrapped, Russian descriptions present, hidden commands absent",
 })
 covered_files.add("hermes_cli/commands.py")
 all_files = {group["source_file"] for group in raw["groups"].values()}
