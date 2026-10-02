@@ -30,6 +30,8 @@ hermes plugins update hermes-telegram-localization
 
 ## Compatibility
 
+The catalog uses Hermes' shared `hermes_yaml` loader on current managed installations; no separate PyYAML installation is required. Older Hermes releases without that module use their existing PyYAML dependency. The plugin does not install packages during registration.
+
 - Windows: full offline TelegramAdapter acceptance passed against Hermes 0.20.0.
 - Linux: plugin import, catalog loading, and translation smoke passed on Linux/Python 3.12. The runtime contains no OS-specific paths or APIs.
 - macOS: supported by the same platform-neutral runtime, but not yet exercised in this release.

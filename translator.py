@@ -8,7 +8,13 @@ from pathlib import Path
 from string import Formatter
 from typing import Any, Mapping, Pattern
 
-import yaml
+try:
+    import hermes_yaml as yaml
+except ModuleNotFoundError as exc:
+    if exc.name != "hermes_yaml":
+        raise
+    # Older Hermes releases provide PyYAML instead of the shared YAML facade.
+    import yaml
 
 
 @dataclass(frozen=True)
