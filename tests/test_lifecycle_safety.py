@@ -24,7 +24,7 @@ class PluginContext:
 
 
 class LifecycleSafetyTests(unittest.TestCase):
-    def test_register_never_imports_gateway_run_and_reports_lifecycle_disabled(self):
+    def test_register_never_imports_gateway_run(self):
         package_name = "loc_lifecycle_safety_test"
         spec = importlib.util.spec_from_file_location(
             package_name,
@@ -49,18 +49,6 @@ class LifecycleSafetyTests(unittest.TestCase):
             ), patch("builtins.__import__", side_effect=guarded_import):
                 package.register(PluginContext())
             self.assertEqual([], attempted)
-            self.assertEqual(
-                "disabled_lifecycle_safety",
-                package._STATE.boundaries[
-                    "GatewayRunner._send_restart_notification"
-                ],
-            )
-            self.assertEqual(
-                "disabled_lifecycle_safety",
-                package._STATE.boundaries[
-                    "GatewayRunner._notify_active_sessions_of_shutdown"
-                ],
-            )
         finally:
             sys.modules.pop(package_name, None)
 

@@ -647,24 +647,6 @@ groups:
       to: '**Всего использовано токенов:** {tokens} _(это не размер текущего контекста; используйте `/context`)_'
       placeholders:
         tokens: '[0-9][0-9.,]*'
-    - id: gateway.stop.online
-      family: gateway
-      from: ♻️ Gateway online — Hermes is back and ready.
-      to: ♻️ Сервис Hermes запущен и снова готов к работе.
-    - id: gateway.stop.restarted_ok
-      family: gateway
-      from: ♻ Gateway restarted successfully. Your session continues.
-      to: ♻ Сервис Hermes успешно перезапущен. Ваш сеанс продолжается.
-    - id: gateway.stop.restarting_notification
-      family: gateway
-      from: ⚠️ Gateway restarting — Your current task will be interrupted. Send any message after restart and I'll try to
-        resume where you left off.
-      to: ⚠️ Сервис Hermes перезапускается — ваша текущая задача будет прервана. Отправьте любое сообщение после перезапуска,
-        и я попробую возобновить с места остановки.
-    - id: gateway.stop.shutting_down
-      family: gateway
-      from: ⚠️ Gateway shutting down — Your current task will be interrupted.
-      to: ⚠️ Сервис Hermes завершает работу — ваша текущая задача будет прервана.
     - id: gateway.whoami.scope_group
       family: gateway
       from: group/channel

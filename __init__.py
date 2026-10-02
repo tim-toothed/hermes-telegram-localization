@@ -104,14 +104,6 @@ def register(ctx: Any) -> None:
         menu_filter_status
     )
 
-    # Lifecycle sends deliberately stay untouched. A failed Telegram restart or
-    # shutdown notification must never turn Gateway startup/stop into a failure.
-    _STATE.boundaries[
-        "GatewayRunner._notify_active_sessions_of_shutdown"
-    ] = "disabled_lifecycle_safety"
-    _STATE.boundaries[
-        "GatewayRunner._send_restart_notification"
-    ] = "disabled_lifecycle_safety"
 
     try:
         cron_delivery_status = install_cron_delivery_wrapper(_STATE)
