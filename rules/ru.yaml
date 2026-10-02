@@ -5158,6 +5158,18 @@ groups:
   requested.manual_compression_feedback.py:
     source_file: agent/manual_compression_feedback.py
     rules:
+    - id: requested.compression.no_changes
+      family: runtime_status
+      from: '🗜️ No changes from compression: {count} messages'
+      to: '🗜️ Сжатие не изменило контекст: {count} сообщений'
+      placeholders:
+        count: '[0-9]+'
+    - id: requested.compression.token_size_unchanged
+      family: runtime_status
+      from: 'Approx request size: ~{tokens} tokens (unchanged)'
+      to: 'Примерный размер запроса: ~{tokens} токенов (без изменений)'
+      placeholders:
+        tokens: '[0-9][0-9,]*'
     - id: requested.compression.threshold_exceeded
       family: runtime_warning
       from: ⚠ Context is over the compression threshold ({current_tokens} / {threshold_tokens} tokens), but automatic compression was already attempted this turn. Send /new to start fresh or /compress to retry manually.
@@ -5286,3 +5298,1548 @@ groups:
       placeholders:
         reset_time: '[0-9]{1,2}:[0-9]{2}'
         session_info: .*?
+
+  hermes.cli.tips.py:
+    source_file: hermes_cli/tips.py
+    rules:
+    - id: cli_tips.tip_001
+      family: cli_tips
+      from: /bg <prompt> runs a task in a separate session while your current one stays free; /btw <question> answers a side question about this conversation without interrupting it.
+      to: /bg <prompt> запускает задачу в отдельном сеансе, оставляя текущий свободным; /btw <question> отвечает на дополнительный вопрос по этому диалогу, не прерывая его.
+    - id: cli_tips.tip_002
+      family: cli_tips
+      from: /branch forks the current session so you can explore a different direction without losing progress.
+      to: /branch создаёт ответвление текущего сеанса, чтобы вы могли попробовать другой подход, не теряя прогресс.
+    - id: cli_tips.tip_003
+      family: cli_tips
+      from: /compress manually compresses conversation context when things get long.
+      to: /compress вручную сжимает контекст затянувшегося диалога.
+    - id: cli_tips.tip_004
+      family: cli_tips
+      from: /rollback lists filesystem checkpoints — restore files the agent modified to any prior state.
+      to: /rollback показывает контрольные точки файловой системы — восстановите изменённые агентом файлы до любого предыдущего состояния.
+    - id: cli_tips.tip_005
+      family: cli_tips
+      from: /rollback diff 2 previews what changed since checkpoint 2 without restoring anything.
+      to: /rollback diff 2 показывает изменения с контрольной точки 2, ничего не восстанавливая.
+    - id: cli_tips.tip_006
+      family: cli_tips
+      from: /rollback 2 src/file.py restores a single file from a specific checkpoint.
+      to: /rollback 2 src/file.py восстанавливает один файл из указанной контрольной точки.
+    - id: cli_tips.tip_007
+      family: cli_tips
+      from: /title "my project" names your session — resume it later with /resume or hermes -c.
+      to: /title "my project" задаёт название сеанса — позднее продолжите его через /resume или hermes -c.
+    - id: cli_tips.tip_008
+      family: cli_tips
+      from: /resume picks up where you left off in a previously named session.
+      to: /resume продолжает ранее названный сеанс с того места, где вы остановились.
+    - id: cli_tips.tip_009
+      family: cli_tips
+      from: /queue <prompt> queues a message for the next turn without interrupting the current one.
+      to: /queue <prompt> ставит сообщение в очередь на следующий ход, не прерывая текущий.
+    - id: cli_tips.tip_010
+      family: cli_tips
+      from: /undo removes the last user/assistant exchange from the conversation.
+      to: /undo удаляет из диалога последний обмен сообщениями пользователя и ассистента.
+    - id: cli_tips.tip_011
+      family: cli_tips
+      from: /retry resends your last message — useful when the agent's response wasn't quite right.
+      to: /retry повторно отправляет ваше последнее сообщение — полезно, если ответ агента оказался неудачным.
+    - id: cli_tips.tip_012
+      family: cli_tips
+      from: '/verbose cycles tool progress display: off → new → all → verbose.'
+      to: '/verbose переключает отображение работы инструментов: off → new → all → verbose.'
+    - id: cli_tips.tip_013
+      family: cli_tips
+      from: /reasoning high increases the model's thinking depth. /reasoning show displays the reasoning.
+      to: /reasoning high увеличивает глубину рассуждений модели. /reasoning show показывает рассуждения.
+    - id: cli_tips.tip_014
+      family: cli_tips
+      from: /fast toggles priority processing for faster API responses (provider-dependent).
+      to: /fast переключает приоритетную обработку для более быстрых ответов API (зависит от провайдера).
+    - id: cli_tips.tip_015
+      family: cli_tips
+      from: /yolo skips all dangerous command approval prompts for the rest of the session.
+      to: /yolo отключает все запросы подтверждения опасных команд до конца сеанса.
+    - id: cli_tips.tip_016
+      family: cli_tips
+      from: /model lets you switch models mid-session — try /model sonnet or /model gpt-5.
+      to: /model позволяет сменить модель во время сеанса — попробуйте /model sonnet или /model gpt-5.
+    - id: cli_tips.tip_017
+      family: cli_tips
+      from: /model --global changes your default model permanently.
+      to: /model --global сохраняет выбранную модель как модель по умолчанию.
+    - id: cli_tips.tip_018
+      family: cli_tips
+      from: /personality pirate sets a fun personality — 14 built-in options from kawaii to shakespeare.
+      to: /personality pirate задаёт забавный характер — доступны 14 встроенных вариантов от kawaii до shakespeare.
+    - id: cli_tips.tip_019
+      family: cli_tips
+      from: /skin changes the CLI theme — try ares, mono, slate, poseidon, or charizard.
+      to: /skin меняет тему CLI — попробуйте ares, mono, slate, poseidon или charizard.
+    - id: cli_tips.tip_020
+      family: cli_tips
+      from: /statusbar toggles a persistent bar showing model, tokens, context fill %, cost, and duration.
+      to: /statusbar переключает постоянную строку состояния с моделью, токенами, заполнением контекста в %, стоимостью и длительностью.
+    - id: cli_tips.tip_021
+      family: cli_tips
+      from: /tools disable browser temporarily removes browser tools for the current session.
+      to: /tools disable browser временно отключает браузерные инструменты в текущем сеансе.
+    - id: cli_tips.tip_022
+      family: cli_tips
+      from: /browser connect attaches browser tools to your running Chromium-family browser via CDP.
+      to: /browser connect подключает браузерные инструменты к вашему запущенному браузеру семейства Chromium через CDP.
+    - id: cli_tips.tip_023
+      family: cli_tips
+      from: /plugins lists installed plugins and their status.
+      to: /plugins показывает установленные плагины и их состояние.
+    - id: cli_tips.tip_024
+      family: cli_tips
+      from: /cron manages scheduled tasks — set up recurring prompts with delivery to any platform.
+      to: /cron управляет задачами по расписанию — настройте повторяющиеся запросы с доставкой на любую платформу.
+    - id: cli_tips.tip_025
+      family: cli_tips
+      from: /reload-mcp hot-reloads MCP server configuration without restarting.
+      to: /reload-mcp перезагружает конфигурацию серверов MCP без перезапуска.
+    - id: cli_tips.tip_026
+      family: cli_tips
+      from: /usage shows token usage, cost breakdown, and session duration.
+      to: /usage показывает расход токенов, разбивку стоимости и длительность сеанса.
+    - id: cli_tips.tip_027
+      family: cli_tips
+      from: /insights shows usage analytics for the last 30 days.
+      to: /insights показывает аналитику использования за последние 30 дней.
+    - id: cli_tips.tip_028
+      family: cli_tips
+      from: /paste checks your clipboard for an image and attaches it to your next message.
+      to: /paste проверяет наличие изображения в буфере обмена и прикрепляет его к следующему сообщению.
+    - id: cli_tips.tip_029
+      family: cli_tips
+      from: /profile shows which profile is active and its home directory.
+      to: /profile показывает активный профиль и его домашний каталог.
+    - id: cli_tips.tip_030
+      family: cli_tips
+      from: /config shows your current configuration at a glance.
+      to: /config кратко показывает текущую конфигурацию.
+    - id: cli_tips.tip_031
+      family: cli_tips
+      from: /stop kills all running background processes spawned by the agent.
+      to: /stop завершает все работающие фоновые процессы, запущенные агентом.
+    - id: cli_tips.tip_032
+      family: cli_tips
+      from: '@file:path/to/file.py injects file contents directly into your message.'
+      to: '@file:path/to/file.py вставляет содержимое файла прямо в ваше сообщение.'
+    - id: cli_tips.tip_033
+      family: cli_tips
+      from: '@file:main.py:10-50 injects only lines 10-50 of a file.'
+      to: '@file:main.py:10-50 вставляет только строки 10-50 файла.'
+    - id: cli_tips.tip_034
+      family: cli_tips
+      from: '@folder:src/ injects a directory tree listing.'
+      to: '@folder:src/ вставляет дерево каталогов.'
+    - id: cli_tips.tip_035
+      family: cli_tips
+      from: '@diff injects your unstaged git changes into the message.'
+      to: '@diff вставляет в сообщение изменения git, ещё не добавленные в индекс.'
+    - id: cli_tips.tip_036
+      family: cli_tips
+      from: '@staged injects your staged git changes (git diff --staged).'
+      to: '@staged вставляет изменения git, добавленные в индекс (git diff --staged).'
+    - id: cli_tips.tip_037
+      family: cli_tips
+      from: '@git:5 injects the last 5 commits with full patches.'
+      to: '@git:5 вставляет последние 5 коммитов с полными патчами.'
+    - id: cli_tips.tip_038
+      family: cli_tips
+      from: '@url:https://example.com fetches and injects a web page''s content.'
+      to: '@url:https://example.com загружает и вставляет содержимое веб-страницы.'
+    - id: cli_tips.tip_039
+      family: cli_tips
+      from: Typing @ triggers filesystem path completion — navigate to any file interactively.
+      to: Ввод @ включает автодополнение путей файловой системы — выбирайте любой файл интерактивно.
+    - id: cli_tips.tip_040
+      family: cli_tips
+      from: 'Combine multiple references: "Review @file:main.py and @file:test.py for consistency."'
+      to: 'Объединяйте несколько ссылок: «Проверь согласованность @file:main.py и @file:test.py».'
+    - id: cli_tips.tip_041
+      family: cli_tips
+      from: Alt+Enter inserts a newline for multi-line input. (Windows Terminal intercepts Alt+Enter — use Ctrl+Enter instead.)
+      to: Alt+Enter вставляет новую строку для многострочного ввода. (Windows Terminal перехватывает Alt+Enter — используйте Ctrl+Enter.)
+    - id: cli_tips.tip_042
+      family: cli_tips
+      from: Ctrl+C interrupts the agent. Double-press within 2 seconds to force exit.
+      to: Ctrl+C прерывает агента. Двойное нажатие в течение 2 секунд принудительно завершает работу.
+    - id: cli_tips.tip_043
+      family: cli_tips
+      from: Ctrl+Z suspends Hermes to the background — run fg in your shell to resume.
+      to: Ctrl+Z приостанавливает Hermes и переводит его в фон — выполните fg в оболочке, чтобы продолжить.
+    - id: cli_tips.tip_044
+      family: cli_tips
+      from: Tab accepts auto-suggestion ghost text or autocompletes slash commands.
+      to: Tab принимает подсказку автодополнения или дополняет команды с косой чертой.
+    - id: cli_tips.tip_045
+      family: cli_tips
+      from: Type a new message while the agent is working to interrupt and redirect it.
+      to: Введите новое сообщение во время работы агента, чтобы прервать его и изменить направление работы.
+    - id: cli_tips.tip_046
+      family: cli_tips
+      from: Alt+V pastes an image from your clipboard into the conversation.
+      to: Alt+V вставляет изображение из буфера обмена в диалог.
+    - id: cli_tips.tip_047
+      family: cli_tips
+      from: Pasting 5+ lines auto-saves to a file and inserts a compact reference instead.
+      to: При вставке 5 и более строк текст автоматически сохраняется в файл, а вместо него вставляется компактная ссылка.
+    - id: cli_tips.tip_048
+      family: cli_tips
+      from: hermes -c resumes your most recent CLI session. hermes -c "project name" resumes by title.
+      to: hermes -c продолжает последний сеанс CLI. hermes -c "project name" продолжает сеанс по названию.
+    - id: cli_tips.tip_049
+      family: cli_tips
+      from: hermes -w creates an isolated git worktree — perfect for parallel agent workflows.
+      to: hermes -w создаёт изолированное рабочее дерево git — удобно для параллельной работы агентов.
+    - id: cli_tips.tip_050
+      family: cli_tips
+      from: 'hermes -w -q "Fix issue #42" combines worktree isolation with a one-shot query.'
+      to: 'hermes -w -q "Fix issue #42" сочетает изоляцию рабочего дерева с разовым запросом.'
+    - id: cli_tips.tip_051
+      family: cli_tips
+      from: hermes chat -t web,terminal enables only specific toolsets for a focused session.
+      to: hermes chat -t web,terminal включает только указанные наборы инструментов для целевого сеанса.
+    - id: cli_tips.tip_052
+      family: cli_tips
+      from: hermes chat -s github-pr-workflow preloads a skill at launch.
+      to: hermes chat -s github-pr-workflow заранее загружает навык при запуске.
+    - id: cli_tips.tip_053
+      family: cli_tips
+      from: hermes chat -q "query" runs a single non-interactive query and exits.
+      to: hermes chat -q "query" выполняет один неинтерактивный запрос и завершает работу.
+    - id: cli_tips.tip_054
+      family: cli_tips
+      from: hermes chat --max-turns 1000 overrides the default 500-iteration limit per turn.
+      to: hermes chat --max-turns 1000 заменяет стандартное ограничение в 500 итераций на ход.
+    - id: cli_tips.tip_055
+      family: cli_tips
+      from: hermes chat --checkpoints enables filesystem snapshots before every destructive file change.
+      to: hermes chat --checkpoints включает снимки файловой системы перед каждым потенциально разрушительным изменением файлов.
+    - id: cli_tips.tip_056
+      family: cli_tips
+      from: hermes --yolo bypasses all dangerous command approval prompts for the entire session.
+      to: hermes --yolo отключает все запросы подтверждения опасных команд на весь сеанс.
+    - id: cli_tips.tip_057
+      family: cli_tips
+      from: hermes chat --source telegram tags the session for filtering in hermes sessions list.
+      to: hermes chat --source telegram помечает сеанс для фильтрации в hermes sessions list.
+    - id: cli_tips.tip_058
+      family: cli_tips
+      from: hermes -p work chat runs under a specific profile without changing your default.
+      to: hermes -p work chat запускает указанный профиль, не меняя профиль по умолчанию.
+    - id: cli_tips.tip_059
+      family: cli_tips
+      from: hermes doctor --fix diagnoses and auto-repairs config and dependency issues.
+      to: hermes doctor --fix диагностирует и автоматически исправляет проблемы конфигурации и зависимостей.
+    - id: cli_tips.tip_060
+      family: cli_tips
+      from: hermes dump outputs a compact setup summary — great for bug reports.
+      to: hermes dump выводит компактную сводку настроек — удобно для сообщений об ошибках.
+    - id: cli_tips.tip_061
+      family: cli_tips
+      from: hermes config set KEY VALUE auto-routes secrets to .env and everything else to config.yaml.
+      to: hermes config set KEY VALUE автоматически сохраняет секреты в .env, а остальные параметры — в config.yaml.
+    - id: cli_tips.tip_062
+      family: cli_tips
+      from: hermes config edit opens config.yaml in your default editor.
+      to: hermes config edit открывает config.yaml в редакторе по умолчанию.
+    - id: cli_tips.tip_063
+      family: cli_tips
+      from: hermes config check scans for missing or stale configuration options.
+      to: hermes config check ищет отсутствующие или устаревшие параметры конфигурации.
+    - id: cli_tips.tip_064
+      family: cli_tips
+      from: hermes sessions browse opens an interactive session picker with search.
+      to: hermes sessions browse открывает интерактивный выбор сеанса с поиском.
+    - id: cli_tips.tip_065
+      family: cli_tips
+      from: hermes sessions stats shows session counts by platform and database size.
+      to: hermes sessions stats показывает число сеансов по платформам и размер базы данных.
+    - id: cli_tips.tip_066
+      family: cli_tips
+      from: hermes sessions prune --older-than 30 cleans up old sessions.
+      to: hermes sessions prune --older-than 30 удаляет старые сеансы.
+    - id: cli_tips.tip_067
+      family: cli_tips
+      from: hermes skills search react --source skills-sh searches the skills.sh public directory.
+      to: hermes skills search react --source skills-sh ищет навыки в открытом каталоге skills.sh.
+    - id: cli_tips.tip_068
+      family: cli_tips
+      from: hermes skills check scans installed hub skills for upstream updates.
+      to: hermes skills check проверяет установленные через каталог навыки на наличие обновлений в источнике.
+    - id: cli_tips.tip_069
+      family: cli_tips
+      from: hermes skills tap add myorg/skills-repo adds a custom GitHub skill source.
+      to: hermes skills tap add myorg/skills-repo добавляет собственный источник навыков на GitHub.
+    - id: cli_tips.tip_070
+      family: cli_tips
+      from: hermes skills snapshot export setup.json exports your skill configuration for backup or sharing.
+      to: hermes skills snapshot export setup.json экспортирует конфигурацию навыков для резервного копирования или обмена.
+    - id: cli_tips.tip_071
+      family: cli_tips
+      from: hermes mcp add github --command npx adds MCP servers from the command line.
+      to: hermes mcp add github --command npx добавляет серверы MCP из командной строки.
+    - id: cli_tips.tip_072
+      family: cli_tips
+      from: hermes mcp serve runs Hermes itself as an MCP server for other agents.
+      to: hermes mcp serve запускает сам Hermes как сервер MCP для других агентов.
+    - id: cli_tips.tip_073
+      family: cli_tips
+      from: hermes auth add lets you add multiple API keys for credential pool rotation.
+      to: hermes auth add позволяет добавить несколько API-ключей для ротации в пуле учётных данных.
+    - id: cli_tips.tip_074
+      family: cli_tips
+      from: hermes completion bash >> ~/.bashrc enables tab completion for all commands and profiles.
+      to: hermes completion bash >> ~/.bashrc включает дополнение по Tab для всех команд и профилей.
+    - id: cli_tips.tip_075
+      family: cli_tips
+      from: hermes logs -f follows agent.log in real time. --level WARNING --since 1h filters output.
+      to: hermes logs -f показывает agent.log в реальном времени. --level WARNING --since 1h фильтрует вывод.
+    - id: cli_tips.tip_076
+      family: cli_tips
+      from: hermes backup creates a zip backup of your entire Hermes home directory.
+      to: hermes backup создаёт резервную копию всего домашнего каталога Hermes в формате zip.
+    - id: cli_tips.tip_077
+      family: cli_tips
+      from: hermes profile create coder creates an isolated profile that becomes its own command.
+      to: hermes profile create coder создаёт изолированный профиль с собственной командой запуска.
+    - id: cli_tips.tip_078
+      family: cli_tips
+      from: hermes profile create work --clone copies your current config and keys to a new profile.
+      to: hermes profile create work --clone копирует текущую конфигурацию и ключи в новый профиль.
+    - id: cli_tips.tip_079
+      family: cli_tips
+      from: hermes update syncs new bundled skills to ALL profiles automatically.
+      to: hermes update автоматически добавляет новые встроенные навыки во ВСЕ профили.
+    - id: cli_tips.tip_080
+      family: cli_tips
+      from: hermes gateway install sets up Hermes as a system service (systemd/launchd).
+      to: hermes gateway install устанавливает Hermes как системный сервис (systemd/launchd).
+    - id: cli_tips.tip_081
+      family: cli_tips
+      from: hermes memory setup lets you configure an external memory provider (Honcho, Mem0, etc.).
+      to: hermes memory setup позволяет настроить внешнего провайдера памяти (Honcho, Mem0 и другие).
+    - id: cli_tips.tip_082
+      family: cli_tips
+      from: hermes webhook subscribe creates event-driven webhook routes with HMAC validation.
+      to: hermes webhook subscribe создаёт маршруты вебхуков, запускаемые событиями, с проверкой HMAC.
+    - id: cli_tips.tip_083
+      family: cli_tips
+      from: 'Save money: hermes tools disables unused tools, hermes skills config trims skills down.'
+      to: 'Экономьте: hermes tools отключает неиспользуемые инструменты, hermes skills config сокращает набор навыков.'
+    - id: cli_tips.tip_084
+      family: cli_tips
+      from: /reasoning low or /reasoning minimal cuts thinking depth below the default (medium) — faster, cheaper responses.
+      to: /reasoning low или /reasoning minimal уменьшает глубину рассуждений относительно значения по умолчанию (medium) — ответы быстрее и дешевле.
+    - id: cli_tips.tip_085
+      family: cli_tips
+      from: hermes models routes vision, compression, and aux tasks to cheaper models — cuts background token cost 85%+ without downgrading your main chat model.
+      to: hermes models направляет задачи анализа изображений, сжатия и вспомогательные задачи на более дешёвые модели — снижает фоновую стоимость токенов на 85% и более без смены основной модели диалога.
+    - id: cli_tips.tip_086
+      family: cli_tips
+      from: 'Set display.bell_on_complete: true in config.yaml to hear a bell when long tasks finish.'
+      to: 'Установите display.bell_on_complete: true в config.yaml, чтобы слышать звуковой сигнал при завершении долгих задач.'
+    - id: cli_tips.tip_087
+      family: cli_tips
+      from: 'Set display.streaming: true to see tokens appear in real time as the model generates.'
+      to: 'Установите display.streaming: true, чтобы видеть появление токенов в реальном времени при генерации ответа.'
+    - id: cli_tips.tip_088
+      family: cli_tips
+      from: 'Set display.show_reasoning: true to watch the model''s chain-of-thought reasoning.'
+      to: 'Установите display.show_reasoning: true, чтобы видеть цепочку рассуждений модели.'
+    - id: cli_tips.tip_089
+      family: cli_tips
+      from: 'Set display.compact: true to reduce whitespace in output for denser information.'
+      to: 'Установите display.compact: true, чтобы уменьшить пустое пространство и сделать вывод плотнее.'
+    - id: cli_tips.tip_090
+      family: cli_tips
+      from: 'Set display.busy_input_mode: queue to queue messages instead of interrupting the agent, or steer to inject them mid-run via /steer.'
+      to: 'Установите display.busy_input_mode: queue, чтобы ставить сообщения в очередь вместо прерывания агента, или steer, чтобы передавать их во время работы через /steer.'
+    - id: cli_tips.tip_091
+      family: cli_tips
+      from: 'Set display.resume_display: minimal to skip the full conversation recap on session resume.'
+      to: 'Установите display.resume_display: minimal, чтобы пропускать полный обзор диалога при продолжении сеанса.'
+    - id: cli_tips.tip_092
+      family: cli_tips
+      from: 'Set compression.threshold: 0.50 to control when auto-compression fires (default: 50% of context).'
+      to: 'Установите compression.threshold: 0.50, чтобы задать порог автосжатия (по умолчанию: 50% контекста).'
+    - id: cli_tips.tip_093
+      family: cli_tips
+      from: 'Set agent.max_turns: 1000 to let the agent take more tool-calling steps per turn.'
+      to: 'Установите agent.max_turns: 1000, чтобы разрешить агенту больше шагов вызова инструментов за ход.'
+    - id: cli_tips.tip_094
+      family: cli_tips
+      from: 'Set file_read_max_chars: 200000 to increase the max content per read_file call.'
+      to: 'Установите file_read_max_chars: 200000, чтобы увеличить максимальный объём содержимого за один вызов read_file.'
+    - id: cli_tips.tip_095
+      family: cli_tips
+      from: 'Set approvals.mode: smart to let an LLM auto-approve safe commands and auto-deny dangerous ones.'
+      to: 'Установите approvals.mode: smart, чтобы LLM автоматически разрешала безопасные команды и отклоняла опасные.'
+    - id: cli_tips.tip_096
+      family: cli_tips
+      from: Set fallback_model in config.yaml to automatically fail over to a backup provider.
+      to: Задайте fallback_model в config.yaml для автоматического переключения на резервного провайдера при сбое.
+    - id: cli_tips.tip_097
+      family: cli_tips
+      from: 'Set privacy.redact_pii: true to hash user IDs and phone numbers before sending to the LLM.'
+      to: 'Установите privacy.redact_pii: true, чтобы хешировать ID пользователей и номера телефонов перед отправкой в LLM.'
+    - id: cli_tips.tip_098
+      family: cli_tips
+      from: 'Set browser.record_sessions: true to auto-record browser sessions as WebM videos.'
+      to: 'Установите browser.record_sessions: true для автоматической записи браузерных сеансов в видео WebM.'
+    - id: cli_tips.tip_099
+      family: cli_tips
+      from: 'Set worktree: true in config.yaml to always create a git worktree (same as hermes -w).'
+      to: 'Установите worktree: true в config.yaml, чтобы всегда создавать рабочее дерево git (как при hermes -w).'
+    - id: cli_tips.tip_100
+      family: cli_tips
+      from: 'Set security.website_blocklist.enabled: true to block specific domains from web tools.'
+      to: 'Установите security.website_blocklist.enabled: true, чтобы блокировать доступ веб-инструментов к указанным доменам.'
+    - id: cli_tips.tip_101
+      family: cli_tips
+      from: 'Set cron.wrap_response: false to deliver raw agent output without the cron header/footer.'
+      to: 'Установите cron.wrap_response: false, чтобы доставлять исходный ответ агента без заголовка и подвала Cron.'
+    - id: cli_tips.tip_102
+      family: cli_tips
+      from: HERMES_TIMEZONE overrides the server timezone with any IANA timezone string.
+      to: HERMES_TIMEZONE заменяет часовой пояс сервера на любой часовой пояс в формате IANA.
+    - id: cli_tips.tip_103
+      family: cli_tips
+      from: 'Environment variable substitution works in config.yaml: use ${env_example} syntax.'
+      to: 'В config.yaml работает подстановка переменных окружения: используйте синтаксис ${env_example}.'
+      placeholders:
+        env_example: \{VAR_NAME\}
+    - id: cli_tips.tip_104
+      family: cli_tips
+      from: Quick commands in config.yaml run shell commands instantly with zero token usage.
+      to: Быстрые команды в config.yaml мгновенно выполняют команды оболочки без расхода токенов.
+    - id: cli_tips.tip_105
+      family: cli_tips
+      from: Custom personalities can be defined in config.yaml under agent.personalities.
+      to: Собственные характеры можно определить в config.yaml в разделе agent.personalities.
+    - id: cli_tips.tip_106
+      family: cli_tips
+      from: provider_routing controls OpenRouter provider sorting, whitelisting, and blacklisting.
+      to: provider_routing управляет сортировкой провайдеров OpenRouter, списками разрешённых и запрещённых провайдеров.
+    - id: cli_tips.tip_107
+      family: cli_tips
+      from: execute_code runs Python scripts that call Hermes tools programmatically — results stay out of context.
+      to: execute_code выполняет скрипты Python, которые программно вызывают инструменты Hermes — результаты не попадают в контекст.
+    - id: cli_tips.tip_108
+      family: cli_tips
+      from: delegate_task spawns up to 3 concurrent sub-agents by default (delegation.max_concurrent_children) with isolated contexts for parallel work.
+      to: delegate_task по умолчанию запускает до 3 параллельных субагентов (delegation.max_concurrent_children) с изолированными контекстами.
+    - id: cli_tips.tip_109
+      family: cli_tips
+      from: web_extract works on PDF URLs — pass any PDF link and it converts to markdown.
+      to: web_extract работает с URL файлов PDF — передайте ссылку на PDF, чтобы преобразовать его в Markdown.
+    - id: cli_tips.tip_110
+      family: cli_tips
+      from: search_files is ripgrep-backed and faster than grep — use it instead of terminal grep.
+      to: search_files использует ripgrep и работает быстрее grep — используйте его вместо grep в терминале.
+    - id: cli_tips.tip_111
+      family: cli_tips
+      from: patch uses 9 fuzzy matching strategies so minor whitespace differences won't break edits.
+      to: patch применяет 9 стратегий нечёткого сопоставления, поэтому небольшие различия в пробелах не мешают правкам.
+    - id: cli_tips.tip_112
+      family: cli_tips
+      from: patch supports V4A format for bulk multi-file edits in a single call.
+      to: patch поддерживает формат V4A для массовых правок нескольких файлов за один вызов.
+    - id: cli_tips.tip_113
+      family: cli_tips
+      from: read_file suggests similar filenames when a file isn't found.
+      to: read_file предлагает похожие имена, если файл не найден.
+    - id: cli_tips.tip_114
+      family: cli_tips
+      from: read_file auto-deduplicates — re-reading an unchanged file returns a lightweight stub.
+      to: read_file автоматически устраняет повторное чтение — для неизменившегося файла возвращается краткая заглушка.
+    - id: cli_tips.tip_115
+      family: cli_tips
+      from: browser_vision takes a screenshot and analyzes it with AI — works for CAPTCHAs and visual content.
+      to: browser_vision делает снимок экрана и анализирует его с помощью ИИ — подходит для CAPTCHA и визуального содержимого.
+    - id: cli_tips.tip_116
+      family: cli_tips
+      from: browser_console can evaluate JavaScript expressions in the page context.
+      to: browser_console позволяет вычислять выражения JavaScript в контексте страницы.
+    - id: cli_tips.tip_117
+      family: cli_tips
+      from: image_generate creates images with FLUX 2 Pro and automatic 2x upscaling.
+      to: image_generate создаёт изображения с FLUX 2 Pro и автоматически увеличивает разрешение в 2 раза.
+    - id: cli_tips.tip_118
+      family: cli_tips
+      from: text_to_speech converts text to audio — plays as voice bubbles on Telegram.
+      to: text_to_speech преобразует текст в аудио — в Telegram оно воспроизводится как голосовое сообщение.
+    - id: cli_tips.tip_119
+      family: cli_tips
+      from: send_message can reach any connected messaging platform from within a session.
+      to: send_message позволяет отправить сообщение на любую подключённую платформу из текущего сеанса.
+    - id: cli_tips.tip_120
+      family: cli_tips
+      from: The todo tool helps the agent track complex multi-step tasks during a session.
+      to: Инструмент todo помогает агенту отслеживать сложные многошаговые задачи в ходе сеанса.
+    - id: cli_tips.tip_121
+      family: cli_tips
+      from: session_search performs full-text search across ALL past conversations.
+      to: session_search выполняет полнотекстовый поиск по ВСЕМ прошлым диалогам.
+    - id: cli_tips.tip_122
+      family: cli_tips
+      from: The agent automatically saves preferences, corrections, and environment facts to memory.
+      to: Агент автоматически сохраняет в память предпочтения, исправления и сведения об окружении.
+    - id: cli_tips.tip_123
+      family: cli_tips
+      from: /moa routes one hard prompt through your configured Mixture of Agents model set.
+      to: /moa передаёт один сложный запрос настроенному набору моделей Mixture of Agents.
+    - id: cli_tips.tip_124
+      family: cli_tips
+      from: Terminal commands support background mode with notify_on_complete for long-running tasks.
+      to: Команды терминала поддерживают фоновый режим с notify_on_complete для длительных задач.
+    - id: cli_tips.tip_125
+      family: cli_tips
+      from: Terminal background processes support watch_patterns to alert on specific output lines.
+      to: Фоновые процессы терминала поддерживают watch_patterns для уведомлений при появлении определённых строк вывода.
+    - id: cli_tips.tip_126
+      family: cli_tips
+      from: 'The terminal tool supports 6 backends: local, Docker, SSH, Modal, Daytona, and Singularity.'
+      to: 'Инструмент terminal поддерживает 6 сред выполнения: local, Docker, SSH, Modal, Daytona и Singularity.'
+    - id: cli_tips.tip_127
+      family: cli_tips
+      from: Each profile gets its own config, API keys, memory, sessions, skills, and cron jobs.
+      to: У каждого профиля свои конфигурация, API-ключи, память, сеансы, навыки и задания Cron.
+    - id: cli_tips.tip_128
+      family: cli_tips
+      from: Profile names become shell commands — 'hermes profile create coder' creates the 'coder' command.
+      to: Имена профилей становятся командами оболочки — 'hermes profile create coder' создаёт команду 'coder'.
+    - id: cli_tips.tip_129
+      family: cli_tips
+      from: hermes profile export coder -o backup.tar.gz creates a portable profile archive.
+      to: hermes profile export coder -o backup.tar.gz создаёт переносимый архив профиля.
+    - id: cli_tips.tip_130
+      family: cli_tips
+      from: If two profiles accidentally share a bot token, the second gateway is blocked with a clear error.
+      to: Если два профиля случайно используют один токен бота, запуск второго сервиса Hermes блокируется с понятным сообщением об ошибке.
+    - id: cli_tips.tip_131
+      family: cli_tips
+      from: Sessions auto-generate descriptive titles after the first exchange — no manual naming needed.
+      to: Сеансы автоматически получают содержательные названия после первого обмена сообщениями — называть их вручную не нужно.
+    - id: cli_tips.tip_132
+      family: cli_tips
+      from: 'Session titles support lineage: "my project" → "my project #2" → "my project #3".'
+      to: 'Названия сеансов поддерживают последовательность: "my project" → "my project #2" → "my project #3".'
+    - id: cli_tips.tip_133
+      family: cli_tips
+      from: When exiting, Hermes prints a resume command with session ID and stats.
+      to: При выходе Hermes выводит команду продолжения сеанса с его ID и статистикой.
+    - id: cli_tips.tip_134
+      family: cli_tips
+      from: hermes sessions export backup.jsonl exports all sessions for backup or analysis.
+      to: hermes sessions export backup.jsonl экспортирует все сеансы для резервного копирования или анализа.
+    - id: cli_tips.tip_135
+      family: cli_tips
+      from: hermes -r SESSION_ID resumes any specific past session by its ID.
+      to: hermes -r SESSION_ID продолжает указанный прошлый сеанс по его ID.
+    - id: cli_tips.tip_136
+      family: cli_tips
+      from: Memory is a frozen snapshot — changes appear in the system prompt only at next session start.
+      to: Память используется как неизменяемый снимок — изменения появляются в системном промпте только при запуске следующего сеанса.
+    - id: cli_tips.tip_137
+      family: cli_tips
+      from: Memory entries are automatically scanned for prompt injection and exfiltration patterns.
+      to: Записи памяти автоматически проверяются на внедрение инструкций и признаки утечки данных.
+    - id: cli_tips.tip_138
+      family: cli_tips
+      from: 'The agent has two memory stores: personal notes (~2200 chars) and user profile (~1375 chars).'
+      to: 'У агента два хранилища памяти: личные заметки (~2200 символов) и профиль пользователя (~1375 символов).'
+    - id: cli_tips.tip_139
+      family: cli_tips
+      from: Corrections you give the agent ("no, do it this way") are often auto-saved to memory.
+      to: Ваши исправления агенту («нет, сделай вот так») часто автоматически сохраняются в память.
+    - id: cli_tips.tip_140
+      family: cli_tips
+      from: Over 80 bundled skills covering github, creative, mlops, productivity, research, and more.
+      to: Более 80 встроенных навыков охватывают github, creative, mlops, productivity, research и другие направления.
+    - id: cli_tips.tip_141
+      family: cli_tips
+      from: Every installed skill automatically becomes a slash command — type / to see them all.
+      to: Каждый установленный навык автоматически становится командой с косой чертой — введите /, чтобы увидеть все.
+    - id: cli_tips.tip_142
+      family: cli_tips
+      from: hermes skills install official/security/1password installs optional skills from the repo.
+      to: hermes skills install official/security/1password устанавливает дополнительные навыки из репозитория.
+    - id: cli_tips.tip_143
+      family: cli_tips
+      from: Skills can restrict to specific OS platforms — some only load on macOS or Linux.
+      to: Навыки могут ограничивать поддерживаемые ОС — некоторые загружаются только на macOS или Linux.
+    - id: cli_tips.tip_144
+      family: cli_tips
+      from: skills.external_dirs in config.yaml lets you load skills from custom directories.
+      to: skills.external_dirs в config.yaml позволяет загружать навыки из собственных каталогов.
+    - id: cli_tips.tip_145
+      family: cli_tips
+      from: The agent can create its own skills as procedural memory using skill_manage.
+      to: Агент может создавать собственные навыки как процедурную память с помощью skill_manage.
+    - id: cli_tips.tip_146
+      family: cli_tips
+      from: /plan writes a markdown implementation plan to .hermes/plans/ without executing anything.
+      to: /plan записывает план реализации в Markdown в .hermes/plans/, ничего не выполняя.
+    - id: cli_tips.tip_147
+      family: cli_tips
+      from: 'Cron jobs can attach skills: hermes cron add --skill blogwatcher "Check for new posts".'
+      to: 'К заданиям Cron можно прикреплять навыки: hermes cron add --skill blogwatcher "Check for new posts".'
+    - id: cli_tips.tip_148
+      family: cli_tips
+      from: Cron delivery targets include telegram, discord, slack, email, sms, and 12+ more platforms.
+      to: Cron доставляет результаты на telegram, discord, slack, email, sms и ещё более чем 12 платформ.
+    - id: cli_tips.tip_149
+      family: cli_tips
+      from: If a cron response starts with [SILENT], delivery is suppressed — useful for monitoring-only jobs.
+      to: Если ответ Cron начинается с [SILENT], доставка подавляется — удобно для задач, которые только наблюдают за состоянием.
+    - id: cli_tips.tip_150
+      family: cli_tips
+      from: Cron supports relative delays (30m), intervals (every 2h), cron expressions, and ISO timestamps.
+      to: Cron поддерживает относительные задержки (30m), интервалы (every 2h), выражения Cron и временные метки ISO.
+    - id: cli_tips.tip_151
+      family: cli_tips
+      from: Cron jobs run in completely fresh agent sessions — prompts must be self-contained.
+      to: Задания Cron выполняются в совершенно новых сеансах агента — запросы должны содержать весь необходимый контекст.
+    - id: cli_tips.tip_152
+      family: cli_tips
+      from: Voice mode works with zero API keys if faster-whisper is installed (free local speech-to-text).
+      to: Голосовой режим работает без API-ключей, если установлен faster-whisper (бесплатное локальное распознавание речи).
+    - id: cli_tips.tip_153
+      family: cli_tips
+      from: 'Five TTS providers available: Edge TTS (free), ElevenLabs, OpenAI, NeuTTS (free local), MiniMax.'
+      to: 'Доступны пять провайдеров TTS: Edge TTS (бесплатный), ElevenLabs, OpenAI, NeuTTS (бесплатный локальный), MiniMax.'
+    - id: cli_tips.tip_154
+      family: cli_tips
+      from: /voice on enables voice mode in the CLI. Ctrl+B toggles push-to-talk recording.
+      to: /voice on включает голосовой режим в CLI. Ctrl+B переключает запись по нажатию клавиши.
+    - id: cli_tips.tip_155
+      family: cli_tips
+      from: Streaming TTS plays sentences as they generate — you don't wait for the full response.
+      to: Потоковый TTS воспроизводит предложения по мере генерации — не нужно ждать полного ответа.
+    - id: cli_tips.tip_156
+      family: cli_tips
+      from: Voice messages on Telegram, Discord, WhatsApp, and Slack are auto-transcribed.
+      to: Голосовые сообщения в Telegram, Discord, WhatsApp и Slack автоматически расшифровываются.
+    - id: cli_tips.tip_157
+      family: cli_tips
+      from: 'Hermes runs on 21 messaging platforms: Telegram, Discord, Slack, WhatsApp, Signal, Matrix, IRC, Microsoft Teams, email, and more.'
+      to: 'Hermes работает на 21 платформе обмена сообщениями: Telegram, Discord, Slack, WhatsApp, Signal, Matrix, IRC, Microsoft Teams, электронная почта и другие.'
+    - id: cli_tips.tip_158
+      family: cli_tips
+      from: hermes gateway install sets it up as a system service that starts on boot.
+      to: hermes gateway install устанавливает системный сервис, запускаемый при загрузке системы.
+    - id: cli_tips.tip_159
+      family: cli_tips
+      from: DingTalk uses Stream Mode — no webhooks or public URL needed.
+      to: DingTalk использует Stream Mode — вебхуки и публичный URL не нужны.
+    - id: cli_tips.tip_160
+      family: cli_tips
+      from: BlueBubbles brings iMessage to Hermes via a local macOS server.
+      to: BlueBubbles подключает iMessage к Hermes через локальный сервер macOS.
+    - id: cli_tips.tip_161
+      family: cli_tips
+      from: Webhook routes support HMAC validation, rate limiting, and event filtering.
+      to: Маршруты вебхуков поддерживают проверку HMAC, ограничение частоты запросов и фильтрацию событий.
+    - id: cli_tips.tip_162
+      family: cli_tips
+      from: The API server exposes an OpenAI-compatible endpoint compatible with Open WebUI and LibreChat.
+      to: Сервер API предоставляет OpenAI-совместимую конечную точку для Open WebUI и LibreChat.
+    - id: cli_tips.tip_163
+      family: cli_tips
+      from: 'Discord voice channel mode: the bot joins VC, transcribes speech, and talks back.'
+      to: 'Режим голосового канала Discord: бот подключается к каналу, распознаёт речь и отвечает голосом.'
+    - id: cli_tips.tip_164
+      family: cli_tips
+      from: 'group_sessions_per_user: true gives each person their own session in group chats.'
+      to: 'group_sessions_per_user: true выделяет каждому участнику собственный сеанс в групповых чатах.'
+    - id: cli_tips.tip_165
+      family: cli_tips
+      from: /sethome marks a chat as the home channel for cron job deliveries.
+      to: /sethome назначает чат домашним каналом для доставки результатов заданий Cron.
+    - id: cli_tips.tip_166
+      family: cli_tips
+      from: The gateway supports inactivity-based timeouts — active agents can run indefinitely.
+      to: Сервис Hermes поддерживает тайм-ауты по бездействию — активные агенты могут работать неограниченно долго.
+    - id: cli_tips.tip_167
+      family: cli_tips
+      from: 'Dangerous command approval has 4 tiers: once, session, always (permanent allowlist), deny.'
+      to: 'Для опасных команд доступны 4 варианта подтверждения: once, session, always (постоянный список разрешённых), deny.'
+    - id: cli_tips.tip_168
+      family: cli_tips
+      from: Smart approval mode uses an LLM to auto-approve safe commands and flag dangerous ones.
+      to: Умный режим подтверждения использует LLM для автоматического разрешения безопасных команд и выявления опасных.
+    - id: cli_tips.tip_169
+      family: cli_tips
+      from: SSRF protection blocks private networks, loopback, link-local, and cloud metadata addresses.
+      to: Защита от SSRF блокирует частные сети, loopback, link-local и адреса метаданных облака.
+    - id: cli_tips.tip_170
+      family: cli_tips
+      from: Tirith pre-exec scanning detects homograph URL spoofing and pipe-to-interpreter patterns.
+      to: Проверка Tirith перед выполнением выявляет подмену URL похожими символами и передачу данных напрямую интерпретатору через конвейер.
+    - id: cli_tips.tip_171
+      family: cli_tips
+      from: MCP subprocesses receive a filtered environment — only safe system vars pass through.
+      to: Подпроцессы MCP получают отфильтрованное окружение — передаются только безопасные системные переменные.
+    - id: cli_tips.tip_172
+      family: cli_tips
+      from: Context files (.hermes.md, AGENTS.md) are security-scanned for prompt injection before loading.
+      to: Файлы контекста (.hermes.md, AGENTS.md) перед загрузкой проверяются на внедрение инструкций.
+    - id: cli_tips.tip_173
+      family: cli_tips
+      from: command_allowlist in config.yaml permanently approves specific shell command patterns.
+      to: command_allowlist в config.yaml навсегда разрешает команды оболочки, соответствующие указанным шаблонам.
+    - id: cli_tips.tip_174
+      family: cli_tips
+      from: Context auto-compresses when it reaches the threshold — memories are flushed and history summarized.
+      to: Контекст автоматически сжимается при достижении порога — важные сведения сохраняются в память, а история сводится в резюме.
+    - id: cli_tips.tip_175
+      family: cli_tips
+      from: The status bar turns yellow, then orange, then red as context fills up.
+      to: По мере заполнения контекста строка состояния становится жёлтой, затем оранжевой, затем красной.
+    - id: cli_tips.tip_176
+      family: cli_tips
+      from: SOUL.md is the agent's primary identity file — customize it to shape behavior.
+      to: SOUL.md — основной файл идентичности агента; изменяйте его, чтобы управлять поведением.
+    - id: cli_tips.tip_177
+      family: cli_tips
+      from: Hermes loads project context from .hermes.md, AGENTS.md, CLAUDE.md, or .cursorrules (first match).
+      to: Hermes загружает контекст проекта из .hermes.md, AGENTS.md, CLAUDE.md или .cursorrules (первый найденный файл).
+    - id: cli_tips.tip_178
+      family: cli_tips
+      from: Subdirectory AGENTS.md files are discovered progressively as the agent navigates into folders.
+      to: Файлы AGENTS.md во вложенных каталогах обнаруживаются постепенно, по мере перехода агента в эти папки.
+    - id: cli_tips.tip_179
+      family: cli_tips
+      from: Context files are capped at 20,000 characters with smart head/tail truncation.
+      to: Файлы контекста ограничены 20 000 символами; при сокращении сохраняются важные части начала и конца.
+    - id: cli_tips.tip_180
+      family: cli_tips
+      from: 'Five browser providers: local Chromium, Browserbase, Browser Use, Camofox, and Firecrawl.'
+      to: 'Пять провайдеров браузера: локальный Chromium, Browserbase, Browser Use, Camofox и Firecrawl.'
+    - id: cli_tips.tip_181
+      family: cli_tips
+      from: Camofox is an anti-detection browser — Firefox fork with C++ fingerprint spoofing.
+      to: Camofox — браузер с защитой от обнаружения, ответвление Firefox с подменой отпечатка на C++.
+    - id: cli_tips.tip_182
+      family: cli_tips
+      from: browser_navigate returns a page snapshot automatically — no need to call browser_snapshot after.
+      to: browser_navigate автоматически возвращает снимок страницы — вызывать browser_snapshot после него не нужно.
+    - id: cli_tips.tip_183
+      family: cli_tips
+      from: browser_vision with annotate=true overlays numbered labels on interactive elements.
+      to: browser_vision с annotate=true накладывает нумерованные метки на интерактивные элементы.
+    - id: cli_tips.tip_184
+      family: cli_tips
+      from: hermes mcp opens an interactive picker of Nous-approved MCPs you can install in one keystroke.
+      to: hermes mcp открывает интерактивный выбор одобренных Nous серверов MCP, устанавливаемых одним нажатием клавиши.
+    - id: cli_tips.tip_185
+      family: cli_tips
+      from: hermes mcp catalog lists Nous-approved MCP servers shipped with the repo.
+      to: hermes mcp catalog показывает одобренные Nous серверы MCP, поставляемые с репозиторием.
+    - id: cli_tips.tip_186
+      family: cli_tips
+      from: hermes mcp install <name> installs a catalog entry, prompts for credentials, and lets you pick which of its tools to enable.
+      to: hermes mcp install <name> устанавливает запись каталога, запрашивает учётные данные и позволяет выбрать инструменты для включения.
+    - id: cli_tips.tip_187
+      family: cli_tips
+      from: MCP servers are configured in config.yaml — both stdio and HTTP transports supported.
+      to: Серверы MCP настраиваются в config.yaml — поддерживаются транспорты stdio и HTTP.
+    - id: cli_tips.tip_188
+      family: cli_tips
+      from: 'Per-server tool filtering: tools.include whitelists and tools.exclude blacklists specific tools.'
+      to: 'Фильтрация инструментов по серверу: tools.include разрешает указанные инструменты, tools.exclude запрещает.'
+    - id: cli_tips.tip_189
+      family: cli_tips
+      from: MCP servers auto-generate toolsets at runtime — hermes tools can toggle them per platform.
+      to: Серверы MCP автоматически создают наборы инструментов во время работы — hermes tools переключает их для каждой платформы.
+    - id: cli_tips.tip_190
+      family: cli_tips
+      from: 'MCP OAuth support: auth: oauth enables browser-based authorization with PKCE.'
+      to: 'Поддержка OAuth в MCP: auth: oauth включает авторизацию через браузер с PKCE.'
+    - id: cli_tips.tip_191
+      family: cli_tips
+      from: Checkpoints have zero overhead when no files are modified — enabled by default.
+      to: Контрольные точки не создают накладных расходов, если файлы не меняются; они включены по умолчанию.
+    - id: cli_tips.tip_192
+      family: cli_tips
+      from: A pre-rollback snapshot is saved automatically so you can undo the undo.
+      to: Перед откатом автоматически сохраняется снимок, чтобы можно было отменить сам откат.
+    - id: cli_tips.tip_193
+      family: cli_tips
+      from: /rollback also undoes the conversation turn, so the agent doesn't remember rolled-back changes.
+      to: /rollback также отменяет ход диалога, поэтому агент не помнит отменённые изменения.
+    - id: cli_tips.tip_194
+      family: cli_tips
+      from: Checkpoints use shadow repos in ~/.hermes/checkpoints/ — your project's .git is never touched.
+      to: Контрольные точки используют отдельные репозитории в ~/.hermes/checkpoints/ — .git вашего проекта не затрагивается.
+    - id: cli_tips.tip_195
+      family: cli_tips
+      from: batch_runner.py processes hundreds of prompts in parallel for training data generation.
+      to: batch_runner.py параллельно обрабатывает сотни запросов для генерации обучающих данных.
+    - id: cli_tips.tip_196
+      family: cli_tips
+      from: hermes chat -Q enables quiet mode for programmatic use — suppresses banner and spinner.
+      to: hermes chat -Q включает тихий режим для программного использования — скрывает баннер и индикатор ожидания.
+    - id: cli_tips.tip_197
+      family: cli_tips
+      from: Trajectory saving (--save-trajectories) captures full tool-use traces for model training.
+      to: Сохранение траекторий (--save-trajectories) записывает полные последовательности использования инструментов для обучения моделей.
+    - id: cli_tips.tip_198
+      family: cli_tips
+      from: 'Three plugin types: general (tools/hooks), memory providers, and context engines.'
+      to: 'Три типа плагинов: общие (инструменты и обработчики), провайдеры памяти и движки контекста.'
+    - id: cli_tips.tip_199
+      family: cli_tips
+      from: hermes plugins install owner/repo installs plugins directly from GitHub.
+      to: hermes plugins install owner/repo устанавливает плагины прямо из GitHub.
+    - id: cli_tips.tip_200
+      family: cli_tips
+      from: '8 external memory providers available: Honcho, OpenViking, Mem0, Hindsight, and more.'
+      to: 'Доступны 8 внешних провайдеров памяти: Honcho, OpenViking, Mem0, Hindsight и другие.'
+    - id: cli_tips.tip_201
+      family: cli_tips
+      from: Plugin hooks include pre/post_tool_call, pre/post_llm_call, and transform_terminal_output for output canonicalization.
+      to: Обработчики плагинов включают pre/post_tool_call, pre/post_llm_call и transform_terminal_output для приведения вывода к единому виду.
+    - id: cli_tips.tip_202
+      family: cli_tips
+      from: Prompt caching (Anthropic) reduces costs by reusing cached system prompt prefixes.
+      to: Кеширование промптов (Anthropic) снижает стоимость за счёт повторного использования кешированных префиксов системного промпта.
+    - id: cli_tips.tip_203
+      family: cli_tips
+      from: The agent auto-generates session titles in a background thread — zero latency impact.
+      to: Агент автоматически создаёт названия сеансов в фоновом потоке — без влияния на задержку ответа.
+    - id: cli_tips.tip_204
+      family: cli_tips
+      from: Smart model routing can auto-route simple queries to a cheaper model.
+      to: Умная маршрутизация моделей может автоматически направлять простые запросы более дешёвой модели.
+    - id: cli_tips.tip_205
+      family: cli_tips
+      from: 'Slash commands support prefix matching: /h resolves to /help, /mod to /model.'
+      to: 'Команды с косой чертой поддерживают сокращения: /h распознаётся как /help, /mod — как /model.'
+    - id: cli_tips.tip_206
+      family: cli_tips
+      from: Dragging a file path into the terminal auto-attaches images or sends as context.
+      to: Перетаскивание пути файла в терминал автоматически прикрепляет изображение или отправляет файл как контекст.
+    - id: cli_tips.tip_207
+      family: cli_tips
+      from: .worktreeinclude in your repo root lists gitignored files to copy into worktrees.
+      to: .worktreeinclude в корне репозитория перечисляет игнорируемые git файлы для копирования в рабочие деревья.
+    - id: cli_tips.tip_208
+      family: cli_tips
+      from: hermes acp runs Hermes as an ACP server for VS Code, Zed, and JetBrains integration.
+      to: hermes acp запускает Hermes как сервер ACP для интеграции с VS Code, Zed и JetBrains.
+    - id: cli_tips.tip_209
+      family: cli_tips
+      from: 'Custom providers: save named endpoints in config.yaml under custom_providers.'
+      to: 'Собственные провайдеры: сохраняйте именованные конечные точки в config.yaml в разделе custom_providers.'
+    - id: cli_tips.tip_210
+      family: cli_tips
+      from: HERMES_EPHEMERAL_SYSTEM_PROMPT injects a system prompt that's never persisted to history.
+      to: HERMES_EPHEMERAL_SYSTEM_PROMPT добавляет системный промпт, который никогда не сохраняется в историю.
+    - id: cli_tips.tip_211
+      family: cli_tips
+      from: credential_pool_strategies supports fill_first, round_robin, least_used, and random rotation.
+      to: credential_pool_strategies поддерживает стратегии ротации fill_first, round_robin, least_used и random.
+    - id: cli_tips.tip_212
+      family: cli_tips
+      from: hermes auth add nous or hermes auth add openai-codex sets up OAuth-based providers.
+      to: hermes auth add nous или hermes auth add openai-codex настраивает провайдеров с авторизацией OAuth.
+    - id: cli_tips.tip_213
+      family: cli_tips
+      from: The API server supports both Chat Completions and Responses API with server-side state.
+      to: Сервер API поддерживает Chat Completions и Responses API с хранением состояния на сервере.
+    - id: cli_tips.tip_214
+      family: cli_tips
+      from: 'tool_preview_length: 0 in config shows full file paths in the spinner''s activity feed.'
+      to: 'tool_preview_length: 0 в конфигурации показывает полные пути файлов в ленте активности индикатора ожидания.'
+    - id: cli_tips.tip_215
+      family: cli_tips
+      from: hermes status --deep runs deeper diagnostic checks across all components.
+      to: hermes status --deep выполняет углублённую диагностику всех компонентов.
+    - id: cli_tips.tip_216
+      family: cli_tips
+      from: Cron jobs can attach a Python script (--script) whose stdout is injected into the prompt as context.
+      to: К заданиям Cron можно прикрепить скрипт Python (--script), чей stdout добавляется в запрос как контекст.
+    - id: cli_tips.tip_217
+      family: cli_tips
+      from: Cron scripts live in ~/.hermes/scripts/ and run before the agent — perfect for data collection pipelines.
+      to: Скрипты Cron находятся в ~/.hermes/scripts/ и выполняются перед агентом — удобно для конвейеров сбора данных.
+    - id: cli_tips.tip_218
+      family: cli_tips
+      from: prefill_messages_file in config.yaml injects few-shot examples into every API call, never saved to history.
+      to: prefill_messages_file в config.yaml добавляет примеры в каждый вызов API, не сохраняя их в историю.
+    - id: cli_tips.tip_219
+      family: cli_tips
+      from: SOUL.md completely replaces the agent's default identity — rewrite it to make Hermes your own.
+      to: SOUL.md полностью заменяет идентичность агента по умолчанию — перепишите его, чтобы настроить Hermes под себя.
+    - id: cli_tips.tip_220
+      family: cli_tips
+      from: SOUL.md is auto-seeded with a default personality on first run. Edit it to customize.
+      to: При первом запуске SOUL.md автоматически заполняется характером по умолчанию. Отредактируйте его под себя.
+    - id: cli_tips.tip_221
+      family: cli_tips
+      from: /compress <focus topic> allocates 60-70% of the summary budget to your topic and aggressively trims the rest.
+      to: /compress <focus topic> выделяет 60-70% объёма резюме вашей теме и существенно сокращает остальное.
+    - id: cli_tips.tip_222
+      family: cli_tips
+      from: On second+ compression, the compressor updates the previous summary instead of starting from scratch.
+      to: При втором и последующих сжатиях обновляется предыдущее резюме, а не создаётся новое с нуля.
+    - id: cli_tips.tip_223
+      family: cli_tips
+      from: Before a gateway session reset, Hermes auto-flushes important facts to memory in the background.
+      to: Перед сбросом сеанса сервиса Hermes важные факты автоматически сохраняются в память в фоне.
+    - id: cli_tips.tip_224
+      family: cli_tips
+      from: 'network.force_ipv4: true in config.yaml fixes hangs on servers with broken IPv6 — monkey-patches socket.'
+      to: 'network.force_ipv4: true в config.yaml устраняет зависания на серверах с неработающим IPv6 — подменяет поведение socket во время выполнения.'
+    - id: cli_tips.tip_225
+      family: cli_tips
+      from: 'The terminal tool annotates common exit codes: grep returning 1 = ''No matches found (not an error)''.'
+      to: 'Инструмент terminal поясняет распространённые коды завершения: код 1 у grep означает «Совпадений нет (это не ошибка)».'
+    - id: cli_tips.tip_226
+      family: cli_tips
+      from: Failed foreground terminal commands auto-retry up to 3 times with exponential backoff (2s, 4s, 8s).
+      to: Неудачные команды терминала переднего плана автоматически повторяются до 3 раз с экспоненциальной задержкой (2, 4, 8 секунд).
+    - id: cli_tips.tip_227
+      family: cli_tips
+      from: Bare sudo commands are auto-rewritten to pipe SUDO_PASSWORD from .env — no interactive prompt needed.
+      to: Обычные команды sudo автоматически переписываются для передачи SUDO_PASSWORD из .env через конвейер — интерактивный запрос не нужен.
+    - id: cli_tips.tip_228
+      family: cli_tips
+      from: 'execute_code has built-in helpers: json_parse() for tolerant parsing, shell_quote(), and retry() with backoff.'
+      to: 'execute_code содержит встроенные помощники: json_parse() для устойчивого разбора, shell_quote() и retry() с увеличением задержки.'
+    - id: cli_tips.tip_229
+      family: cli_tips
+      from: execute_code's 7 sandbox tools (web_search, terminal, read/write/search/patch) use RPC — never enter context.
+      to: 7 инструментов песочницы execute_code (web_search, terminal, read/write/search/patch) используют RPC — их результаты не попадают в контекст.
+    - id: cli_tips.tip_230
+      family: cli_tips
+      from: Reading the same file region 3+ times triggers a warning. At 4+, it's hard-blocked to prevent loops.
+      to: Чтение одного участка файла 3 и более раз вызывает предупреждение. С 4-го раза чтение блокируется для предотвращения циклов.
+    - id: cli_tips.tip_231
+      family: cli_tips
+      from: write_file and patch detect if a file was externally modified since the last read and warn about staleness.
+      to: write_file и patch обнаруживают внешние изменения файла после последнего чтения и предупреждают об устаревшем содержимом.
+    - id: cli_tips.tip_232
+      family: cli_tips
+      from: V4A patch format supports Add File, Delete File, and Move File directives — not just Update.
+      to: Формат патчей V4A поддерживает директивы Add File, Delete File и Move File, а не только Update.
+    - id: cli_tips.tip_233
+      family: cli_tips
+      from: MCP servers can request LLM completions back via sampling — the agent becomes a tool for the server.
+      to: Серверы MCP могут запрашивать генерацию LLM через sampling — агент становится инструментом для сервера.
+    - id: cli_tips.tip_234
+      family: cli_tips
+      from: MCP servers send notifications/tools/list_changed to trigger automatic tool re-registration without restart.
+      to: Серверы MCP отправляют notifications/tools/list_changed для автоматической перерегистрации инструментов без перезапуска.
+    - id: cli_tips.tip_235
+      family: cli_tips
+      from: 'delegate_task with acp_command: ''claude'' spawns Claude Code as a child agent from any platform.'
+      to: 'delegate_task с acp_command: ''claude'' запускает Claude Code как дочернего агента с любой платформы.'
+    - id: cli_tips.tip_236
+      family: cli_tips
+      from: Delegation has a heartbeat thread — child activity propagates to the parent, preventing gateway timeouts.
+      to: У делегирования есть поток уведомлений об активности — работа дочернего агента передаётся родительскому, предотвращая тайм-ауты сервиса Hermes.
+    - id: cli_tips.tip_237
+      family: cli_tips
+      from: When a provider returns HTTP 402 (payment required), the auxiliary client auto-falls back to the next one.
+      to: Когда провайдер возвращает HTTP 402 (требуется оплата), вспомогательный клиент автоматически переключается на следующего.
+    - id: cli_tips.tip_238
+      family: cli_tips
+      from: agent.tool_use_enforcement steers models that describe actions instead of calling tools — auto for GPT/Codex.
+      to: agent.tool_use_enforcement направляет модели, которые описывают действия вместо вызова инструментов — для GPT/Codex включается автоматически.
+    - id: cli_tips.tip_239
+      family: cli_tips
+      from: agent.restart_after_turn_timeout lets in-flight turns finish before /restart enters stop(); restart_drain_timeout is only the force-interrupt budget once stop() begins.
+      to: agent.restart_after_turn_timeout даёт текущим ходам завершиться до вызова stop() командой /restart; restart_drain_timeout ограничивает только ожидание до принудительного прерывания после начала stop().
+    - id: cli_tips.tip_240
+      family: cli_tips
+      from: agent.api_max_retries (default 3) controls how many times the agent retries a failed API call before surfacing the error — lower it for fast fallback.
+      to: agent.api_max_retries (по умолчанию 3) задаёт число повторов неудачного вызова API до показа ошибки — уменьшите для быстрого перехода к резервной модели.
+    - id: cli_tips.tip_241
+      family: cli_tips
+      from: The gateway caches AIAgent instances per session — destroying this cache breaks Anthropic prompt caching.
+      to: Сервис Hermes кеширует экземпляры AIAgent для каждого сеанса — уничтожение этого кеша нарушает кеширование промптов Anthropic.
+    - id: cli_tips.tip_242
+      family: cli_tips
+      from: Any website can expose skills via /.well-known/skills/index.json — the skills hub discovers them automatically.
+      to: Любой сайт может публиковать навыки через /.well-known/skills/index.json — каталог навыков обнаруживает их автоматически.
+    - id: cli_tips.tip_243
+      family: cli_tips
+      from: The skills audit log at ~/.hermes/skills/.hub/audit.log tracks every install and removal operation.
+      to: Журнал аудита навыков ~/.hermes/skills/.hub/audit.log фиксирует каждую установку и удаление.
+    - id: cli_tips.tip_244
+      family: cli_tips
+      from: 'Stale git worktrees are auto-cleaned on startup: clean, fully-merged trees get pruned; dirty or unpushed work is always preserved.'
+      to: 'Устаревшие рабочие деревья git очищаются при запуске: чистые и полностью слитые удаляются; незакоммиченная или неотправленная работа всегда сохраняется.'
+    - id: cli_tips.tip_245
+      family: cli_tips
+      from: Profiles scope Hermes state via HERMES_HOME; host tool subprocesses keep your real HOME unless terminal.home_mode is profile.
+      to: Профили изолируют состояние Hermes через HERMES_HOME; подпроцессы инструментов на хосте сохраняют настоящий HOME, если terminal.home_mode не задан как profile.
+    - id: cli_tips.tip_246
+      family: cli_tips
+      from: HERMES_HOME_MODE env var (octal, e.g. 0701) sets custom directory permissions for web server traversal.
+      to: Переменная HERMES_HOME_MODE (восьмеричное значение, например 0701) задаёт права каталога, позволяющие веб-серверу проходить через него.
+    - id: cli_tips.tip_247
+      family: cli_tips
+      from: 'Container mode: place .container-mode in HERMES_HOME and the host CLI auto-execs into the container.'
+      to: 'Контейнерный режим: поместите .container-mode в HERMES_HOME, и CLI хоста автоматически запустит команду внутри контейнера.'
+    - id: cli_tips.tip_248
+      family: cli_tips
+      from: 'Ctrl+C has 5 priority tiers: cancel recording → cancel prompts → cancel picker → interrupt agent → exit.'
+      to: 'Ctrl+C имеет 5 уровней приоритета: отмена записи → отмена запросов → отмена выбора → прерывание агента → выход.'
+    - id: cli_tips.tip_249
+      family: cli_tips
+      from: Every interrupt during an agent run is logged to ~/.hermes/interrupt_debug.log with timestamps.
+      to: Каждое прерывание во время работы агента записывается в ~/.hermes/interrupt_debug.log с временной меткой.
+    - id: cli_tips.tip_250
+      family: cli_tips
+      from: BROWSER_CDP_URL connects browser tools to any running Chromium-family browser — accepts WebSocket, HTTP, or host:port.
+      to: BROWSER_CDP_URL подключает браузерные инструменты к любому запущенному браузеру семейства Chromium — принимает WebSocket, HTTP или host:port.
+    - id: cli_tips.tip_251
+      family: cli_tips
+      from: BROWSERBASE_ADVANCED_STEALTH=true enables advanced anti-detection with custom Chromium (Scale Plan).
+      to: BROWSERBASE_ADVANCED_STEALTH=true включает расширенную защиту от обнаружения с модифицированным Chromium (Scale Plan).
+    - id: cli_tips.tip_252
+      family: cli_tips
+      from: The CLI auto-switches to compact mode in terminals narrower than 80 columns.
+      to: CLI автоматически переходит в компактный режим в терминалах шириной менее 80 столбцов.
+    - id: cli_tips.tip_253
+      family: cli_tips
+      from: 'Quick commands support two types: exec (run shell command directly) and alias (redirect to another command).'
+      to: 'Быстрые команды поддерживают два типа: exec (прямой запуск команды оболочки) и alias (перенаправление на другую команду).'
+    - id: cli_tips.tip_254
+      family: cli_tips
+      from: 'Per-task delegation model: delegation.model and delegation.provider in config route subagents to cheaper models.'
+      to: 'Модель делегирования для задач: delegation.model и delegation.provider в конфигурации направляют субагентов на более дешёвые модели.'
+    - id: cli_tips.tip_255
+      family: cli_tips
+      from: delegation.reasoning_effort independently controls thinking depth for subagents.
+      to: delegation.reasoning_effort независимо задаёт глубину рассуждений субагентов.
+    - id: cli_tips.tip_256
+      family: cli_tips
+      from: 'display.platforms in config.yaml allows per-platform display overrides: {config_example}.'
+      to: 'display.platforms в config.yaml позволяет отдельно переопределять отображение для платформ: {config_example}.'
+      placeholders:
+        config_example: \{telegram:\ \{tool_progress:\ all\}\}
+    - id: cli_tips.tip_257
+      family: cli_tips
+      from: human_delay.mode in config simulates human typing speed — configurable min_ms/max_ms range.
+      to: human_delay.mode в конфигурации имитирует скорость человеческого набора — диапазон задаётся min_ms/max_ms.
+    - id: cli_tips.tip_258
+      family: cli_tips
+      from: Config version migrations run automatically on load — new config keys appear without manual intervention.
+      to: Миграции версий конфигурации выполняются при загрузке автоматически — новые ключи появляются без ручного вмешательства.
+    - id: cli_tips.tip_259
+      family: cli_tips
+      from: GPT and Codex models get special system prompt guidance for tool discipline and mandatory tool use.
+      to: Модели GPT и Codex получают специальные указания системного промпта о дисциплине и обязательном использовании инструментов.
+    - id: cli_tips.tip_260
+      family: cli_tips
+      from: Gemini models get tailored directives for absolute paths, parallel tool calls, and non-interactive commands.
+      to: Модели Gemini получают специальные указания об абсолютных путях, параллельных вызовах инструментов и неинтерактивных командах.
+    - id: cli_tips.tip_261
+      family: cli_tips
+      from: context.engine in config.yaml can be set to a plugin name for alternative context management strategies.
+      to: context.engine в config.yaml можно задать именем плагина для альтернативной стратегии управления контекстом.
+    - id: cli_tips.tip_262
+      family: cli_tips
+      from: Browser page snapshots over 15,000 characters are truncated or auto-summarized; the full snapshot is saved to cache/web for read_file paging.
+      to: Снимки страниц браузера длиннее 15 000 символов сокращаются или автоматически сводятся в резюме; полный снимок сохраняется в cache/web для постраничного чтения через read_file.
+    - id: cli_tips.tip_263
+      family: cli_tips
+      from: 'The compressor does a cheap pre-pass: tool outputs over 200 chars are replaced with placeholders before the LLM runs.'
+      to: 'Перед сжатием выполняется экономичная подготовка: вывод инструментов длиннее 200 символов заменяется заглушками до вызова LLM.'
+    - id: cli_tips.tip_264
+      family: cli_tips
+      from: When compression fails, further attempts are paused for 10 minutes to avoid API hammering.
+      to: При ошибке сжатия следующие попытки приостанавливаются на 10 минут, чтобы не перегружать API.
+    - id: cli_tips.tip_265
+      family: cli_tips
+      from: Long dangerous commands (>70 chars) get a 'view' option in the approval prompt to see the full text first.
+      to: Для длинных опасных команд (>70 символов) запрос подтверждения предлагает вариант 'view', позволяющий сначала увидеть полный текст.
+    - id: cli_tips.tip_266
+      family: cli_tips
+      from: Audio level visualization shows ▁▂▃▄▅▆▇ bars during voice recording based on microphone RMS levels.
+      to: При записи голоса визуализация громкости показывает столбцы ▁▂▃▄▅▆▇ на основе среднеквадратичного уровня сигнала микрофона.
+    - id: cli_tips.tip_267
+      family: cli_tips
+      from: Profile names cannot collide with existing PATH binaries — 'hermes profile create ls' would be rejected.
+      to: Имена профилей не могут совпадать с существующими программами в PATH — 'hermes profile create ls' будет отклонена.
+    - id: cli_tips.tip_268
+      family: cli_tips
+      from: hermes profile create backup --clone-all copies everything (config, keys, SOUL.md, memories, skills, sessions).
+      to: 'hermes profile create backup --clone-all копирует всё: конфигурацию, ключи, SOUL.md, память, навыки и сеансы.'
+    - id: cli_tips.tip_269
+      family: cli_tips
+      from: The voice record key is configurable via voice.record_key in config.yaml — not just Ctrl+B.
+      to: Клавиша записи голоса настраивается через voice.record_key в config.yaml — не обязательно Ctrl+B.
+    - id: cli_tips.tip_270
+      family: cli_tips
+      from: .cursorrules and .cursor/rules/*.mdc files are auto-detected and loaded as project context.
+      to: Файлы .cursorrules и .cursor/rules/*.mdc автоматически обнаруживаются и загружаются как контекст проекта.
+    - id: cli_tips.tip_271
+      family: cli_tips
+      from: Context files support 10+ prompt injection patterns — invisible Unicode, 'ignore instructions', exfil attempts.
+      to: 'Проверка файлов контекста распознаёт более 10 шаблонов внедрения инструкций: невидимый Unicode, «игнорируй инструкции», попытки утечки данных.'
+    - id: cli_tips.tip_272
+      family: cli_tips
+      from: GPT-5 and Codex use 'developer' role instead of 'system' in the message format.
+      to: GPT-5 и Codex используют роль 'developer' вместо 'system' в формате сообщений.
+    - id: cli_tips.tip_273
+      family: cli_tips
+      from: 'Per-task auxiliary overrides: auxiliary.vision.provider, auxiliary.compression.model, etc. in config.yaml.'
+      to: 'Переопределения вспомогательных задач: auxiliary.vision.provider, auxiliary.compression.model и другие параметры в config.yaml.'
+    - id: cli_tips.tip_274
+      family: cli_tips
+      from: The auxiliary client treats 'main' as a provider alias — resolves to your actual primary provider + model.
+      to: Вспомогательный клиент трактует 'main' как псевдоним провайдера — подставляет вашего основного провайдера и модель.
+    - id: cli_tips.tip_275
+      family: cli_tips
+      from: hermes claw migrate --dry-run previews OpenClaw migration without writing anything.
+      to: hermes claw migrate --dry-run показывает предварительный результат миграции OpenClaw, ничего не записывая.
+    - id: cli_tips.tip_276
+      family: cli_tips
+      from: File paths pasted with quotes or escaped spaces are handled automatically — no manual cleanup needed.
+      to: Пути файлов, вставленные с кавычками или экранированными пробелами, обрабатываются автоматически — ручная очистка не нужна.
+    - id: cli_tips.tip_277
+      family: cli_tips
+      from: Slash commands never trigger the large-paste collapse — /command with big arguments works correctly.
+      to: Команды с косой чертой никогда не сворачиваются как большие вставки — /command с объёмными аргументами работает корректно.
+    - id: cli_tips.tip_278
+      family: cli_tips
+      from: In interrupt mode, slash commands typed during agent execution bypass interrupt logic and run immediately.
+      to: В режиме interrupt команды с косой чертой, введённые во время работы агента, обходят логику прерывания и выполняются сразу.
+    - id: cli_tips.tip_279
+      family: cli_tips
+      from: HERMES_DEV=1 bypasses container mode detection for local development.
+      to: HERMES_DEV=1 отключает определение контейнерного режима для локальной разработки.
+    - id: cli_tips.tip_280
+      family: cli_tips
+      from: Each MCP server gets its own toolset (mcp-servername) that can be toggled independently via hermes tools.
+      to: Каждый сервер MCP получает собственный набор инструментов (mcp-servername), который можно независимо переключать через hermes tools.
+    - id: cli_tips.tip_281
+      family: cli_tips
+      from: MCP ${env_example} placeholders in config are resolved at server spawn — including vars from ~/.hermes/.env.
+      to: Подстановки MCP ${env_example} в конфигурации раскрываются при запуске сервера, включая переменные из ~/.hermes/.env.
+      placeholders:
+        env_example: \{ENV_VAR\}
+    - id: cli_tips.tip_282
+      family: cli_tips
+      from: Skills from trusted repos (NousResearch) get a 'trusted' security level; community skills get extra scanning.
+      to: Навыки из доверенных репозиториев (NousResearch) получают уровень безопасности 'trusted'; навыки сообщества проходят дополнительную проверку.
+    - id: cli_tips.tip_283
+      family: cli_tips
+      from: The skills quarantine at ~/.hermes/skills/.hub/quarantine/ holds skills pending security review.
+      to: В карантине ~/.hermes/skills/.hub/quarantine/ хранятся навыки, ожидающие проверки безопасности.
+    - id: cli_tips.tip_284
+      family: cli_tips
+      from: /steer <prompt> injects a note after the next tool call — nudge direction mid-task without interrupting.
+      to: /steer <prompt> добавляет заметку после следующего вызова инструмента — корректируйте направление задачи, не прерывая работу.
+    - id: cli_tips.tip_285
+      family: cli_tips
+      from: /goal <text> sets a standing Ralph-loop objective — Hermes auto-continues turn after turn until a judge says done.
+      to: /goal <text> задаёт постоянную цель цикла Ralph — Hermes автоматически продолжает ход за ходом, пока оценщик не подтвердит завершение.
+    - id: cli_tips.tip_286
+      family: cli_tips
+      from: /snapshot create [label] saves a full state snapshot of Hermes config; /snapshot restore <id> reverts later.
+      to: /snapshot create [label] сохраняет полный снимок состояния конфигурации Hermes; /snapshot restore <id> позволяет восстановить его позже.
+    - id: cli_tips.tip_287
+      family: cli_tips
+      from: /copy [N] copies the last assistant response to your clipboard, or the Nth-from-last with a number.
+      to: /copy [N] копирует последний ответ ассистента в буфер обмена, а с числом — N-й ответ с конца.
+    - id: cli_tips.tip_288
+      family: cli_tips
+      from: /redraw forces a full UI repaint, fixing terminal drift after tmux resize or mouse selection artifacts.
+      to: /redraw полностью перерисовывает интерфейс, устраняя искажения после изменения размера tmux или выделения мышью.
+    - id: cli_tips.tip_289
+      family: cli_tips
+      from: /agents (alias /tasks) shows active agents and running background tasks across the current session.
+      to: /agents (псевдоним /tasks) показывает активных агентов и работающие фоновые задачи текущего сеанса.
+    - id: cli_tips.tip_290
+      family: cli_tips
+      from: /footer toggles the gateway footer on final replies showing model, context %, and cwd.
+      to: /footer переключает подвал окончательных ответов сервиса Hermes с моделью, заполнением контекста в % и cwd.
+    - id: cli_tips.tip_291
+      family: cli_tips
+      from: /busy queue|steer|interrupt controls what pressing Enter does while Hermes is working.
+      to: /busy queue|steer|interrupt задаёт поведение Enter во время работы Hermes.
+    - id: cli_tips.tip_292
+      family: cli_tips
+      from: /topic in Telegram DMs enables user-managed multi-session topic mode — /topic <id> restores past sessions inline.
+      to: /topic в личных сообщениях Telegram включает управляемый пользователем режим тем с несколькими сеансами — /topic <id> восстанавливает прошлый сеанс прямо в чате.
+    - id: cli_tips.tip_293
+      family: cli_tips
+      from: /approve session|always runs a pending dangerous command with your chosen trust scope; /deny rejects it.
+      to: /approve session|always выполняет ожидающую опасную команду с выбранным уровнем доверия; /deny отклоняет её.
+    - id: cli_tips.tip_294
+      family: cli_tips
+      from: /restart gracefully restarts the gateway after draining active runs, then pings the requester when back up.
+      to: /restart корректно перезапускает сервис Hermes после завершения активных задач и уведомляет запросившего пользователя о готовности.
+    - id: cli_tips.tip_295
+      family: cli_tips
+      from: /kanban boards switch <slug> changes the active multi-project Kanban board from inside chat.
+      to: /kanban boards switch <slug> переключает активную многопроектную доску Kanban прямо из чата.
+    - id: cli_tips.tip_296
+      family: cli_tips
+      from: /reload reloads ~/.hermes/.env into the running session — pick up new API keys without restarting.
+      to: /reload заново загружает ~/.hermes/.env в текущий сеанс — новые API-ключи применяются без перезапуска.
+    - id: cli_tips.tip_297
+      family: cli_tips
+      from: cronjob with no_agent=True runs a script on schedule and sends its stdout directly — zero tokens, zero LLM.
+      to: cronjob с no_agent=True запускает скрипт по расписанию и напрямую отправляет его stdout — без токенов и LLM.
+    - id: cli_tips.tip_298
+      family: cli_tips
+      from: An empty cron script stdout means silent tick — nothing is delivered, perfect for threshold watchdogs.
+      to: Пустой stdout скрипта Cron означает тихое выполнение — ничего не доставляется; удобно для наблюдения за пороговыми значениями.
+    - id: cli_tips.tip_299
+      family: cli_tips
+      from: HERMES_CRON_MAX_PARALLEL (default 4) caps how many cron jobs run per tick so bursts don't saturate your keys.
+      to: HERMES_CRON_MAX_PARALLEL (по умолчанию 4) ограничивает число заданий Cron за один такт, чтобы всплески не перегружали ваши ключи.
+    - id: cli_tips.tip_300
+      family: cli_tips
+      from: Gateway hooks live under ~/.hermes/hooks/<name>/ with HOOK.yaml + handler.py — handler must be named `handle`.
+      to: Обработчики событий сервиса Hermes находятся в ~/.hermes/hooks/<name>/ с HOOK.yaml и handler.py — функция должна называться `handle`.
+    - id: cli_tips.tip_301
+      family: cli_tips
+      from: Hook events include gateway:startup, session:start, agent:step, and command:* wildcard subscriptions.
+      to: События обработчиков включают gateway:startup, session:start, agent:step и подписки по шаблону command:*.
+    - id: cli_tips.tip_302
+      family: cli_tips
+      from: Drop a ~/.hermes/BOOT.md checklist and a gateway:startup hook runs it as a one-shot agent every boot.
+      to: Поместите список действий в ~/.hermes/BOOT.md, и обработчик gateway:startup будет выполнять его разовым запуском агента при каждом старте.
+    - id: cli_tips.tip_303
+      family: cli_tips
+      from: hermes curator run --dry-run previews what the curator would archive or consolidate without mutating anything.
+      to: hermes curator run --dry-run показывает, что куратор архивирует или объединит, ничего не изменяя.
+    - id: cli_tips.tip_304
+      family: cli_tips
+      from: hermes curator pin <skill> hard-fences a skill against both auto-archival and the agent's skill_manage tool.
+      to: hermes curator pin <skill> защищает навык и от автоматического архивирования, и от инструмента агента skill_manage.
+    - id: cli_tips.tip_305
+      family: cli_tips
+      from: hermes curator rollback restores skills from a pre-run snapshot — backups live under skills/.curator_backups/.
+      to: hermes curator rollback восстанавливает навыки из снимка перед запуском — резервные копии находятся в skills/.curator_backups/.
+    - id: cli_tips.tip_306
+      family: cli_tips
+      from: hermes auth reset <provider> clears all cooldowns and exhaustion flags on a credential pool.
+      to: hermes auth reset <provider> сбрасывает все периоды ожидания и признаки исчерпания в пуле учётных данных.
+    - id: cli_tips.tip_307
+      family: cli_tips
+      from: 'credential_pool_strategies.<provider>: round_robin cycles keys evenly instead of the fill_first default.'
+      to: 'credential_pool_strategies.<provider>: round_robin равномерно чередует ключи вместо стратегии fill_first по умолчанию.'
+    - id: cli_tips.tip_308
+      family: cli_tips
+      from: 'use_gateway: true per-tool routes web, image, tts, or browser through your Nous subscription — no extra keys.'
+      to: 'use_gateway: true для инструмента направляет web, image, tts или browser через подписку Nous — дополнительные ключи не нужны.'
+    - id: cli_tips.tip_309
+      family: cli_tips
+      from: 'provider_routing.data_collection: deny excludes data-storing providers on OpenRouter.'
+      to: 'provider_routing.data_collection: deny исключает провайдеров OpenRouter, сохраняющих данные.'
+    - id: cli_tips.tip_310
+      family: cli_tips
+      from: 'provider_routing.require_parameters: true only routes to providers that support every param in your request.'
+      to: 'provider_routing.require_parameters: true направляет запросы только провайдерам, поддерживающим каждый параметр запроса.'
+    - id: cli_tips.tip_311
+      family: cli_tips
+      from: HERMES_TUI_RESUME=1 auto-re-attaches to the most recent TUI session on launch — handy after SSH drops.
+      to: HERMES_TUI_RESUME=1 автоматически подключается к последнему сеансу TUI при запуске — удобно после обрыва SSH.
+    - id: cli_tips.tip_312
+      family: cli_tips
+      from: HERMES_TUI_THEME=light|dark|<hex> forces the TUI theme on terminals that don't set COLORFGBG.
+      to: HERMES_TUI_THEME=light|dark|<hex> принудительно задаёт тему TUI в терминалах, которые не устанавливают COLORFGBG.
+    - id: cli_tips.tip_313
+      family: cli_tips
+      from: Ctrl+G or Ctrl+X Ctrl+E in the TUI opens the input buffer in $EDITOR for long multi-line prompts.
+      to: Ctrl+G или Ctrl+X Ctrl+E в TUI открывает буфер ввода в $EDITOR для длинных многострочных запросов.
+    - id: cli_tips.tip_314
+      family: cli_tips
+      from: The TUI renders LaTeX inline — $E=mc^2$ becomes Unicode math instead of raw TeX.
+      to: TUI отображает LaTeX прямо в тексте — $E=mc^2$ превращается в математическую запись Unicode вместо исходного TeX.
+    - id: cli_tips.tip_315
+      family: cli_tips
+      from: hermes dashboard launches a local web UI at 127.0.0.1:9119 — zero data leaves localhost.
+      to: hermes dashboard запускает локальный веб-интерфейс на 127.0.0.1:9119 — данные не покидают localhost.
+    - id: cli_tips.tip_316
+      family: cli_tips
+      from: hermes dashboard embeds the full Hermes TUI in your browser via xterm.js and a WebSocket PTY.
+      to: hermes dashboard встраивает полный TUI Hermes в браузер через xterm.js и WebSocket PTY.
+    - id: cli_tips.tip_317
+      family: cli_tips
+      from: Drop a YAML in ~/.hermes/dashboard-themes/ with two palette colors to reskin the entire dashboard.
+      to: Поместите YAML с двумя цветами палитры в ~/.hermes/dashboard-themes/, чтобы изменить оформление всей панели.
+    - id: cli_tips.tip_318
+      family: cli_tips
+      from: 'Dashboard plugins are drop-in: manifest.json + JS bundle in ~/.hermes/dashboard-plugins/ — no npm build required.'
+      to: 'Плагины панели подключаются размещением файлов: manifest.json и сборка JS в ~/.hermes/dashboard-plugins/ — сборка через npm не требуется.'
+    - id: cli_tips.tip_319
+      family: cli_tips
+      from: 'layoutVariant: cockpit in a dashboard theme adds a 260px left rail that plugins can populate via the sidebar slot.'
+      to: 'layoutVariant: cockpit в теме панели добавляет левую колонку шириной 260px, которую плагины могут заполнять через слот sidebar.'
+    - id: cli_tips.tip_320
+      family: cli_tips
+      from: 'display.tool_progress_command: true exposes /verbose on messaging platforms; it''s CLI-only by default.'
+      to: 'display.tool_progress_command: true делает /verbose доступной на платформах обмена сообщениями; по умолчанию она доступна только в CLI.'
+    - id: cli_tips.tip_321
+      family: cli_tips
+      from: HERMES_BACKGROUND_NOTIFICATIONS=result only pings when background tasks finish (vs concise/all/error/off).
+      to: HERMES_BACKGROUND_NOTIFICATIONS=result уведомляет только о завершении фоновых задач (в отличие от concise/all/error/off).
+    - id: cli_tips.tip_322
+      family: cli_tips
+      from: 'HERMES_WRITE_SAFE_ROOT restricts write_file/patch to directory prefixes; multiple paths via os.pathsep (: or ;).'
+      to: 'HERMES_WRITE_SAFE_ROOT ограничивает write_file/patch префиксами каталогов; несколько путей разделяются os.pathsep (: или ;).'
+    - id: cli_tips.tip_323
+      family: cli_tips
+      from: HERMES_IGNORE_RULES skips auto-injection of AGENTS.md, SOUL.md, .cursorrules, memory, and preloaded skills.
+      to: HERMES_IGNORE_RULES отключает автоматическое добавление AGENTS.md, SOUL.md, .cursorrules, памяти и заранее загруженных навыков.
+    - id: cli_tips.tip_324
+      family: cli_tips
+      from: HERMES_ACCEPT_HOOKS auto-approves unseen shell hooks declared in config.yaml without a TTY prompt.
+      to: HERMES_ACCEPT_HOOKS автоматически разрешает ранее не встречавшиеся обработчики оболочки из config.yaml без запроса в TTY.
+    - id: cli_tips.tip_325
+      family: cli_tips
+      from: auxiliary.goal_judge.model routes the /goal judge to a cheap fast model to keep loop cost near zero.
+      to: auxiliary.goal_judge.model направляет оценщик /goal на дешёвую быструю модель, сводя стоимость цикла почти к нулю.
+    - id: cli_tips.tip_326
+      family: cli_tips
+      from: Checkpoints skip directories with more than 50,000 files to avoid slow git operations on massive monorepos.
+      to: Контрольные точки пропускают каталоги с более чем 50 000 файлов, чтобы избежать медленных операций git в огромных монорепозиториях.
+    - id: cli_tips.tip_327
+      family: cli_tips
+      from: 'tts.provider: piper runs 44-language local TTS on CPU — voices auto-download to ~/.hermes/cache/piper-voices/.'
+      to: 'tts.provider: piper запускает локальный TTS на CPU для 44 языков — голоса автоматически загружаются в ~/.hermes/cache/piper-voices/.'
+    - id: cli_tips.tip_328
+      family: cli_tips
+      from: 'tts.providers.<name>.type: command wires any CLI TTS engine with {input_path} and {output_path} placeholders.'
+      to: 'tts.providers.<name>.type: command подключает любой движок TTS командной строки с подстановками {input_path} и {output_path}.'
+      placeholders:
+        input_path: \{input_path\}
+        output_path: \{output_path\}
+    - id: cli_tips.tip_329
+      family: cli_tips
+      from: API_SERVER_ENABLED=true runs an OpenAI-compatible endpoint alongside the gateway for Open WebUI and LibreChat.
+      to: API_SERVER_ENABLED=true запускает OpenAI-совместимую конечную точку рядом с сервисом Hermes для Open WebUI и LibreChat.
+    - id: cli_tips.tip_330
+      family: cli_tips
+      from: 'GATEWAY_PROXY_URL runs a split setup: platform I/O locally, agent work delegated to a remote API server.'
+      to: 'GATEWAY_PROXY_URL включает разделённую схему: обмен с платформами выполняется локально, работа агента передаётся удалённому серверу API.'
+    - id: cli_tips.tip_331
+      family: cli_tips
+      from: MATRIX_DEVICE_ID pins a stable device ID for E2EE — without it, keys rotate every start and historic decrypt breaks.
+      to: MATRIX_DEVICE_ID закрепляет постоянный ID устройства для E2EE — без него ключи меняются при каждом запуске и расшифровка старых сообщений нарушается.
+    - id: cli_tips.tip_332
+      family: cli_tips
+      from: TELEGRAM_WEBHOOK_SECRET is required whenever TELEGRAM_WEBHOOK_URL is set — generate with openssl rand -hex 32.
+      to: TELEGRAM_WEBHOOK_SECRET обязателен при заданном TELEGRAM_WEBHOOK_URL — сгенерируйте его через openssl rand -hex 32.
+    - id: cli_tips.tip_333
+      family: cli_tips
+      from: batch_runner.py --resume content-matches completed prompts by text so dataset reorders don't re-run finished work.
+      to: batch_runner.py --resume сопоставляет выполненные запросы по тексту, чтобы перестановка набора данных не запускала готовую работу повторно.
+    - id: cli_tips.tip_334
+      family: cli_tips
+      from: /new starts a fresh session in place (alias /reset) — fresh session ID, clean history, CLI stays open.
+      to: /new начинает новый сеанс на месте (псевдоним /reset) — новый ID, чистая история, CLI остаётся открытым.
+    - id: cli_tips.tip_335
+      family: cli_tips
+      from: /clear wipes the terminal screen AND starts a new session — one shortcut for a visual reset.
+      to: /clear очищает экран терминала И начинает новый сеанс — одна команда для визуального сброса.
+    - id: cli_tips.tip_336
+      family: cli_tips
+      from: /history prints the current conversation in-line without leaving the CLI — useful for a quick re-read.
+      to: /history выводит текущий диалог прямо в CLI — удобно быстро перечитать его.
+    - id: cli_tips.tip_337
+      family: cli_tips
+      from: /save writes the current conversation to disk without ending the session.
+      to: /save сохраняет текущий диалог на диск, не завершая сеанс.
+    - id: cli_tips.tip_338
+      family: cli_tips
+      from: '/status shows session info at a glance: ID, title, model, token usage, and elapsed time.'
+      to: '/status кратко показывает сведения о сеансе: ID, название, модель, расход токенов и прошедшее время.'
+    - id: cli_tips.tip_339
+      family: cli_tips
+      from: /image <path> attaches a local image file for your next prompt without pasting or drag-and-drop.
+      to: /image <path> прикрепляет локальное изображение к следующему запросу без вставки или перетаскивания.
+    - id: cli_tips.tip_340
+      family: cli_tips
+      from: /platforms shows gateway and messaging-platform connection status right from inside chat.
+      to: /platforms показывает состояние сервиса Hermes и подключений к платформам прямо из чата.
+    - id: cli_tips.tip_341
+      family: cli_tips
+      from: /commands paginates the full slash-command + installed-skill list — useful on platforms without tab completion.
+      to: /commands постранично показывает полный список команд с косой чертой и установленных навыков — удобно на платформах без дополнения по Tab.
+    - id: cli_tips.tip_342
+      family: cli_tips
+      from: /toolsets lists every available toolset so you know what -t/--toolsets accepts.
+      to: /toolsets перечисляет все доступные наборы инструментов, чтобы было понятно, что принимает -t/--toolsets.
+    - id: cli_tips.tip_343
+      family: cli_tips
+      from: /voice tts toggles TTS-only mode — agent replies out loud but you still type your prompts.
+      to: /voice tts переключает режим только озвучивания — агент отвечает голосом, но запросы вы вводите текстом.
+    - id: cli_tips.tip_344
+      family: cli_tips
+      from: /reload-skills re-scans ~/.hermes/skills/ so drop-in skills appear without restarting the session.
+      to: /reload-skills повторно сканирует ~/.hermes/skills/, чтобы добавленные навыки появились без перезапуска сеанса.
+    - id: cli_tips.tip_345
+      family: cli_tips
+      from: /indicator kaomoji|emoji|unicode|ascii picks the TUI busy-indicator style shown during agent runs.
+      to: /indicator kaomoji|emoji|unicode|ascii выбирает стиль индикатора занятости TUI во время работы агента.
+    - id: cli_tips.tip_346
+      family: cli_tips
+      from: /debug uploads a support bundle (system info + logs) and returns shareable links — works in chat too.
+      to: /debug загружает пакет для поддержки (сведения о системе и журналы) и возвращает ссылки для отправки — работает и в чате.
+    - id: cli_tips.tip_347
+      family: cli_tips
+      from: 'hermes -z "<prompt>" is the purest one-shot: final answer on stdout, nothing else — ideal for piping in scripts.'
+      to: 'hermes -z "<prompt>" выполняет разовый запрос с минимальным выводом: только окончательный ответ в stdout — удобно для конвейеров в скриптах.'
+    - id: cli_tips.tip_348
+      family: cli_tips
+      from: hermes chat --pass-session-id injects the session ID into the system prompt so the agent can self-reference it.
+      to: hermes chat --pass-session-id добавляет ID сеанса в системный промпт, чтобы агент мог ссылаться на свой сеанс.
+    - id: cli_tips.tip_349
+      family: cli_tips
+      from: hermes chat --image path/to/pic.png attaches a local image to a single -q query without a separate upload step.
+      to: hermes chat --image path/to/pic.png прикрепляет локальное изображение к разовому запросу -q без отдельной загрузки.
+    - id: cli_tips.tip_350
+      family: cli_tips
+      from: hermes chat --ignore-user-config skips the active user config — reproducible bug reports and CI runs.
+      to: hermes chat --ignore-user-config пропускает активную пользовательскую конфигурацию — удобно для воспроизводимых сообщений об ошибках и запусков CI.
+    - id: cli_tips.tip_351
+      family: cli_tips
+      from: hermes chat --source tool tags programmatic chats so they don't clutter hermes sessions list.
+      to: hermes chat --source tool помечает программные диалоги, чтобы они не загромождали hermes sessions list.
+    - id: cli_tips.tip_352
+      family: cli_tips
+      from: hermes dump --show-keys includes redacted API key fingerprints for deeper support debugging.
+      to: hermes dump --show-keys включает отпечатки API-ключей со скрытыми секретными данными для углублённой диагностики поддержкой.
+    - id: cli_tips.tip_353
+      family: cli_tips
+      from: hermes sessions rename <ID> "new title" renames any past session; hermes sessions delete <ID> removes one.
+      to: hermes sessions rename <ID> "new title" переименовывает любой прошлый сеанс; hermes sessions delete <ID> удаляет его.
+    - id: cli_tips.tip_354
+      family: cli_tips
+      from: hermes import restores a full Hermes backup zip; session JSON/JSONL exports import from the dashboard Sessions page.
+      to: hermes import восстанавливает полную резервную копию Hermes из zip; экспортированные сеансы JSON/JSONL импортируются со страницы Sessions панели.
+    - id: cli_tips.tip_355
+      family: cli_tips
+      from: hermes fallback manages the fallback_model chain interactively — no hand-editing config.yaml.
+      to: hermes fallback интерактивно управляет цепочкой fallback_model — редактировать config.yaml вручную не нужно.
+    - id: cli_tips.tip_356
+      family: cli_tips
+      from: hermes pairing rotates the DM pairing token — the first messager after rotation claims access to the bot.
+      to: hermes pairing меняет токен привязки личных сообщений — первый написавший после смены получает доступ к боту.
+    - id: cli_tips.tip_357
+      family: cli_tips
+      from: hermes setup walks first-time users through provider, keys, and platform wiring in one interactive flow.
+      to: hermes setup проводит новых пользователей через выбор провайдера, ключей и подключение платформ в одном интерактивном процессе.
+    - id: cli_tips.tip_358
+      family: cli_tips
+      from: hermes status --deep runs the full health sweep across every component; plain hermes status is the quick view.
+      to: hermes status --deep выполняет полную проверку всех компонентов; обычная hermes status показывает краткую сводку.
+    - id: cli_tips.tip_359
+      family: cli_tips
+      from: HERMES_AGENT_TIMEOUT=0 disables the gateway inactivity kill for a running agent — use for long research runs.
+      to: HERMES_AGENT_TIMEOUT=0 отключает завершение работающего агента по бездействию в сервисе Hermes — подходит для длительных исследований.
+    - id: cli_tips.tip_360
+      family: cli_tips
+      from: HERMES_ENABLE_PROJECT_PLUGINS=1 auto-loads repo-local plugins from ./.hermes/plugins/ — trust-gated by design.
+      to: HERMES_ENABLE_PROJECT_PLUGINS=1 автоматически загружает плагины репозитория из ./.hermes/plugins/ — только при разрешённом доверии.
+    - id: cli_tips.tip_361
+      family: cli_tips
+      from: HERMES_DISABLE_FILE_STATE_GUARD=1 turns off the 'file changed since you read it' guard on patch and write_file.
+      to: HERMES_DISABLE_FILE_STATE_GUARD=1 отключает проверку «файл изменился после чтения» для patch и write_file.
+    - id: cli_tips.tip_362
+      family: cli_tips
+      from: HERMES_ALLOW_PRIVATE_URLS=true lets web tools hit localhost and private networks — off by default in gateway mode.
+      to: HERMES_ALLOW_PRIVATE_URLS=true разрешает веб-инструментам обращаться к localhost и частным сетям — по умолчанию отключено в режиме сервиса Hermes.
+    - id: cli_tips.tip_363
+      family: cli_tips
+      from: HERMES_OPTIONAL_SKILLS=name1,name2 auto-installs extra optional-catalog skills on first run per profile.
+      to: HERMES_OPTIONAL_SKILLS=name1,name2 автоматически устанавливает дополнительные навыки из каталога при первом запуске каждого профиля.
+    - id: cli_tips.tip_364
+      family: cli_tips
+      from: HERMES_BUNDLED_SKILLS points at a custom bundled-skill tree — used by Homebrew and Nix packaging.
+      to: HERMES_BUNDLED_SKILLS указывает собственное дерево встроенных навыков — используется в пакетах Homebrew и Nix.
+    - id: cli_tips.tip_365
+      family: cli_tips
+      from: HERMES_DUMP_REQUEST_STDOUT=1 dumps every API request payload to stdout instead of log files.
+      to: HERMES_DUMP_REQUEST_STDOUT=1 выводит содержимое каждого запроса API в stdout вместо файлов журналов.
+    - id: cli_tips.tip_366
+      family: cli_tips
+      from: HERMES_OAUTH_TRACE=1 logs redacted OAuth token exchange and refresh attempts for debugging provider auth.
+      to: HERMES_OAUTH_TRACE=1 записывает обмен и обновление токенов OAuth со скрытыми секретными данными для диагностики авторизации провайдера.
+    - id: cli_tips.tip_367
+      family: cli_tips
+      from: HERMES_STREAM_RETRIES (default 3) controls mid-stream reconnect attempts on transient network errors.
+      to: HERMES_STREAM_RETRIES (по умолчанию 3) задаёт число попыток восстановления потокового соединения при временных сетевых ошибках.
+    - id: cli_tips.tip_368
+      family: cli_tips
+      from: HERMES_GATEWAY_BUSY_ACK_ENABLED=false silences the ⚡/⏳/⏩ ack messages when a user messages a busy agent.
+      to: HERMES_GATEWAY_BUSY_ACK_ENABLED=false отключает подтверждения ⚡/⏳/⏩, когда пользователь пишет занятому агенту.
+    - id: cli_tips.tip_369
+      family: cli_tips
+      from: HERMES_AGENT_NOTIFY_INTERVAL (default 180s) sets how often the gateway pings with progress on long turns.
+      to: HERMES_AGENT_NOTIFY_INTERVAL (по умолчанию 180s) задаёт частоту уведомлений сервиса Hermes о прогрессе на длинных ходах.
+    - id: cli_tips.tip_370
+      family: cli_tips
+      from: HERMES_RESTART_DRAIN_TIMEOUT (default 900s) caps how long /restart waits for in-flight runs before forcing.
+      to: HERMES_RESTART_DRAIN_TIMEOUT (по умолчанию 900s) ограничивает ожидание активных задач командой /restart до принудительного завершения.
+    - id: cli_tips.tip_371
+      family: cli_tips
+      from: HERMES_CHECKPOINT_TIMEOUT (default 30s) caps filesystem checkpoint creation — raise it on huge monorepos.
+      to: HERMES_CHECKPOINT_TIMEOUT (по умолчанию 30s) ограничивает время создания контрольной точки файловой системы — увеличьте для огромных монорепозиториев.
+    - id: cli_tips.tip_372
+      family: cli_tips
+      from: 'image_gen.model in config.yaml picks the FAL model: flux-2/klein, gpt-image-2, nano-banana-pro, and more.'
+      to: 'image_gen.model в config.yaml выбирает модель FAL: flux-2/klein, gpt-image-2, nano-banana-pro и другие.'
+    - id: cli_tips.tip_373
+      family: cli_tips
+      from: image_gen.provider routes image generation through a plugin (OpenAI Images, Codex, FAL) instead of the default.
+      to: image_gen.provider направляет генерацию изображений через плагин (OpenAI Images, Codex, FAL) вместо провайдера по умолчанию.
+    - id: cli_tips.tip_374
+      family: cli_tips
+      from: AUXILIARY_VISION_BASE_URL + AUXILIARY_VISION_API_KEY point vision analysis at any OpenAI-compatible endpoint.
+      to: AUXILIARY_VISION_BASE_URL + AUXILIARY_VISION_API_KEY направляют анализ изображений на любую OpenAI-совместимую конечную точку.
+    - id: cli_tips.tip_375
+      family: cli_tips
+      from: 'security.tirith_fail_open: false makes Hermes block commands when the tirith scanner itself errors out.'
+      to: 'security.tirith_fail_open: false заставляет Hermes блокировать команды при ошибке самого сканера tirith.'
+    - id: cli_tips.tip_376
+      family: cli_tips
+      from: TIRITH_FAIL_OPEN env var overrides the tirith_fail_open config — a quick toggle without editing config.yaml.
+      to: Переменная окружения TIRITH_FAIL_OPEN переопределяет параметр tirith_fail_open — быстрое переключение без редактирования config.yaml.
+    - id: cli_tips.tip_377
+      family: cli_tips
+      from: --source tool chats are excluded from hermes sessions list by default — set --source explicitly to see them.
+      to: Диалоги с --source tool по умолчанию исключены из hermes sessions list — явно укажите --source, чтобы увидеть их.
+    - id: cli_tips.tip_378
+      family: cli_tips
+      from: Session IDs are timestamp-prefixed (20250305_091523_abcd) so sorting works naturally in ls and jq.
+      to: ID сеансов начинаются с временной метки (20250305_091523_abcd), поэтому ls и jq естественным образом сортируют их по времени.
+    - id: cli_tips.tip_379
+      family: cli_tips
+      from: API_SERVER_MODEL_NAME customizes the model name on /v1/models — essential for multi-profile Open WebUI setups.
+      to: API_SERVER_MODEL_NAME задаёт имя модели в /v1/models — важно для многопрофильных конфигураций Open WebUI.
+    - id: cli_tips.tip_380
+      family: cli_tips
+      from: Dashboard plugins are served from /dashboard-plugins/<name>/ — drop files into ~/.hermes/dashboard-plugins/.
+      to: Плагины панели доступны по /dashboard-plugins/<name>/ — поместите файлы в ~/.hermes/dashboard-plugins/.
+    - id: cli_tips.wrapper_en
+      family: cli_tips
+      from: '✦ Tip: {tip}'
+      to: '✦ Совет: {tip}'
+      placeholders:
+        tip: .+?
+    - id: cli_tips.wrapper_ru
+      family: cli_tips
+      from: '✦ Совет: {tip}'
+      to: '✦ Совет: {tip}'
+      placeholders:
+        tip: .+?
