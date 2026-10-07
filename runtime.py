@@ -517,14 +517,21 @@ def activate_from_gateway_event(
     if str(platform).lower() != "telegram":
         return
     state.begin_delivery_cycle()
-    adapter_for_source: Callable[..., Any] | None = getattr(
-        gateway, "_adapter_for_source", None
-    )
-    if not callable(adapter_for_source):
-        state.boundaries["GatewayRunner._adapter_for_source"] = "method_missing"
+    adapter_for_source: Callable[..., Any] | None = None
+    boundary = "GatewayRunner._delivery_adapter_for"
+    for method_name in ("_delivery_adapter_for", "_adapter_for_source"):
+        candidate = getattr(gateway, method_name, None)
+        if callable(candidate):
+            adapter_for_source = candidate
+            boundary = f"GatewayRunner.{method_name}"
+            break
+    if adapter_for_source is None:
+        state.boundaries[boundary] = "method_missing"
         return
     adapter = adapter_for_source(source)
     if adapter is None:
-        state.boundaries["GatewayRunner._adapter_for_source"] = "adapter_missing"
+        state.boundaries[boundary] = "adapter_missing"
         return
+    state.boundaries.pop("GatewayRunner._adapter_for_source", None)
+    state.boundaries[boundary] = "installed"
     install_on_adapter(adapter, state)
