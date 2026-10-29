@@ -226,6 +226,40 @@ class RuntimeState:
         )
 
 
+_COMPACTION_STATUS_TEXTS = frozenset({
+    "🗜️ Compacting context — summarizing earlier conversation so I can continue...",
+    "🗜️ Compacting context — still summarizing earlier conversation so I can continue...",
+    "✓ Context compaction complete — continuing turn...",
+})
+
+
+def _install_compaction_status_entry(adapter: Any, state: RuntimeState) -> None:
+    """Translate known system statuses before rich send/edit bypasses formatting."""
+    boundary = "TelegramAdapter.send_or_update_status.compaction_entry"
+    original = getattr(adapter, "send_or_update_status", None)
+    if not callable(original):
+        state.boundaries[boundary] = "method_missing"
+        return
+    signature = inspect.signature(original)
+
+    async def wrapped(*args: Any, **kwargs: Any) -> Any:
+        try:
+            bound = signature.bind_partial(*args, **kwargs)
+            content = bound.arguments.get("content")
+            if isinstance(content, str) and content in _COMPACTION_STATUS_TEXTS:
+                translated = state.translate(content, boundary)
+                if translated != content:
+                    bound.arguments["content"] = translated
+                    args, kwargs = bound.args, bound.kwargs
+        except Exception:
+            # Localization must never block delivery or alter the original call.
+            pass
+        return await original(*args, **kwargs)
+
+    setattr(adapter, "send_or_update_status", wrapped)
+    state.boundaries[boundary] = "installed"
+
+
 def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
     """Do not translate model-authored final replies that share adapter boundaries."""
     for method_name in ("send", "edit_message"):
@@ -488,6 +522,7 @@ def install_on_adapter(adapter: Any, state: RuntimeState) -> bool:
         f"{adapter.__class__.__module__}.{adapter.__class__.__qualname__}"
     )
     _install_final_reply_guards(adapter, state)
+    _install_compaction_status_entry(adapter, state)
     _install_format_boundary(adapter, state)
     _install_transport_boundary(adapter, state)
     _install_button_boundary(adapter, state)
