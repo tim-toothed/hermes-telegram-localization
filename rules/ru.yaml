@@ -6825,3 +6825,35 @@ groups:
       to: '✦ Совет: {tip}'
       placeholders:
         tip: .+?
+  agent.onboarding.py:
+    source_file: agent/onboarding.py
+    rules:
+    - id: onboarding.busy_first_queue
+      family: onboarding
+      from: 💡 First-time tip — I queued your message instead of interrupting. Send `/busy interrupt` to make new messages stop
+        the current task immediately, or `/busy status` to check. This notice won't appear again.
+      to: '💡 Подсказка: сообщение добавлено в очередь и будет обработано после текущей задачи. `/busy interrupt` — прерывать
+        текущую задачу новым сообщением; `/busy status` — проверить режим. Эта подсказка больше не появится.'
+    - id: onboarding.busy_first_steer
+      family: onboarding
+      from: 💡 First-time tip — I steered your message into the current run; it will arrive after the next tool call instead
+        of interrupting. Send `/busy interrupt` or `/busy queue` to change this, or `/busy status` to check. This notice won't
+        appear again.
+      to: '💡 Подсказка: сообщение передано в текущую задачу и поступит после следующего вызова инструмента, без прерывания.
+        Сменить режим: `/busy interrupt` или `/busy queue`; проверить: `/busy status`. Эта подсказка больше не появится.'
+    - id: onboarding.busy_first_redirect
+      family: onboarding
+      from: 💡 First-time tip — I redirected the current run using your message. Completed work stays in context, and `/stop`
+        still cancels the task. Send `/busy queue` to wait for a separate turn, or `/busy status` to check. This notice won't
+        appear again.
+      to: '💡 Подсказка: сообщение изменило направление текущей задачи. Результаты выполненной работы остаются в контексте; `/stop`
+        отменяет задачу. `/busy queue` — отложить сообщение до отдельного хода; `/busy status` — проверить режим. Эта подсказка
+        больше не появится.'
+    - id: onboarding.busy_first_interrupt
+      family: onboarding
+      from: 💡 First-time tip — I just interrupted my current task to answer you. Send `/busy queue` to queue follow-ups for
+        after the current task instead, `/busy steer` to inject them mid-run without interrupting, or `/busy status` to check.
+        This notice won't appear again.
+      to: '💡 Подсказка: я прервал текущую задачу, чтобы ответить тебе. `/busy queue` — обрабатывать следующие сообщения после
+        завершения задачи; `/busy steer` — передавать их в текущую задачу без прерывания; `/busy status` — проверить режим.
+        Эта подсказка больше не появится.'
