@@ -6857,3 +6857,515 @@ groups:
       to: '💡 Подсказка: я прервал текущую задачу, чтобы ответить тебе. `/busy queue` — обрабатывать следующие сообщения после
         завершения задачи; `/busy steer` — передавать их в текущую задачу без прерывания; `/busy status` — проверить режим.
         Эта подсказка больше не появится.'
+  goal_notices_023:
+    source_file: hermes_cli/goals.py
+    rules:
+    - id: gateway.goal.notice.blocked
+      family: gateway.goal.notice
+      from: '🚫 Goal judged unachievable — paused: {reason} Re-scope with /goal set, or override with /goal resume.'
+      to: '🚫 Цель поставлена на паузу: по оценке Hermes, её нельзя выполнить в текущем виде. Причина: {reason}
+
+        Уточните цель через /goal set или продолжите выполнение через /goal resume.'
+      placeholders: {}
+    - id: gateway.goal.notice.done
+      family: gateway.goal.notice
+      from: '✓ Goal achieved: {reason}'
+      to: '✓ Цель достигнута: {reason}'
+      placeholders: {}
+    - id: gateway.goal.notice.continue
+      family: gateway.goal.notice
+      from: '↻ Continuing toward goal ({used}/{limit}): {reason}'
+      to: '↻ Продолжаю работу над целью ({used}/{limit} ходов): {reason}'
+      placeholders:
+        used: '[0-9]+'
+        limit: '[0-9]+'
+    - id: gateway.goal.notice.waiting
+      family: gateway.goal.notice
+      from: '⏳ Goal parked — waiting on {target}: {reason}'
+      to: '⏳ Работа над целью отложена до завершения {target}: {reason}'
+      placeholders: {}
+    - id: gateway.goal.notice.judge_waiting
+      family: gateway.goal.notice
+      from: '⏳ Goal parked (judge) — waiting on {target}: {reason}'
+      to: '⏳ По решению модели-оценщика работа отложена до завершения {target}: {reason}'
+      placeholders: {}
+    - id: gateway.goal.notice.gate_failed
+      family: gateway.goal.notice
+      from: '✗ Quality gate failed ({used}/{limit} turns, attempt {attempt}/{retries}): $ {command}'
+      to: '✗ Проверка не пройдена ({used}/{limit} ходов, попытка {attempt}/{retries}): $ {command}'
+      placeholders:
+        used: '[0-9]+'
+        limit: '[0-9]+'
+        attempt: '[0-9]+'
+        retries: '[0-9]+'
+    - id: gateway.goal.notice.budget
+      family: gateway.goal.notice
+      from: ⏸ Goal paused — {used}/{limit} turns used. Use /goal resume to keep going, or /goal clear to stop.
+      to: '⏸ Цель поставлена на паузу: использовано {used}/{limit} ходов. Продолжить — /goal resume, снять цель — /goal clear.'
+      placeholders:
+        used: '[0-9]+'
+        limit: '[0-9]+'
+  turn_notices_023:
+    source_file: agent/turn_failure_copy.py + agent/turn_api_call.py
+    rules:
+    - id: telegram.turn_notice.failed
+      from: Your request was not processed. Send it again if you still want me to carry it out.
+      to: Запрос не обработан. Отправьте его ещё раз, если он по-прежнему актуален.
+      boundaries:
+      - telegram.final_turn_notice
+    - id: telegram.turn_notice.partial
+      from: This turn did not complete. Some actions may already have run; verify their effects before resending.
+      to: Ход не завершился. Часть действий могла выполниться. Проверьте результат перед повторной отправкой.
+      boundaries:
+      - telegram.final_turn_notice
+    - id: telegram.turn_notice.interrupted
+      from: 'Operation interrupted: waiting for model response ({seconds}s elapsed).'
+      to: Операция прервана во время ожидания ответа модели (прошло {seconds} с).
+      boundaries:
+      - telegram.final_turn_notice
+      placeholders:
+        seconds: '[0-9]+[.][0-9]'
+    - id: telegram.turn_notice.truncated
+      from: The model's reply was cut off before it finished (it hit its output length limit), so Hermes didn't run the incomplete action. Nothing was changed. Send `continue`, ask for the work in smaller steps, or raise max_tokens for this model.
+      to: Ответ модели оборвался из-за ограничения длины. Hermes не выполнил действие, которое модель не успела описать. Отправьте `continue`, разбейте задачу на шаги или увеличьте max_tokens для этой модели.
+      boundaries:
+      - telegram.final_turn_notice
+  approval_reasons_023:
+    source_file: tools/approval_detection.py + tools/approval.py + tools/file_tools_write_guards.py
+    rules:
+    - id: telegram.approval.protected_instruction_files
+      from: "Write to protected agent-instruction file(s): {targets}. These files steer future agent behavior; approval is always required (not bypassed by auto-approve)."
+      to: "Запись в защищённые файлы инструкций агента: {targets}. Эти файлы определяют дальнейшее поведение агента. Операцию нужно подтверждать каждый раз, даже если включено автоподтверждение."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.ssh_config
+      from: "Write to SSH client config file(s): {display_targets}. The SSH config can carry ProxyCommand / Match exec directives that run commands, so writes require your approval."
+      to: "Изменение настроек SSH: {display_targets}. SSH используется для удалённого доступа к другим компьютерам. Изменение этих настроек может привести к тому, что при следующей попытке подключения на этом компьютере автоматически запустится команда. Проверьте изменения перед подтверждением."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.execute_code
+      from: "execute_code script execution. The script can spawn subprocesses or mutate files without passing through terminal command approval; approval is one-shot for this run."
+      to: "Hermes собирается запустить скрипт через execute_code. Скрипт может запускать программы или менять файлы без отдельных запросов на каждое действие. Подтверждение действует только на этот запуск."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.plugin
+      from: "Plugin requires approval for {tool_name}"
+      to: "Плагин запрашивает подтверждение для инструмента {tool_name}."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.4
+      from: "PowerShell destructive delete (Remove-Item)"
+      to: "PowerShell собирается удалить файлы или папки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.5
+      from: "PowerShell destructive delete (alias after pipe)"
+      to: "PowerShell собирается удалить объекты, переданные предыдущей командой."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.6
+      from: "PowerShell encoded command execution"
+      to: "PowerShell собирается выполнить закодированную команду. Проверьте, что в ней содержится."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.7
+      from: "SQL DELETE without WHERE"
+      to: "Запрос удалит все строки таблицы: условие отбора отсутствует."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.8
+      from: "SQL DROP"
+      to: "Запрос удаляет объект базы данных, например таблицу. Его данные могут быть потеряны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.9
+      from: "SQL TRUNCATE"
+      to: "Запрос очистит таблицу целиком, сохранив её структуру."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.10
+      from: "Windows PowerShell destructive delete"
+      to: "PowerShell собирается удалить файлы или папки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.11
+      from: "Windows PowerShell destructive delete (later in the script)"
+      to: "Дальше в скрипте PowerShell есть команда удаления файлов или папок."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.12
+      from: "Windows cmd destructive delete"
+      to: "Команда Windows удаляет файлы или папки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.13
+      from: "Windows destructive delete (recursive/quiet switch)"
+      to: "Команда Windows удаляет файлы с вложенными папками или без дополнительных запросов."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.14
+      from: "access to Hermes secrets (Windows path)"
+      to: "Команда обращается к файлам, где Hermes хранит секреты."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.15
+      from: "access to SSH keys (Windows path)"
+      to: "Команда обращается к SSH-ключам. Они могут давать доступ к другим системам."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.16
+      from: "chmod +x followed by immediate execution"
+      to: "Команда делает файл исполняемым и сразу запускает его."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.17
+      from: "cloud metadata endpoint access (instance credentials)"
+      to: "Команда обращается к службе метаданных облачного сервера. Она может вернуть данные для доступа к облаку."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.18
+      from: "copy/move file into sensitive credential/SSH/shell-rc path"
+      to: "Команда копирует или переносит файл в место, где хранятся данные доступа, настройки SSH или файлы запуска оболочки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.19
+      from: "copy/move file into system config path"
+      to: "Команда копирует или переносит файл в системные настройки. Существующий файл может быть заменён."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.20
+      from: "delete backups (wbadmin)"
+      to: "Команда удаляет резервные копии Windows. Восстановиться из них больше не получится."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.21
+      from: "delete in root path"
+      to: "Команда удаляет файлы или папки от корня файловой системы."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.22
+      from: "delete volume shadow copies (vssadmin)"
+      to: "Команда удаляет теневые копии Windows. Предыдущие версии файлов могут стать недоступны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.23
+      from: "disk copy"
+      to: "Команда копирует данные на уровне диска. Данные на диске назначения могут быть перезаписаны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.24
+      from: "disk partitioning (diskpart)"
+      to: "Команда меняет разделы диска. Данные на них могут стать недоступны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.25
+      from: "docker compose restart/stop/kill/down (container lifecycle)"
+      to: "Команда останавливает, перезапускает или удаляет контейнеры Docker Compose. Работа сервисов может прерваться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.26
+      from: "docker context use (switches default daemon for future commands)"
+      to: "Команда меняет сервер Docker по умолчанию для следующих операций."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.27
+      from: "docker restart/stop/kill (container lifecycle)"
+      to: "Команда останавливает или перезапускает контейнеры Docker. Работа сервисов может прерваться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.28
+      from: "docker with daemon redirect (--context: alternate daemon)"
+      to: "Команда Docker использует другой сервер через выбранный контекст."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.29
+      from: "docker with remote daemon redirect (-H/--host)"
+      to: "Команда Docker направлена на другой сервер. Изменения произойдут там."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.30
+      from: "docker/podman daemon redirect via environment (DOCKER_HOST/CONTAINER_HOST)"
+      to: "Переменные окружения перенаправляют Docker или Podman на другой сервер."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.31
+      from: "dynamic shell word may expand to arbitrary program execution flag"
+      to: "Часть команды вычисляется при запуске и может превратиться в параметр, запускающий другую программу."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.32
+      from: "execute remote content via Invoke-Expression"
+      to: "PowerShell собирается выполнить содержимое, полученное из сети."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.33
+      from: "execute remote content via command substitution"
+      to: "Оболочка собирается выполнить содержимое, полученное из сети."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.34
+      from: "execute remote script via process substitution"
+      to: "Оболочка собирается запустить скрипт, полученный из сети."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.35
+      from: "find -delete"
+      to: "Команда удалит файлы и папки, которые найдёт по заданным условиям."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.36
+      from: "find -exec/-execdir rm"
+      to: "Команда передаёт результаты поиска на удаление."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.37
+      from: "find dynamic shell word may expand to destructive flag"
+      to: "Часть условий поиска вычисляется при запуске и может превратиться в параметр удаления."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.38
+      from: "force kill processes"
+      to: "Команда принудительно завершает процессы. Несохранённые данные могут потеряться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.39
+      from: "force kill processes (Stop-Process -Force)"
+      to: "Команда принудительно завершает процессы Windows. Несохранённые данные могут потеряться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.40
+      from: "force kill processes (killall -KILL)"
+      to: "Команда принудительно завершает процессы по имени. Несохранённые данные могут потеряться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.41
+      from: "force kill processes (killall -s KILL)"
+      to: "Команда принудительно завершает процессы по имени. Несохранённые данные могут потеряться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.42
+      from: "force kill processes (taskkill /F)"
+      to: "Команда принудительно завершает процессы Windows. Несохранённые данные могут потеряться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.43
+      from: "force stop service (Stop-Service -Force)"
+      to: "Команда принудительно останавливает службу Windows. Зависящие от неё приложения могут перестать работать."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.44
+      from: "fork bomb"
+      to: "Команда может создать столько процессов, что система перестанет отвечать."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.45
+      from: "format drive (format.com)"
+      to: "Команда форматирует диск. Доступ к прежним данным будет потерян."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.46
+      from: "format filesystem"
+      to: "Команда создаёт новую файловую систему. Доступ к прежним данным будет потерян."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.47
+      from: "format filesystem (Format-Volume)"
+      to: "Команда форматирует том Windows. Доступ к прежним данным будет потерян."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.48
+      from: "git branch force delete"
+      to: "Команда удаляет ветку Git, даже если её изменения ещё не вошли в другие ветки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.49
+      from: "git branch force delete (long flags)"
+      to: "Команда удаляет ветку Git, даже если её изменения ещё не вошли в другие ветки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.50
+      from: "git branch force delete (long flags, force-first)"
+      to: "Команда удаляет ветку Git, даже если её изменения ещё не вошли в другие ветки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.51
+      from: "git clean with force (deletes untracked files)"
+      to: "Команда удаляет файлы, которые Git не отслеживает. Из истории Git их не восстановить."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.52
+      from: "git force push (rewrites remote history)"
+      to: "Команда перезаписывает историю ветки в общем репозитории. Чужие изменения могут исчезнуть из этой ветки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.53
+      from: "git force push short flag (rewrites remote history)"
+      to: "Команда перезаписывает историю ветки в общем репозитории. Чужие изменения могут исчезнуть из этой ветки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.54
+      from: "git reset --hard (destroys uncommitted changes)"
+      to: "Команда сбрасывает рабочие файлы Git. Незакоммиченные изменения в отслеживаемых файлах будут потеряны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.55
+      from: "grant Everyone access (icacls)"
+      to: "Команда выдаёт доступ группе «Все». Файлы могут стать доступны другим пользователям."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.56
+      from: "hermes update (restarts gateway, kills running agents)"
+      to: "Команда обновляет Hermes, перезапускает шлюз и прерывает работу запущенных агентов."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.57
+      from: "in-place edit of Hermes config/env"
+      to: "Команда меняет настройки Hermes или файл переменных окружения прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.58
+      from: "in-place edit of Hermes config/env (long flag)"
+      to: "Команда меняет настройки Hermes или файл переменных окружения прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.59
+      from: "in-place edit of Hermes config/env (perl/ruby)"
+      to: "Команда меняет настройки Hermes или файл переменных окружения прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.60
+      from: "in-place edit of sensitive credential/SSH/shell-rc path"
+      to: "Команда меняет файл с данными доступа, настройками SSH или командами запуска оболочки прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.61
+      from: "in-place edit of sensitive credential/SSH/shell-rc path (long flag)"
+      to: "Команда меняет файл с данными доступа, настройками SSH или командами запуска оболочки прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.62
+      from: "in-place edit of sensitive credential/SSH/shell-rc path (perl/ruby)"
+      to: "Команда меняет файл с данными доступа, настройками SSH или командами запуска оболочки прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.63
+      from: "in-place edit of system config"
+      to: "Команда меняет системные настройки прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.64
+      from: "in-place edit of system config (long flag)"
+      to: "Команда меняет системные настройки прямо на диске."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.65
+      from: "kill all processes"
+      to: "Команда завершает сразу множество процессов. Система и приложения могут перестать работать."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.66
+      from: "kill hermes/gateway process (self-termination)"
+      to: "Команда завершает процесс Hermes или его шлюза. Текущий сеанс и задачи могут прерваться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.67
+      from: "kill process via backtick pgrep/pidof expansion (self-termination)"
+      to: "Команда сама подставляет ID процессов для остановки. Она может завершить и текущий агент."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.68
+      from: "kill process via pgrep/pidof expansion (self-termination)"
+      to: "Команда сама подставляет ID процессов для остановки. Она может завершить и текущий агент."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.69
+      from: "kill processes by regex (killall -r)"
+      to: "Команда завершает процессы, чьи имена совпадут с шаблоном. Под него могут попасть лишние процессы."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.70
+      from: "modify boot configuration (bcdedit /set)"
+      to: "Команда меняет параметры загрузки Windows. Ошибка может помешать запуску системы."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.71
+      from: "overwrite project env/config file"
+      to: "Команда заменяет файл настроек проекта или переменных окружения. Прежние значения могут пропасть."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.72
+      from: "overwrite project env/config via redirection"
+      to: "Команда записывает вывод поверх файла настроек проекта. Прежние значения могут пропасть."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.73
+      from: "overwrite project env/config via tee"
+      to: "Команда направляет вывод в файл настроек проекта и может заменить его содержимое."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.74
+      from: "overwrite system config"
+      to: "Команда заменяет системный файл настроек. Прежние настройки могут пропасть."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.75
+      from: "overwrite system file via redirection"
+      to: "Команда записывает вывод поверх системного файла. Прежнее содержимое может пропасть."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.76
+      from: "overwrite system file via tee"
+      to: "Команда направляет вывод в системный файл и может заменить его содержимое."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.77
+      from: "package manager uninstall"
+      to: "Команда удаляет установленный пакет. Зависящие от него программы могут перестать работать."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.78
+      from: "pipe a credential file into a curl/wget upload (possible exfiltration)"
+      to: "Команда может отправить файл с данными доступа на внешний адрес."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.79
+      from: "pipe decoded content to shell (possible command obfuscation)"
+      to: "Команда декодирует данные и сразу выполняет их. Действия скрыты в исходной записи."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.80
+      from: "pipe openssl-decoded content to shell (possible command obfuscation)"
+      to: "Команда декодирует данные через OpenSSL и сразу выполняет результат."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.81
+      from: "pipe remote content to PowerShell (iwr | iex)"
+      to: "PowerShell получит содержимое из сети и сразу выполнит его."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.82
+      from: "pipe remote content to shell"
+      to: "Оболочка получит содержимое из сети и сразу выполнит его."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.83
+      from: "pipe tr-transformed output to shell (possible command obfuscation)"
+      to: "Команда преобразует текст и сразу выполняет результат. Исходная запись может скрывать действия."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.84
+      from: "pipe xxd-decoded content to shell (possible command obfuscation)"
+      to: "Команда преобразует шестнадцатеричные данные в текст и сразу выполняет результат."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.85
+      from: "podman remote mode (-r/--remote: remote daemon)"
+      to: "Podman выполнит команду на удалённом сервере."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.86
+      from: "podman with remote daemon redirect (--url/--connection/--identity)"
+      to: "Команда Podman указывает другой сервер или подключение. Изменения произойдут там."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.87
+      from: "recursive chown to root"
+      to: "Команда делает root владельцем папки и её содержимого. Другие пользователи могут потерять доступ на запись."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.88
+      from: "recursive chown to root (long flag)"
+      to: "Команда делает root владельцем папки и её содержимого. Другие пользователи могут потерять доступ на запись."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.89
+      from: "recursive delete"
+      to: "Команда удаляет папку вместе со всеми вложенными папками и файлами."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.90
+      from: "recursive delete (flags after operands)"
+      to: "Команда удаляет папку вместе со всеми вложенными папками и файлами."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.91
+      from: "recursive delete (long flag)"
+      to: "Команда удаляет папку вместе со всеми вложенными папками и файлами."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.92
+      from: "recursive world/other-writable (long flag)"
+      to: "Команда разрешает другим пользователям менять папку и её содержимое."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.93
+      from: "registry delete (reg delete)"
+      to: "Команда удаляет записи из реестра Windows. Это может изменить работу системы или приложений."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.94
+      from: "registry value delete (Remove-ItemProperty -Force)"
+      to: "PowerShell принудительно удаляет значение из реестра Windows."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.95
+      from: "reset ACLs recursively (icacls /reset)"
+      to: "Команда сбрасывает права доступа для папки и её содержимого. Доступ пользователей может измениться."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.96
+      from: "shell execution via heredoc"
+      to: "Оболочка собирается выполнить команды из многострочного блока."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.97
+      from: "start gateway outside systemd (use 'systemctl --user restart hermes-gateway')"
+      to: "Команда запускает шлюз Hermes в обход службы systemd. Может появиться второй экземпляр шлюза."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.98
+      from: "stop/delete service (sc)"
+      to: "Команда останавливает или удаляет службу Windows. Связанные функции могут перестать работать."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.99
+      from: "stop/restart hermes gateway (kills running agents)"
+      to: "Команда останавливает или перезапускает шлюз Hermes. Текущие задачи агентов будут прерваны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.100
+      from: "stop/restart hermes launchd service (kills running agents)"
+      to: "Команда останавливает или перезапускает службу Hermes в macOS. Текущие задачи агентов будут прерваны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.101
+      from: "stop/restart system service"
+      to: "Команда останавливает или перезапускает системную службу. Зависимые приложения могут временно перестать работать."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.102
+      from: "sudo with combined-flag privilege escalation"
+      to: "Команда запрашивает повышенные права через sudo и использует сочетание параметров с дополнительными привилегиями."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.103
+      from: "sudo with privilege flag (stdin/askpass/shell/list)"
+      to: "Команда использует особый режим sudo: он может читать пароль, запустить оболочку или показать доступные привилегии."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.104
+      from: "wipe disk (Clear-Disk)"
+      to: "Команда очищает диск. Данные и разделы могут стать недоступны."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.105
+      from: "wipe free space (cipher /w)"
+      to: "Команда стирает следы ранее удалённых файлов в свободном месте диска. Восстановить их будет сложнее или невозможно."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.106
+      from: "world/other-writable permissions"
+      to: "Команда разрешает другим пользователям менять указанные файлы или папки."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.107
+      from: "write to block device"
+      to: "Команда пишет напрямую на диск или другое блочное устройство. Она может повредить разделы или данные."
+      boundaries: [telegram.approval_reason]
+    - id: telegram.approval.108
+      from: "xargs with rm"
+      to: "Команда передаёт список путей на удаление. Будет удалён каждый путь из списка."
+      boundaries: [telegram.approval_reason]

@@ -100,6 +100,14 @@ class RuntimeState:
         if footer_marker in text:
             head, tail = text.rsplit(footer_marker, 1)
             return head + "\n\n" + replacement + tail, True
+        head, separator, tail = text.rpartition("\n\n")
+        notice = self.catalog.translate(tail, boundary="telegram.final_turn_notice")
+        if notice.status == "translated" and (notice.rule_id or "").startswith("telegram.turn_notice."):
+            if separator:
+                body = self.catalog.translate(head, boundary="telegram.final_turn_notice")
+                if body.status == "translated" and (body.rule_id or "").startswith("telegram.turn_notice.truncated"):
+                    head = body.text
+            return head + separator + notice.text, True
         provider_failure, _fallback = self.provider_surface(text)
         if not provider_failure:
             return text, False
@@ -112,6 +120,18 @@ class RuntimeState:
         if not isinstance(text, str) or not text:
             return text
         try:
+            # Telegram approval cards reach the adapter already formatted as HTML.
+            if boundary in ("TelegramAdapter._send_message_with_thread_fallback", "TelegramAdapter.format_message"):
+                labels = ("Why it was flagged: ", "Почему помечена: ", "Reason: ", "Причина: ")
+                markers = (prefix + label for prefix in ("</pre>\n\n", "\n```\n", "\n```\n\n") for label in labels)
+                for marker in markers:
+                    head, separator, tail = text.rpartition(marker)
+                    if not separator:
+                        continue
+                    reason, newline, rest = tail.partition("\n")
+                    localized = self.catalog.translate(reason, boundary="telegram.approval_reason")
+                    if localized.status == "translated" and (localized.rule_id or "").startswith("telegram.approval."):
+                        return head + separator + localized.text + newline + rest
             translated_background = translate_background_review_notification(text)
             translated_recovery = translate_delivery_recovery_notice(text)
             translated_model_card = translate_model_switch_card(text)
