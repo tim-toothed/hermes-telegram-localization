@@ -84,16 +84,21 @@ class RuntimeState:
 
     def translate_provider_failure(self, text: str) -> str:
         body, marker, details = text.partition("\n\nProvider said: ")
-        if not marker:
-            return text
         card = self.catalog.translate(body, boundary="telegram.provider_failure")
+        if not marker and card.rule_id != "telegram.provider_023.codex_app_server":
+            return text
         if card.status != "translated" or not (card.rule_id or "").startswith("telegram.provider_023."):
             return text
+        if not marker:
+            return card.text
         raw, separator, last = details.rpartition("\n\n")
         reset = self.catalog.translate(last, boundary="telegram.provider_reset")
-        if separator and reset.status == "translated":
-            details = raw + separator + reset.text
-        return card.text + "\n\nОтвет провайдера: " + details
+        has_reset = bool(separator and reset.rule_id == "telegram.provider_023.reset_at")
+        detail = raw if has_reset else details
+        localized = self.catalog.translate(detail, boundary="telegram.codex_detail")
+        if localized.rule_id in {"telegram.provider_023.codex_limit", "telegram.provider_023.codex_limit_retry"}:
+            detail = localized.text
+        return card.text + "\n\nОтвет провайдера: " + detail + (separator + reset.text if has_reset else "")
 
     def translate_final_system_surface(self, text: Any) -> tuple[Any, bool]:
         """Translate only recognized Hermes-owned fragments inside a final reply."""

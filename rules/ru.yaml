@@ -6908,6 +6908,45 @@ groups:
   provider_failures_023:
     source_file: agent/turn_failure_copy.py + agent/turn_recovery.py
     rules:
+    - id: telegram.provider_023.oauth
+      from: '{label} rejected your sign-in, so the model can''t be reached. Sign in again: `{relogin}`.'
+      to: '{label} отклонил вход, поэтому модель недоступна. Войдите заново: `{relogin}`.'
+      boundaries: [telegram.provider_failure]
+      placeholders: {label: '[^
+\n]+?', relogin: '[^`
+\n]+'}
+    - id: telegram.provider_023.codex_app_server
+      from: 'Codex app-server turn failed: {detail}. Fall back to default runtime with `/codex-runtime auto`.'
+      to: 'Сбой Codex app-server: {detail}. Чтобы вернуться к обычному режиму, используйте `/codex-runtime auto`.'
+      boundaries: [telegram.provider_failure]
+    - id: telegram.provider_023.codex_resume
+      from: 'Codex thread could not be resumed; starting a new one.'
+      to: 'Не удалось восстановить диалог Codex. Начинаю новый.'
+      boundaries: [telegram.provider_progress]
+    - id: telegram.provider_023.fallback
+      from: '⚠️ Rate limited — switching to fallback provider...'
+      to: '⚠️ Достигнут лимит запросов. Переключаюсь на резервного провайдера…'
+      boundaries: [telegram.provider_progress]
+    - id: telegram.provider_023.codex_limit
+      from: 'You''ve hit your usage limit.'
+      to: 'Лимит использования исчерпан.'
+      boundaries: [telegram.codex_detail]
+    - id: telegram.provider_023.codex_limit_retry
+      from: 'You''ve hit your usage limit. Try again at {time}.'
+      to: 'Лимит использования исчерпан. Повторите попытку в {time}.'
+      boundaries: [telegram.codex_detail]
+      placeholders: {time: '[^
+\n]+'}
+    - id: telegram.provider_023.busy_wait
+      from: '⏱️ {reason}. Waiting {seconds}s (attempt {attempt}/{limit}){note}...'
+      to: '⏱️ Модель или провайдер перегружены. Следующая попытка через {seconds} с ({attempt} из {limit})…'
+      boundaries: [telegram.provider_progress]
+      placeholders: {reason: 'The free model is busy|Provider overloaded', seconds: '\d+(?:\.\d+)?', attempt: '\d+', limit: '\d+', note: '(?: \(Z\.AI Coding overload (?:adaptive long backoff|short retry)\))?'}
+    - id: telegram.provider_023.busy_wait_reset
+      from: '⏱️ {reason}. Resets in {window}. Waiting {seconds}s (attempt {attempt}/{limit}){note}...'
+      to: '⏱️ Модель или провайдер перегружены. Лимит обновится через {window}. Следующая попытка через {seconds} с ({attempt} из {limit})…'
+      boundaries: [telegram.provider_progress]
+      placeholders: {reason: 'The free model is busy|Provider overloaded', window: '[~\d][\d.hmsin ]*', seconds: '\d+(?:\.\d+)?', attempt: '\d+', limit: '\d+', note: '(?: \(Z\.AI Coding overload (?:adaptive long backoff|short retry)\))?'}
     - id: telegram.provider_023.quota
       from: '{label} rate-limited every one of {attempts} attempts — its usage limit resets in {window}. Send /retry after that, or switch models with /model. To avoid this in future, add a backup provider with `hermes fallback add`.'
       to: '{label}: лимит запросов сработал во всех попытках ({attempts}). Лимит обновится через {window}. Затем отправьте /retry или смените модель через /model. Чтобы в будущем не ждать, добавьте резервного провайдера командой `hermes fallback add`.'
