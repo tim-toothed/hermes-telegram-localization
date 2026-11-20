@@ -82,6 +82,19 @@ class RuntimeState:
         if cycle is not None:
             cycle["generation"] += 1
 
+    def translate_provider_failure(self, text: str) -> str:
+        body, marker, details = text.partition("\n\nProvider said: ")
+        if not marker:
+            return text
+        card = self.catalog.translate(body, boundary="telegram.provider_failure")
+        if card.status != "translated" or not (card.rule_id or "").startswith("telegram.provider_023."):
+            return text
+        raw, separator, last = details.rpartition("\n\n")
+        reset = self.catalog.translate(last, boundary="telegram.provider_reset")
+        if separator and reset.status == "translated":
+            details = raw + separator + reset.text
+        return card.text + "\n\nОтвет провайдера: " + details
+
     def translate_final_system_surface(self, text: Any) -> tuple[Any, bool]:
         """Translate only recognized Hermes-owned fragments inside a final reply."""
         if not isinstance(text, str):
@@ -107,7 +120,12 @@ class RuntimeState:
                 body = self.catalog.translate(head, boundary="telegram.final_turn_notice")
                 if body.status == "translated" and (body.rule_id or "").startswith("telegram.turn_notice.truncated"):
                     head = body.text
+                else:
+                    head = self.translate_provider_failure(head)
             return head + separator + notice.text, True
+        provider_card = self.translate_provider_failure(text)
+        if provider_card != text:
+            return provider_card, True
         provider_failure, _fallback = self.provider_surface(text)
         if not provider_failure:
             return text, False
@@ -337,6 +355,10 @@ def _install_final_reply_guards(adapter: Any, state: RuntimeState) -> None:
                         not is_stream_preview
                         and _safe_transform(translate_runtime_status, content) != content
                     )
+                    if not is_stream_preview:
+                        progress = state.catalog.translate(content, boundary="telegram.provider_progress")
+                        if progress.status == "translated":
+                            bound.arguments["content"] = progress.text
                     candidate = _safe_transform(
                         translate_delivery_recovery_notice, content
                     )

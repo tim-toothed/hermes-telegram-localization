@@ -6905,6 +6905,44 @@ groups:
       placeholders:
         used: '[0-9]+'
         limit: '[0-9]+'
+  provider_failures_023:
+    source_file: agent/turn_failure_copy.py + agent/turn_recovery.py
+    rules:
+    - id: telegram.provider_023.quota
+      from: '{label} rate-limited every one of {attempts} attempts — its usage limit resets in {window}. Send /retry after that, or switch models with /model. To avoid this in future, add a backup provider with `hermes fallback add`.'
+      to: '{label}: лимит запросов сработал во всех попытках ({attempts}). Лимит обновится через {window}. Затем отправьте /retry или смените модель через /model. Чтобы в будущем не ждать, добавьте резервного провайдера командой `hermes fallback add`.'
+      boundaries: [telegram.provider_failure]
+      placeholders: {label: '[^\r\n]+?', attempts: '\d+', window: '[~\d][\d.hmsin ]*'}
+    - id: telegram.provider_023.quota_first
+      from: '{label} is rate-limiting requests right now — its usage limit resets in {window}. Send /retry after that, or switch models with /model. To avoid this in future, add a backup provider with `hermes fallback add`.'
+      to: '{label} сейчас ограничивает запросы. Лимит обновится через {window}. Затем отправьте /retry или смените модель через /model. Чтобы в будущем не ждать, добавьте резервного провайдера командой `hermes fallback add`.'
+      boundaries: [telegram.provider_failure]
+      placeholders: {label: '[^\r\n]+?', window: '[~\d][\d.hmsin ]*'}
+    - id: telegram.provider_023.exhausted
+      from: '{label} {cause} — it looks temporarily unavailable. Wait a minute and send /retry, or switch models with /model. To avoid this in future, add a backup provider with `hermes fallback add`.'
+      to: '{label}: сервис временно недоступен. Подождите минуту и отправьте /retry или смените модель через /model. Чтобы в будущем не ждать, добавьте резервного провайдера командой `hermes fallback add`.'
+      boundaries: [telegram.provider_failure]
+      placeholders: {label: '[^\r\n]+?', cause: 'rate-limited every one of \d+ attempts|is rate-limiting requests right now|reported it was overloaded on all \d+ attempts|returned a server error on all \d+ attempts|didn''t respond in time on any of \d+ attempts|didn''t answer after \d+ attempts'}
+    - id: telegram.provider_023.reset_at
+      from: 'Limit resets at {time} (in {window}).'
+      to: 'Лимит обновится в {time} (через {window}).'
+      boundaries: [telegram.provider_reset]
+      placeholders: {time: '\d{2}:\d{2}', window: '[\d][\dhm ]*'}
+    - id: telegram.provider_023.wait_with_reset
+      from: '⏱️ Rate limited. Resets in {window}. Waiting {seconds}s (attempt {attempt}/{limit})...'
+      to: '⏱️ Достигнут лимит запросов. Лимит обновится через {window}. Следующая попытка через {seconds} с ({attempt} из {limit})…'
+      boundaries: [telegram.provider_progress]
+      placeholders: {window: '[~\d][\d.hmsin ]*', seconds: '\d+(?:\.\d+)?', attempt: '\d+', limit: '\d+'}
+    - id: telegram.provider_023.wait
+      from: '⏱️ Rate limited. Waiting {seconds}s (attempt {attempt}/{limit})...'
+      to: '⏱️ Достигнут лимит запросов. Следующая попытка через {seconds} с ({attempt} из {limit})…'
+      boundaries: [telegram.provider_progress]
+      placeholders: {seconds: '\d+(?:\.\d+)?', attempt: '\d+', limit: '\d+'}
+    - id: telegram.provider_023.retry
+      from: '⏳ Retrying in {seconds}s (attempt {attempt}/{limit})...'
+      to: '⏳ Повтор через {seconds} с ({attempt} из {limit})…'
+      boundaries: [telegram.provider_progress]
+      placeholders: {seconds: '\d+(?:\.\d+)?', attempt: '\d+', limit: '\d+'}
   turn_notices_023:
     source_file: agent/turn_failure_copy.py + agent/turn_api_call.py
     rules:
