@@ -6985,6 +6985,10 @@ groups:
   turn_notices_023:
     source_file: agent/turn_failure_copy.py + agent/turn_api_call.py
     rules:
+    - id: telegram.turn_notice.no_reply
+      from: '⚠️ No reply: the model returned empty content after retries and any fallback providers. Try continue, switch model/provider, or inspect the tool output above.'
+      to: '⚠️ Нет ответа: модель вернула пустой ответ даже после повторных попыток и обращения к резервным провайдерам. Отправьте `continue`, смените модель или провайдера.'
+      boundaries: [telegram.final_turn_notice]
     - id: telegram.turn_notice.failed
       from: Your request was not processed. Send it again if you still want me to carry it out.
       to: Запрос не обработан. Отправьте его ещё раз, если он по-прежнему актуален.
