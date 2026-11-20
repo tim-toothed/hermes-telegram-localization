@@ -6908,6 +6908,26 @@ groups:
   provider_failures_023:
     source_file: agent/turn_failure_copy.py + agent/turn_recovery.py
     rules:
+    - id: telegram.provider_023.role_alternation
+      from: '{label} requires user and assistant turns to strictly alternate and rejected this conversation''s shape. Start a clean session with /new or switch models with /model.'
+      to: '{label} отклонил запрос: этот провайдер требует, чтобы сообщения пользователя и ассистента строго чередовались. Начните новый сеанс через /new или смените модель через /model.'
+      boundaries: [telegram.provider_failure]
+    - id: telegram.provider_023.account_policy
+      from: '{label} refused this request because of a policy on your account (its data/privacy settings, or a block the model''s upstream provider placed on the account), so the model didn''t answer and retrying won''t help. Check the account with the provider, or switch models with /model.'
+      to: '{label} отклонил запрос из-за настроек конфиденциальности или ограничения на аккаунте. Повтор запроса не поможет. Проверьте настройки аккаунта у провайдера или смените модель через /model.'
+      boundaries: [telegram.provider_failure]
+    - id: telegram.provider_023.data_policy
+      from: 'This conversation holds a result from a connected app that may only go to a model that does not train on your data, and ''{model}'' on {label} can''t promise that. Switch models with /model, run /compress to summarize the result away, or start fresh with /new. If you are on the free tier, no free model can take this content: upgrade, or use /compress or /new.'
+      to: 'В диалоге есть данные подключённого приложения. Их можно отправлять только моделям, которые не обучаются на ваших данных. Для модели «{model}» у {label} такой гарантии нет. Смените модель через /model, сократите контекст через /compress или начните новый диалог через /new. На бесплатном тарифе доступных моделей для этих данных нет: смените тариф или используйте /compress либо /new.'
+      boundaries: [telegram.provider_failure]
+    - id: telegram.provider_023.upstream_blocked
+      from: 'A firewall/CDN in front of {label} blocked the request before it reached the model, so your key is probably fine. Set a custom User-Agent via the provider''s extra_headers, check the proxy/WAF rules, or switch providers with /model.'
+      to: 'Защита на стороне {label} заблокировала запрос до того, как он дошёл до модели. Проверьте правила прокси или WAF, задайте User-Agent через extra_headers либо смените провайдера через /model.'
+      boundaries: [telegram.provider_failure]
+    - id: telegram.provider_023.rejected
+      from: '{label} rejected the request and retrying won''t help. Pick another model with /model, or check the details in `{home}/logs/agent.log`.'
+      to: '{label} отклонил запрос. Повтор не поможет. Выберите другую модель через /model или посмотрите подробности в `{home}/logs/agent.log`.'
+      boundaries: [telegram.provider_failure]
     - id: telegram.provider_023.api_key
       from: '{label} rejected your API key, so the model can''t be reached. Update it in Settings → Providers, or run `hermes setup` in a terminal.'
       to: '{label} отклонил API-ключ, поэтому модель недоступна. Обновите ключ в разделе «Настройки → Провайдеры» или запустите `hermes setup` в терминале.'
