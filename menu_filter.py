@@ -28,7 +28,6 @@ HIDDEN_TELEGRAM_COMMANDS = frozenset(
         "kanban",
         "suggestions",
         "whoami",
-        "retry",
         "undo",
         "title",
         "branch",
