@@ -4,6 +4,11 @@
 
 Russian localization for Hermes in Telegram.
 
+![REDD-specific adaptation](https://img.shields.io/badge/IMPORTANT-REDD--specific%20adaptation-red)
+
+> [!WARNING]
+> The current Russian version also changes a number of labels and user instructions to match **REDD**, a commercial agent fork. Review the REDD-specific wording before using this plugin with stock Hermes or another distribution.
+
 Translates system messages, buttons, command descriptions, and runtime status updates without modifying Hermes core files. Agent replies remain unchanged.
 
 ## Install
