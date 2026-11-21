@@ -564,16 +564,7 @@ groups:
       to: '◆ Провайдер: {provider}'
       placeholders:
         provider: .+?
-    - id: gateway.restart.in_progress
-      family: gateway
-      from: ⏳ Gateway restart already in progress...
-      to: ⏳ Перезапуск сервиса Hermes уже выполняется...
-    - id: gateway.restart.restarting
-      family: gateway
-      from: ♻ Restarting gateway. If you aren't notified within 60 seconds, restart from the console with `hermes gateway
-        restart`.
-      to: ♻ Перезапуск сервиса Hermes. Если уведомление не придёт в течение 60 секунд, перезапустите его из консоли командой
-        `hermes gateway restart`.
+
     - id: gateway.slash_confirm.prompt
       family: gateway
       from: '⚠️ **Confirm /{command}**
