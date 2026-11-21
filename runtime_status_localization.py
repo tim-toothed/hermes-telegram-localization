@@ -82,6 +82,57 @@ _HEARTBEAT = re.compile(
     r"^⏳ Working — (?P<minutes>[0-9]+) min(?: — (?P<detail>.*))?$"
 )
 
+_FALLBACK_REASONS = {
+    "authentication failed": "ошибка авторизации",
+    "authentication permanently failed": "авторизация отклонена",
+    "billing or quota exhausted": "исчерпан баланс или лимит",
+    "rate limit": "ограничение частоты запросов",
+    "upstream model rate limit": "лимит запросов вышестоящей модели",
+    "provider overloaded": "провайдер перегружен",
+    "provider server error": "ошибка сервера провайдера",
+    "request timeout": "истекло время ожидания ответа",
+    "TLS certificate verification failed": "не удалось проверить TLS-сертификат",
+    "context window exceeded": "превышен размер контекста",
+    "request payload too large": "запрос слишком большой",
+    "image payload too large": "изображение слишком большое",
+    "model not found": "модель не найдена",
+    "provider policy blocked the request": "запрос заблокирован правилами провайдера",
+    "content policy blocked the request": "запрос заблокирован политикой содержимого",
+    "request format rejected": "формат запроса отклонён",
+    "adjacent same-role messages rejected": "отклонены соседние сообщения с одинаковой ролью",
+    "encrypted reasoning state rejected": "зашифрованное состояние рассуждений отклонено",
+    "multimodal tool content unsupported": "мультимодальные результаты инструментов не поддерживаются",
+    "thinking signature rejected": "подпись рассуждений отклонена",
+    "long-context tier unavailable": "режим длинного контекста недоступен",
+    "OAuth long-context beta unavailable": "длинный контекст недоступен при авторизации OAuth",
+    "grammar pattern rejected": "шаблон грамматики отклонён",
+    "provider failure": "сбой провайдера",
+}
+
+_MODEL_FALLBACK = re.compile(
+    r"^⚠️ Model fallback: (?P<old_model>.+?) via (?P<old_provider>.+?) unavailable "
+    r"\((?P<reason>[^\n]+)\); using (?P<new_model>.+?) via (?P<new_provider>.+?)\."
+    r"(?P<retry> Primary retry eligible in ~(?P<seconds>[0-9]+) s; recovery is not guaranteed\.)?$"
+)
+
+
+def translate_model_fallback_notice(text: str) -> str:
+    """Translate Hermes v0.23.0 fallback labels while preserving route identifiers."""
+    match = _MODEL_FALLBACK.fullmatch(text)
+    if match is None or match["reason"] not in _FALLBACK_REASONS:
+        return text
+    translated = (
+        f"⚠️ Резервная модель: {match['old_model']} через {match['old_provider']} недоступна "
+        f"({_FALLBACK_REASONS[match['reason']]}); используется "
+        f"{match['new_model']} через {match['new_provider']}."
+    )
+    if match["retry"]:
+        translated += (
+            f" Основной провайдер можно будет повторно проверить примерно через "
+            f"{match['seconds']} с; восстановление не гарантировано."
+        )
+    return translated
+
 
 def _match(pattern: str, text: str, render: Callable[[re.Match[str]], str]) -> str | None:
     match = re.fullmatch(pattern, text)
@@ -213,6 +264,9 @@ _BUSY_PATTERNS: tuple[tuple[str, str], ...] = (
 
 def translate_runtime_status(text: str) -> str:
     """Translate known heartbeat/busy envelopes and fail open for all other text."""
+    translated_model_fallback = translate_model_fallback_notice(text)
+    if translated_model_fallback != text:
+        return translated_model_fallback
     heartbeat = _HEARTBEAT.fullmatch(text)
     if heartbeat:
         suffix = ""
