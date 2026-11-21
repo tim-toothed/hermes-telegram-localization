@@ -303,17 +303,10 @@ groups:
       family: runtime_warning
       from: The fallback chain was exhausted or unavailable.
       to: Цепочка резервных провайдеров исчерпана или недоступна.
-    - id: runtime_warning.cron_provider_rate_limit_023
-      family: runtime_warning
-      from: '⚠️ Cron ''{job_name}'' failed: the AI model service was rate-limited (too many requests). No backup provider is configured — add one with `hermes fallback add`, or set a cron-wide default via `cron.model` + `cron.model_provider` in config.yaml. It will run again at its next scheduled time; `hermes cron run {job_id}` tries now. Run log: `hermes cron runs {job_id}`.'
-      to: '⚠️ Плановая задача «{job_name}» завершилась ошибкой: сервис модели временно ограничил частоту запросов. Резервный провайдер не настроен. Задача будет запущена снова по расписанию. Попросите меня повторить запуск сейчас, изменить задачу или приостановить её.'
-      placeholders:
-        job_name: .+?
-        job_id: '[a-f0-9]+'
     - id: runtime_warning.cron_generic_023
       family: runtime_warning
       from: '⚠️ Cron ''{job_name}'' failed: {error}. See the full run with `hermes cron runs {job_id}` (output saved under {output_dir}); run it again with `hermes cron run {job_id}`, edit it with `hermes cron edit {job_id}`, or pause it with `hermes cron pause {job_id}`.'
-      to: '⚠️ Плановая задача «{job_name}» завершилась ошибкой: {error}. Попросите меня показать подробности, изменить задачу или приостановить её.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: {error}. Полный запуск: `hermes cron runs {job_id}`; файлы сохранены в {output_dir}. Повторить запуск: `hermes cron run {job_id}`; изменить задачу: `hermes cron edit {job_id}`; приостановить: `hermes cron pause {job_id}`.'
       placeholders:
         job_name: .+?
         error: .+?
