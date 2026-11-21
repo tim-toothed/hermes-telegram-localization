@@ -303,6 +303,15 @@ groups:
       family: runtime_warning
       from: The fallback chain was exhausted or unavailable.
       to: Цепочка резервных провайдеров исчерпана или недоступна.
+    - id: runtime_warning.cron_generic_023
+      family: runtime_warning
+      from: '⚠️ Cron ''{job_name}'' failed: {error}. See the full run with `hermes cron runs {job_id}` (output saved under {output_dir}); run it again with `hermes cron run {job_id}`, edit it with `hermes cron edit {job_id}`, or pause it with `hermes cron pause {job_id}`.'
+      to: '⚠️ Задача Cron «{job_name}» завершилась ошибкой: {error}. Полный запуск: `hermes cron runs {job_id}`; файлы сохранены в {output_dir}. Повторить запуск: `hermes cron run {job_id}`; изменить задачу: `hermes cron edit {job_id}`; приостановить: `hermes cron pause {job_id}`.'
+      placeholders:
+        job_name: .+?
+        error: .+?
+        job_id: '[a-f0-9]+'
+        output_dir: .+?
     - id: runtime_warning.cron_generic
       family: runtime_warning
       from: '⚠️ Cron ''{job_name}'' failed: {error}'
@@ -903,7 +912,7 @@ groups:
     - id: runtime_warning.approval_fallback_smart_heading
       family: runtime_warning
       from: ⚠️ **Smart DENY — owner override for one operation:**
-      to: ⚠️ **Smart DENY — разрешение владельца для одной операции:**
+      to: ⚠️ **Защитный запрет — разовое подтверждение владельца:**
     - id: runtime_warning.compression_aborted
       family: runtime_warning
       from: ⚠️ Context compression was aborted ({error}). No messages were removed; the conversation is unchanged. Use `/compress`
@@ -1689,7 +1698,7 @@ groups:
       to: '
 
 
-        Smart DENY: разрешение владельца действует только для этой операции.'
+        Защитный запрет: эту операцию можно подтвердить только один раз. Для следующей такой операции потребуется новое подтверждение.'
   locales.gateway:
     source_file: locales/en.yaml + locales/ru.yaml
     rules:
@@ -3626,7 +3635,7 @@ groups:
       to: '
 
 
-        <b>Умный запрет:</b> разрешение владельца действует только для этой операции.'
+        <b>Защитный запрет:</b> эту операцию можно подтвердить только один раз. Для следующей такой операции потребуется новое подтверждение.'
     - id: locale.telegram.approval.allow_once
       family: locale.telegram.approval
       from: ✅ Allow Once
