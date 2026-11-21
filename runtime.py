@@ -11,6 +11,7 @@ from typing import Any, Callable
 from .account_usage_localization import translate_account_usage_envelope
 from .background_review_localization import translate_background_review_notification
 from .delivery_recovery_localization import translate_delivery_recovery_notice
+from .file_mutation_localization import translate_file_mutation_footer
 from .model_switch_localization import translate_model_switch_card
 from .runtime_status_localization import translate_runtime_status
 from .translator import Catalog, TranslationResult
@@ -110,14 +111,9 @@ class RuntimeState:
             and cron.rule_id == "locale.cron.delivery.wrapper"
         ):
             return cron.text, True
-        marker = "⚠️ File-mutation verifier:"
-        replacement = "⚠️ Проверка изменения файла:"
-        if text.startswith(marker):
-            return replacement + text[len(marker):], True
-        footer_marker = "\n\n" + marker
-        if footer_marker in text:
-            head, tail = text.rsplit(footer_marker, 1)
-            return head + "\n\n" + replacement + tail, True
+        file_mutation = _safe_transform(translate_file_mutation_footer, text)
+        if file_mutation != text:
+            return file_mutation, True
         head, separator, tail = text.rpartition("\n\n")
         notice = self.catalog.translate(tail, boundary="telegram.final_turn_notice")
         if notice.status == "translated" and (notice.rule_id or "").startswith("telegram.turn_notice."):
