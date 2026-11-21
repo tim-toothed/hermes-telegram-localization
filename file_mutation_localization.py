@@ -63,7 +63,7 @@ def translate_file_mutation_footer(text: str) -> str:
     count = header["count"]
     translated_header = (
         f"⚠️ Проверка изменения файлов: за этот ход не изменено файлов: {count}, "
-        "хотя текст выше может утверждать обратное. Проверьте результат через `git status` или `read_file`."
+        "хотя текст выше может утверждать обратное. Попросите REDD проверить результат и объяснить причину."
     )
     result = text[:header.start()] + translated_header + text[header.end():]
     lines = result.splitlines()
