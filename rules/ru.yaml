@@ -1716,6 +1716,13 @@ groups:
       to: 'Ошибка: {error}'
       placeholders:
         error: .*?
+    - id: locale.gateway.model.err_skew
+      family: locale.gateway.model
+      from: 'This gateway is running code from {boot_rev} but the checkout on disk is now {disk_rev}. Switching models would risk a stale-module crash — restart the gateway to load the new code: hermes gateway restart'
+      to: Код агента обновлён, но сервис продолжает работать на предыдущей версии. Смена модели временно недоступна. Попросите REDD применить обновление.
+      placeholders:
+        boot_rev: '[0-9a-f]+'
+        disk_rev: '[0-9a-f]+'
     - id: locale.gateway.model.switched
       family: locale.gateway.model
       from: Model switched to `{model}`
