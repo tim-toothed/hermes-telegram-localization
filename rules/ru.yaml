@@ -2120,7 +2120,7 @@ groups:
     - id: locale.gateway.fast.not_supported
       family: locale.gateway.fast
       from: ⚡ /fast is only available for OpenAI models that support Priority Processing.
-      to: ⚡ /fast доступен только для моделей OpenAI, поддерживающих Priority Processing.
+      to: ⚡ /fast доступен только для моделей OpenAI, поддерживающих приоритетную обработку.
     - id: locale.gateway.fast.status
       family: locale.gateway.fast
       from: '⚡ Priority Processing
@@ -2130,7 +2130,7 @@ groups:
 
 
         _Usage:_ `/fast <normal|fast|status>`'
-      to: '⚡ Priority Processing
+      to: '⚡ Приоритетная обработка
 
 
         Текущий режим: `{mode}`
@@ -2156,7 +2156,7 @@ groups:
       from: '⚡ ✓ Priority Processing: **{label}** (saved to config)
 
         _(takes effect on next message)_'
-      to: '⚡ ✓ Priority Processing: **{label}** (сохранено в конфигурации)
+      to: '⚡ ✓ Приоритетная обработка: **{label}** (сохранено в конфигурации)
 
         _(вступит в силу со следующего сообщения)_'
       placeholders:
@@ -2164,7 +2164,7 @@ groups:
     - id: locale.gateway.fast.session_only
       family: locale.gateway.fast
       from: '⚡ ✓ Priority Processing: **{label}** (this session only)'
-      to: '⚡ ✓ Priority Processing: **{label}** (только этот сеанс)'
+      to: '⚡ ✓ Приоритетная обработка: **{label}** (только этот чат)'
       placeholders:
         label: .*?
     - id: locale.gateway.fast.picker_title
@@ -2176,7 +2176,7 @@ groups:
 
 
         Pick an option:'
-      to: '⚡ **Priority Processing**
+      to: '⚡ **Приоритетная обработка**
 
 
         Текущий режим: `{mode}`
@@ -2188,11 +2188,27 @@ groups:
     - id: locale.gateway.fast.choice_fast
       family: locale.gateway.fast
       from: fast — Priority Processing on
-      to: fast — Priority Processing включён
+      to: fast — приоритетная обработка включена
     - id: locale.gateway.fast.choice_normal
       family: locale.gateway.fast
       from: normal — standard processing
       to: normal — стандартная обработка
+    - id: locale.gateway.fast.choice_auto
+      family: locale.gateway.fast
+      from: auto — fast for the first seconds of every turn
+      to: auto — быстрый режим в начале каждого ответа
+    - id: locale.gateway.fast.choice_cold
+      family: locale.gateway.fast
+      from: cold — fast for the first turn of a session only
+      to: cold — быстрый режим только для первого ответа в чате
+    - id: locale.gateway.fast.choice_ultrafast
+      family: locale.gateway.fast
+      from: ultrafast — OpenAI Ultrafast, 6x price
+      to: ultrafast — сверхбыстрый режим OpenAI, цена в 6 раз выше
+    - id: locale.gateway.fast.ultrafast_not_supported
+      family: locale.gateway.fast
+      from: ⚡ Ultrafast isn't available for `{model}` on this account or route.
+      to: ⚡ Сверхбыстрый режим недоступен для `{model}` с этим аккаунтом или подключением.
     - id: locale.gateway.footer.status
       family: locale.gateway.footer
       from: '📎 Runtime footer: **{state}**
