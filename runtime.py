@@ -12,6 +12,7 @@ from .account_usage_localization import translate_account_usage_envelope
 from .background_review_localization import translate_background_review_notification
 from .delivery_recovery_localization import translate_delivery_recovery_notice
 from .file_mutation_localization import translate_file_mutation_footer
+from .ingress_refusal_localization import translate_ingress_refusal
 from .model_switch_localization import translate_model_switch_card
 from .runtime_status_localization import translate_runtime_status
 from .translator import Catalog, TranslationResult
@@ -114,6 +115,9 @@ class RuntimeState:
         file_mutation = _safe_transform(translate_file_mutation_footer, text)
         if file_mutation != text:
             return file_mutation, True
+        ingress_refusal = _safe_transform(translate_ingress_refusal, text)
+        if ingress_refusal != text:
+            return ingress_refusal, True
         head, separator, tail = text.rpartition("\n\n")
         notice = self.catalog.translate(tail, boundary="telegram.final_turn_notice")
         if notice.status == "translated" and (notice.rule_id or "").startswith("telegram.turn_notice."):
